@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Bookmark, BOOKMARK_CATEGORIES } from '@/types/bookmark';
-import { ArrowTopRightOnSquareIcon, TrashIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { ArrowTopRightOnSquareIcon, TrashIcon, ClockIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { HeartIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
 
@@ -14,6 +14,7 @@ interface BookmarkCardProps {
 
 export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
   const [isLiked, setIsLiked] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -91,6 +92,16 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
+            onClick={() => setShowPreview(true)}
+            className="p-2 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-indigo-400/20 transition-colors"
+            title="Preview"
+          >
+            <EyeIcon className="w-4 h-4" />
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             onClick={handleVisit}
             className="p-2 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-indigo-400/20 transition-colors"
           >
@@ -162,6 +173,51 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 
       {/* Hover Effect Overlay */}
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+      
+      {/* Preview Modal */}
+      {showPreview && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden"
+          >
+            <div className="flex items-center justify-between p-4 border-b border-gray-700">
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-semibold text-white truncate">{bookmark.title}</h3>
+                <p className="text-sm text-gray-400 truncate">{bookmark.url}</p>
+              </div>
+              <button
+                onClick={() => setShowPreview(false)}
+                className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all flex-shrink-0 ml-4"
+              >
+                <XMarkIcon className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="p-4">
+              <div className="mb-3 flex items-center gap-2 justify-between">
+                <span className="text-sm text-gray-400 truncate flex-1">Preview: {bookmark.url}</span>
+                <a
+                  href={bookmark.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1 flex-shrink-0"
+                >
+                  <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                  Buka di tab baru
+                </a>
+              </div>
+              <iframe
+                src={bookmark.url}
+                className="w-full h-96 rounded-lg border border-gray-600"
+                title={`Preview: ${bookmark.title}`}
+                sandbox="allow-scripts allow-same-origin"
+              />
+            </div>
+          </motion.div>
+        </div>
+      )}
     </motion.div>
   );
 }
