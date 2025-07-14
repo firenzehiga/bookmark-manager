@@ -17,6 +17,7 @@ export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [previewError, setPreviewError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
