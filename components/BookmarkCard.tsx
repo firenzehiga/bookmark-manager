@@ -77,44 +77,44 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-1 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1 flex-shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-gray-800/80 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none rounded-lg sm:rounded-none p-1 sm:p-0">
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsLiked(!isLiked)}
-            className={`p-2 rounded-full transition-colors ${
+            className={`p-2 sm:p-2 rounded-full transition-colors ${
               isLiked ? 'text-red-500 bg-red-500/20' : 'text-gray-400 hover:text-red-400'
             }`}
           >
-            <HeartIcon className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+            <HeartIcon className={`w-5 h-5 sm:w-4 sm:h-4 ${isLiked ? 'fill-current' : ''}`} />
           </motion.button>
           
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setShowPreview(true)}
-            className="p-2 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-indigo-400/20 transition-colors"
+            className="p-2 sm:p-2 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-indigo-400/20 transition-colors"
             title="Preview"
           >
-            <EyeIcon className="w-4 h-4" />
+            <EyeIcon className="w-5 h-5 sm:w-4 sm:h-4" />
           </motion.button>
           
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleVisit}
-            className="p-2 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-indigo-400/20 transition-colors"
+            className="p-2 sm:p-2 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-indigo-400/20 transition-colors"
           >
-            <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+            <ArrowTopRightOnSquareIcon className="w-5 h-5 sm:w-4 sm:h-4" />
           </motion.button>
           
           <motion.button
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={handleDelete}
-            className="p-2 rounded-full text-gray-400 hover:text-red-400 hover:bg-red-400/20 transition-colors"
+            className="p-2 sm:p-2 rounded-full text-gray-400 hover:text-red-400 hover:bg-red-400/20 transition-colors"
           >
-            <TrashIcon className="w-4 h-4" />
+            <TrashIcon className="w-5 h-5 sm:w-4 sm:h-4" />
           </motion.button>
         </div>
       </div>

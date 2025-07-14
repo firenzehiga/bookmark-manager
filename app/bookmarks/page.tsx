@@ -30,10 +30,10 @@ export default function BookmarksPage() {
               animate={{ rotate: 0, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <BookmarkIcon className="w-10 h-10 text-indigo-400" />
+              <BookmarkIcon className="w-8 h-8 text-indigo-400" />
             </motion.div>
-            <h1 className="text-4xl font-bold gradient-text">
-              Koleksi Bookmark
+            <h1 className="text-3xl font-bold gradient-text">
+              Data Bookmark
             </h1>
           </div>
           <motion.p 

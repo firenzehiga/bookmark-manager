@@ -131,3 +131,29 @@ body {
   color: #e2e8f0;
 }
 
+/* Shiny Text Animation */
+.shiny-text {
+  background: linear-gradient(
+    110deg,
+    #ffffff 10%,
+    #60a5fa 30%,
+    #a855f7 50%,
+    #60a5fa 70%,
+    #ffffff 90%
+  );
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 300% 0%;
+  }
+  100% {
+    background-position: -300% 0%;
+  }
+}
+
