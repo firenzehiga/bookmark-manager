@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookmarksList } from '@/components/BookmarksList';
 import { AddBookmarkForm } from '@/components/AddBookmarkForm';
-import { BookmarkIcon, PlusIcon, XMarkIcon, TableCellsIcon } from '@heroicons/react/24/outline';
+import { BookmarkIcon, PlusIcon, XMarkIcon, TableCellsIcon, ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
 
 export default function BookmarksPage() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -50,14 +50,21 @@ export default function BookmarksPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.4 }}
-            className="flex justify-center gap-3"
+            className="flex flex-wrap justify-center gap-4"
           >
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all"
+            >
+              <ArrowLeftCircleIcon className="w-5 h-5" />
+              Kembali ke Home
+            </Link>
             <Link
               href="/bookmarks/table"
               className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all"
             >
               <TableCellsIcon className="w-5 h-5" />
-              Lihat Tabel
+              Table View
             </Link>
           </motion.div>
         </motion.div>
