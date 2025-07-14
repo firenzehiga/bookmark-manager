@@ -1,66 +1,66 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { BookmarkFormData } from '@/types/bookmark';
+import { CategorySelector } from './CategorySelector';
+import { PlusIcon, LinkIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
 
 export function AddBookmarkForm() {
   const [formData, setFormData] = useState<BookmarkFormData>({
     title: '',
     url: '',
     description: '',
-    tags: ''
+    tags: []
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.title || !formData.url) {
+      toast.error('Judul dan URL wajib diisi!');
+      return;
+    }
+
     setIsLoading(true);
-    setMessage(null);
 
     try {
       // Validasi URL
-      if (formData.url && !formData.url.startsWith('http')) {
-        setFormData(prev => ({ ...prev, url: `https://${formData.url}` }));
+      let validUrl = formData.url;
+      if (!validUrl.startsWith('http')) {
+        validUrl = `https://${validUrl}`;
       }
-
-      // Parse tags dari string ke array
-      const tagsArray = formData.tags
-        .split(',')
-        .map(tag => tag.trim())
-        .filter(tag => tag.length > 0);
 
       const { error } = await supabase
         .from('bookmarks')
         .insert([
           {
             title: formData.title,
-            url: formData.url,
+            url: validUrl,
             description: formData.description || null,
-            tags: tagsArray.length > 0 ? tagsArray : null,
+            tags: formData.tags.length > 0 ? formData.tags : null,
           }
-        ])
-        .select();
+        ]);
 
       if (error) {
         throw error;
       }
 
-      setMessage({ type: 'success', text: 'Bookmark berhasil ditambahkan!' });
-      setFormData({ title: '', url: '', description: '', tags: '' });
+      toast.success('🎉 Bookmark berhasil ditambahkan!');
+      setFormData({ title: '', url: '', description: '', tags: [] });
       
-      // Refresh halaman setelah 1 detik untuk melihat bookmark baru
+      // Trigger refresh untuk melihat bookmark baru
       setTimeout(() => {
+        window.dispatchEvent(new Event('bookmark-added'));
         window.location.reload();
-      }, 1000);
+      }, 1500);
 
     } catch (error) {
       console.error('Error adding bookmark:', error);
-      setMessage({ 
-        type: 'error', 
-        text: 'Gagal menambahkan bookmark. Silakan coba lagi.' 
-      });
+      toast.error('❌ Gagal menambahkan bookmark');
     } finally {
       setIsLoading(false);
     }
@@ -71,90 +71,122 @@ export function AddBookmarkForm() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {message && (
-        <div className={`p-3 rounded-md ${
-          message.type === 'success' 
-            ? 'bg-green-50 text-green-800 border border-green-200' 
-            : 'bg-red-50 text-red-800 border border-red-200'
-        }`}>
-          {message.text}
-        </div>
-      )}
+  const handleTagToggle = (tagId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      tags: prev.tags.includes(tagId)
+        ? prev.tags.filter(id => id !== tagId)
+        : [...prev.tags, tagId]
+    }));
+  };
 
-      <div>
-        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-          Judul <span className="text-red-500">*</span>
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Title Input */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="space-y-2"
+      >
+        <label htmlFor="title" className="flex items-center gap-2 text-sm font-medium text-gray-300">
+          <DocumentTextIcon className="w-4 h-4" />
+          Judul Bookmark <span className="text-red-400">*</span>
         </label>
-        <input
+        <motion.input
+          whileFocus={{ scale: 1.01 }}
           type="text"
           id="title"
           name="title"
           value={formData.title}
           onChange={handleChange}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Contoh: Tutorial React"
+          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+          placeholder="Contoh: Tutorial React Terbaru"
         />
-      </div>
+      </motion.div>
 
-      <div>
-        <label htmlFor="url" className="block text-sm font-medium text-gray-700 mb-1">
-          URL <span className="text-red-500">*</span>
+      {/* URL Input */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="space-y-2"
+      >
+        <label htmlFor="url" className="flex items-center gap-2 text-sm font-medium text-gray-300">
+          <LinkIcon className="w-4 h-4" />
+          URL <span className="text-red-400">*</span>
         </label>
-        <input
+        <motion.input
+          whileFocus={{ scale: 1.01 }}
           type="url"
           id="url"
           name="url"
           value={formData.url}
           onChange={handleChange}
           required
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
           placeholder="https://example.com"
         />
-      </div>
+      </motion.div>
 
-      <div>
-        <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-          Deskripsi
+      {/* Description Input */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="space-y-2"
+      >
+        <label htmlFor="description" className="block text-sm font-medium text-gray-300">
+          Deskripsi (Opsional)
         </label>
-        <textarea
+        <motion.textarea
+          whileFocus={{ scale: 1.01 }}
           id="description"
           name="description"
           value={formData.description}
           onChange={handleChange}
           rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Deskripsi singkat tentang bookmark ini..."
+          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none"
+          placeholder="Ceritakan tentang bookmark ini..."
         />
-      </div>
+      </motion.div>
 
-      <div>
-        <label htmlFor="tags" className="block text-sm font-medium text-gray-700 mb-1">
-          Tags/Kategori
-        </label>
-        <input
-          type="text"
-          id="tags"
-          name="tags"
-          value={formData.tags}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="react, tutorial, programming (pisahkan dengan koma)"
+      {/* Category Selector */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
+        <CategorySelector
+          selectedTags={formData.tags}
+          onTagToggle={handleTagToggle}
         />
-        <p className="mt-1 text-sm text-gray-500">
-          Pisahkan beberapa tag dengan koma
-        </p>
-      </div>
+      </motion.div>
 
-      <button
+      {/* Submit Button */}
+      <motion.button
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
         type="submit"
         disabled={isLoading}
-        className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.99 }}
+        className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 btn-hover"
       >
-        {isLoading ? 'Menyimpan...' : 'Tambah Bookmark'}
-      </button>
+        {isLoading ? (
+          <>
+            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+            Menyimpan...
+          </>
+        ) : (
+          <>
+            <PlusIcon className="w-5 h-5" />
+            Tambah Bookmark
+          </>
+        )}
+      </motion.button>
     </form>
   );
 }
