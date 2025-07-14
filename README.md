@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Bookmark Manager - Next.js, TypeScript & Supabase
 
-## Getting Started
+Aplikasi web sederhana untuk menyimpan, mengelola, dan mencari link penting. Cocok untuk menyimpan video TikTok, artikel, meme, atau apapun yang ingin diingat.  
+Dibangun dengan Next.js (App Router), TypeScript, dan Tailwind CSS.  
+Data bookmark **disimpan di Supabase** agar bisa diakses dari mana saja, bukan hanya di browser.
 
-First, run the development server:
+## Fitur Utama
+- Tambah bookmark (judul, URL, deskripsi, tag/kategori)
+- Lihat daftar bookmark dari Supabase
+- Edit dan hapus bookmark
+- Filter berdasarkan kategori/tag (opsional)
+- Cari bookmark (opsional)
+- Data tetap tersimpan walau browser di-refresh dan bisa diakses dari device mana saja
 
+## Contoh Data Bookmark (Supabase Table)
+- id: bigint (auto-increment, primary key)
+- title: text
+- url: text
+- description: text (optional)
+- tags: text[] (optional)
+- created_at: timestamp (ISO date)
+
+## Teknologi
+- Next.js App Router
+- TypeScript
+- Tailwind CSS
+- Supabase (Postgres & API)
+
+## Setup dan Instalasi
+
+### 1. Clone dan Install Dependencies
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repo-url>
+cd bookmark-manager
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Setup Supabase
+1. Buat project baru di [Supabase](https://supabase.com)
+2. Di SQL Editor, jalankan script dari file `supabase-setup.sql`
+3. Dapatkan URL project dan anon key dari Settings > API
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 3. Environment Variables
+1. Copy file `.env.example` menjadi `.env.local`
+2. Isi dengan nilai dari Supabase:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 4. Jalankan Aplikasi
+```bash
+npm run dev
+```
 
-## Learn More
+Buka [http://localhost:3000](http://localhost:3000) untuk melihat aplikasi.
 
-To learn more about Next.js, take a look at the following resources:
+## Struktur Project
+```
+├── app/
+│   ├── page.tsx              # Halaman utama
+│   ├── bookmarks/
+│   │   └── page.tsx          # Halaman daftar bookmarks
+│   └── layout.tsx
+├── components/
+│   ├── AddBookmarkForm.tsx   # Form tambah bookmark
+│   ├── BookmarksList.tsx     # Daftar bookmarks
+│   └── BookmarkCard.tsx      # Card individual bookmark
+├── types/
+│   └── bookmark.ts           # TypeScript types
+├── lib/
+│   └── supabaseClient.ts     # Konfigurasi Supabase
+└── supabase-setup.sql        # Script setup database
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Catatan
+- Untuk tahap pengembangan, akses data di Supabase diatur agar semua user bisa CRUD (Row Level Security diaktifkan dengan policy permisif).
+- Fitur filter dan pencarian bookmark bersifat opsional.
