@@ -12,12 +12,12 @@ export default function Home() {
   const [recentBookmarks, setRecentBookmarks] = useState<Bookmark[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const features = [
-    { icon: "📱", title: "Responsif", desc: "Bekerja di semua device" },
-    { icon: "🎨", title: "Modern UI", desc: "Design yang elegan dan interaktif" },
-    { icon: "⚡", title: "Real-time", desc: "Data tersimpan langsung di cloud" },
-    { icon: "🔍", title: "Pencarian", desc: "Temukan bookmark dengan mudah" },
-  ];
+  // const features = [
+  //   { icon: "📱", title: "Responsif", desc: "Bekerja di semua device" },
+  //   { icon: "🎨", title: "Modern UI", desc: "Design yang elegan dan interaktif" },
+  //   { icon: "⚡", title: "Real-time", desc: "Data tersimpan langsung di cloud" },
+  //   { icon: "🔍", title: "Pencarian", desc: "Temukan bookmark dengan mudah" },
+  // ];
 
   useEffect(() => {
     fetchRecentBookmarks();
