@@ -7,7 +7,7 @@ import ShinyText from "@/components/ShinyText";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Bookmark, BOOKMARK_CATEGORIES } from "@/types/bookmark";
-
+import Image from "next/image";
 export default function Home() {
   const [recentBookmarks, setRecentBookmarks] = useState<Bookmark[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,7 +64,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+		<div className="min-h-screen relative overflow-hidden">
 			{/* Background */}
 			<div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />
 			<div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
@@ -104,7 +104,7 @@ export default function Home() {
 							initial={{ scale: 0 }}
 							animate={{ scale: 1 }}
 							transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-							className="flex items-center justify-center gap-4 mb-5">
+							className="flex items-center gap-3 justify-center mb-3">
 							<motion.div
 								animate={{
 									rotate: [0, 10, -10, 0],
@@ -112,13 +112,18 @@ export default function Home() {
 								}}
 								transition={{ duration: 4, repeat: Infinity }}
 								className="text-7xl">
-								📚
+								<Image
+									src="/images/logo.png"
+									alt="Logo"
+									width={120}
+									height={120}
+								/>
 							</motion.div>
 							<div className="text-left">
-								<h1 className="text-5xl font-bold gradient-text leading-tight">
+								<h1 className="text-5xl font-bold text-indigo-400 leading-tight">
 									Bookmark
 								</h1>
-								<h1 className="text-5xl font-bold gradient-text leading-tight">
+								<h1 className="text-5xl font-bold text-indigo-400 leading-tight">
 									Manager
 								</h1>
 							</div>
@@ -130,10 +135,7 @@ export default function Home() {
 							transition={{ delay: 0.6 }}
 							className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
 							Simpan, kelola, dan temukan kembali link penting Anda dengan
-							<span className="text-indigo-400 font-semibold">
-								{" "}
-								mudah
-							</span>
+							<span className="text-indigo-400 font-semibold"> mudah</span>
 						</motion.p>
 
 						<motion.div
@@ -159,7 +161,6 @@ export default function Home() {
 						</motion.div>
 					</motion.div>
 
-				
 					{/* Recent Bookmarks Section */}
 					{!isLoading && recentBookmarks.length > 0 && (
 						<motion.div
@@ -175,7 +176,7 @@ export default function Home() {
 									Akses cepat ke link yang baru-baru ini Anda simpan
 								</p>
 							</div>
-							
+
 							<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 								{recentBookmarks.map((bookmark, index) => (
 									<motion.div
@@ -185,29 +186,31 @@ export default function Home() {
 										transition={{ delay: 1.8 + index * 0.1 }}
 										className="glass-dark rounded-xl p-4 border border-gray-700/50 hover:border-indigo-400/50 transition-all duration-300 group cursor-pointer"
 										onClick={() => handleVisit(bookmark.url)}>
-										
 										<div className="flex items-start justify-between mb-3">
 											<div className="flex-1 min-w-0">
 												<h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-indigo-300 transition-colors">
 													{bookmark.title}
 												</h3>
 												<p className="text-xs text-gray-500 mt-1">
-													{getDomainFromUrl(bookmark.url)} • {formatDate(bookmark.created_at)}
+													{getDomainFromUrl(bookmark.url)} •{" "}
+													{formatDate(bookmark.created_at)}
 												</p>
 											</div>
 											<ArrowTopRightOnSquareIcon className="w-4 h-4 text-gray-400 group-hover:text-indigo-400 transition-colors flex-shrink-0 ml-2" />
 										</div>
-										
+
 										{bookmark.description && (
 											<p className="text-gray-400 text-xs line-clamp-2 mb-3">
 												{bookmark.description}
 											</p>
 										)}
-										
+
 										{bookmark.tags && bookmark.tags.length > 0 && (
 											<div className="flex flex-wrap gap-1">
-												{bookmark.tags.slice(0, 2).map(tagId => {
-													const category = BOOKMARK_CATEGORIES.find(c => c.id === tagId);
+												{bookmark.tags.slice(0, 2).map((tagId) => {
+													const category = BOOKMARK_CATEGORIES.find(
+														(c) => c.id === tagId
+													);
 													return category ? (
 														<span
 															key={tagId}
@@ -215,7 +218,7 @@ export default function Home() {
 															style={{
 																backgroundColor: `${category.color}15`,
 																borderColor: `${category.color}40`,
-																color: category.color
+																color: category.color,
 															}}>
 															{category.icon} {category.label}
 														</span>
@@ -231,7 +234,7 @@ export default function Home() {
 									</motion.div>
 								))}
 							</div>
-							
+
 							<motion.div
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}

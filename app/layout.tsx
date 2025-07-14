@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bookmark Manager - Dark Theme",
+  title: "Bookmark Manager",
   description: "Simpan dan kelola bookmark Anda dengan style",
 };
 

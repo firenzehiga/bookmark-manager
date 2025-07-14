@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { BookmarkFormData } from '@/types/bookmark';
 import { CategorySelector } from './CategorySelector';
-import { PlusIcon, LinkIcon, DocumentTextIcon, EyeIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, LinkIcon, DocumentTextIcon, EyeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
   const [formData, setFormData] = useState<BookmarkFormData>({
@@ -17,6 +17,7 @@ export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+  const [previewError, setPreviewError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,6 +88,37 @@ export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
       return true;
     } catch {
       return false;
+    }
+  };
+
+  const getUrlInfo = (url: string) => {
+    try {
+      const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`);
+      const hostname = urlObj.hostname;
+      
+      // Deteksi platform yang tidak bisa di-embed
+      const restrictedPlatforms = [
+        'tiktok.com',
+        'instagram.com',
+        'facebook.com',
+        'twitter.com',
+        'x.com',
+        'linkedin.com',
+        'discord.com',
+        'whatsapp.com'
+      ];
+      
+      const isRestricted = restrictedPlatforms.some(platform => 
+        hostname.includes(platform)
+      );
+      
+      return {
+        hostname,
+        isRestricted,
+        platform: restrictedPlatforms.find(p => hostname.includes(p)) || null
+      };
+    } catch {
+      return { hostname: '', isRestricted: false, platform: null };
     }
   };
 
@@ -161,12 +193,42 @@ export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
             className="mt-3 p-3 bg-gray-800/30 border border-gray-700 rounded-lg overflow-hidden"
           >
             <p className="text-xs text-gray-400 mb-2">Preview:</p>
-            <iframe
-              src={formData.url.startsWith('http') ? formData.url : `https://${formData.url}`}
-              className="w-full h-32 rounded border border-gray-600"
-              title="Website Preview"
-              onError={() => setShowPreview(false)}
-            />
+            {(() => {
+              const urlInfo = getUrlInfo(formData.url);
+              
+              if (urlInfo.isRestricted) {
+                return (
+                  <div className="w-full h-32 bg-gray-700/50 rounded border border-gray-600 flex flex-col items-center justify-center text-center p-4">
+                    <ExclamationTriangleIcon className="w-8 h-8 text-yellow-400 mb-2" />
+                    <p className="text-sm text-gray-300 mb-1">
+                      Preview tidak tersedia untuk {urlInfo.platform}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      Platform ini memblokir preview iframe
+                    </p>
+                    <a 
+                      href={formData.url.startsWith('http') ? formData.url : `https://${formData.url}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-2 text-xs text-indigo-400 hover:text-indigo-300 underline"
+                    >
+                      Buka di tab baru →
+                    </a>
+                  </div>
+                );
+              }
+              
+              return (
+                <iframe
+                  src={formData.url.startsWith('http') ? formData.url : `https://${formData.url}`}
+                  className="w-full h-32 rounded border border-gray-600"
+                  title="Website Preview"
+                  onError={() => {
+                    setPreviewError(true);
+                  }}
+                />
+              );
+            })()}
           </motion.div>
         )}
       </motion.div>
