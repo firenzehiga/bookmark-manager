@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { Bookmark, BOOKMARK_CATEGORIES } from '@/types/bookmark';
@@ -92,72 +91,39 @@ export function BookmarksList() {
 
   if (isLoading) {
     return (
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="flex flex-col items-center justify-center py-16"
-      >
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"
+      <div className="flex flex-col items-center justify-center py-16">
+        <div
+          className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full mb-4 animate-spin"
         />
-        <motion.p 
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="text-gray-400 text-lg"
-        >
-          Memuat bookmark...
-        </motion.p>
-      </motion.div>
+        <p className="text-gray-400 text-lg">Memuat bookmark...</p>
+      </div>
     );
   }
 
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.6 }}
-      className="space-y-6"
-    >
+    <div className="space-y-6">
       {/* Search and Filter Section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="glass-dark rounded-2xl p-6 border border-gray-700/50"
-      >
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="glass-dark rounded-2xl p-4 md:p-6 border border-gray-700/50">
+        <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
           {/* Search Input */}
-          <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1, duration: 0.4 }}
-            className="flex-1 relative"
-          >
-            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="flex-1 relative">
+            <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
             <input
               type="text"
               placeholder="Cari bookmark..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+              className="w-full pl-9 md:pl-10 pr-4 py-2.5 md:py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm md:text-base"
             />
-          </motion.div>
+          </div>
 
           {/* Category Filter */}
-          <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
-            className="relative"
-          >
-            <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <div className="relative">
+            <FunnelIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="pl-10 pr-8 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none cursor-pointer min-w-48"
+              className="pl-9 md:pl-10 pr-8 py-2.5 md:py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all appearance-none cursor-pointer min-w-[180px] md:min-w-48 text-sm md:text-base"
             >
               <option value="all">Semua Kategori</option>
               {getUniqueCategories().map(categoryId => {
@@ -169,100 +135,60 @@ export function BookmarksList() {
                 );
               })}
             </select>
-          </motion.div>
+          </div>
         </div>
 
         {/* Stats */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
-          className="mt-4 flex flex-wrap items-center gap-4 text-sm text-gray-400"
-        >
+        <div className="mt-3 md:mt-4 flex flex-wrap items-center gap-2 md:gap-4 text-xs md:text-sm text-gray-400">
           <span className="flex items-center gap-1">
-            <BookmarkIcon className="w-4 h-4" />
+            <BookmarkIcon className="w-3 h-3 md:w-4 md:h-4" />
             {filteredBookmarks.length} dari {bookmarks.length} bookmark
           </span>
           {searchQuery && (
-            <span className="truncate">• Hasil pencarian: &ldquo;{searchQuery}&rdquo;</span>
+            <span className="truncate">• Pencarian: &ldquo;{searchQuery}&rdquo;</span>
           )}
           {selectedCategory !== 'all' && (
-            <span className="truncate">• Kategori: {BOOKMARK_CATEGORIES.find(c => c.id === selectedCategory)?.label || selectedCategory}</span>
+            <span className="truncate">• {BOOKMARK_CATEGORIES.find(c => c.id === selectedCategory)?.label || selectedCategory}</span>
           )}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
 
       {/* Bookmarks Grid */}
-      <AnimatePresence mode="wait">
+      <div className="space-y-4">
         {filteredBookmarks.length === 0 ? (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.4 }}
-            className="text-center py-16"
-          >
-            <motion.div 
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="text-8xl mb-6 opacity-20"
-            >
-              📚
-            </motion.div>
-            <motion.h3 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="text-2xl font-bold text-gray-300 mb-2"
-            >
+          <div className="text-center py-12 md:py-16">
+            <div className="text-6xl md:text-8xl mb-4 md:mb-6 opacity-20">📚</div>
+            <h3 className="text-xl md:text-2xl font-bold text-gray-300 mb-2">
               {searchQuery || selectedCategory !== 'all' 
                 ? 'Tidak ada bookmark yang ditemukan' 
                 : 'Belum ada bookmark'
               }
-            </motion.h3>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="text-gray-500"
-            >
+            </h3>
+            <p className="text-sm md:text-base text-gray-500">
               {searchQuery || selectedCategory !== 'all'
                 ? 'Coba ubah filter atau kata kunci pencarian'
                 : 'Klik tombol "Tambah Bookmark Baru" untuk memulai'
               }
-            </motion.p>
-          </motion.div>
+            </p>
+          </div>
         ) : (
-          <motion.div 
-            key="bookmarks"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="grid gap-6 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3"
-          >
-            {filteredBookmarks.map((bookmark, index) => (
-              <motion.div
+          <div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
+            {filteredBookmarks.map((bookmark) => (
+              <div
                 key={bookmark.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ 
-                  delay: index * 0.1,
-                  duration: 0.5,
-                  ease: "easeOut"
-                }}
+                className="opacity-0 animate-fadeIn"
+                style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}
               >
                 <BookmarkCard
                   bookmark={bookmark}
                   onDelete={handleDelete}
-                  index={index}
+                  index={0}
                 />
-              </motion.div>
+              </div>
             ))}
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
-    </motion.div>
+      </div>
+    </div>
   );
 }

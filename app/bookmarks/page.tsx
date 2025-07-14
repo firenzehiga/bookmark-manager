@@ -73,22 +73,24 @@ export default function BookmarksPage() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 className="overflow-hidden"
               >
-                <div className="glass-dark rounded-2xl p-6 border border-gray-700/50 relative">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                      <PlusIcon className="w-5 h-5 text-indigo-400" />
-                      Tambah Bookmark Baru
-                    </h2>
-                    <motion.button
-                      onClick={() => setShowAddForm(false)}
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all"
-                    >
-                      <XMarkIcon className="w-5 h-5" />
-                    </motion.button>
+                <div className="max-w-2xl mx-auto">
+                  <div className="glass-dark rounded-2xl p-6 border border-gray-700/50 relative">
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                        <PlusIcon className="w-5 h-5 text-indigo-400" />
+                        Tambah Bookmark Baru
+                      </h2>
+                      <motion.button
+                        onClick={() => setShowAddForm(false)}
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="p-2 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-lg transition-all"
+                      >
+                        <XMarkIcon className="w-5 h-5" />
+                      </motion.button>
+                    </div>
+                    <AddBookmarkForm onSuccess={() => setShowAddForm(false)} />
                   </div>
-                  <AddBookmarkForm />
                 </div>
               </motion.div>
             </AnimatePresence>

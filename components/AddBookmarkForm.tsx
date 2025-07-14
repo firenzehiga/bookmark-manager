@@ -6,9 +6,9 @@ import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { BookmarkFormData } from '@/types/bookmark';
 import { CategorySelector } from './CategorySelector';
-import { PlusIcon, LinkIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { PlusIcon, LinkIcon, DocumentTextIcon, EyeIcon } from '@heroicons/react/24/outline';
 
-export function AddBookmarkForm() {
+export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
   const [formData, setFormData] = useState<BookmarkFormData>({
     title: '',
     url: '',
@@ -16,6 +16,7 @@ export function AddBookmarkForm() {
     tags: []
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,11 +53,11 @@ export function AddBookmarkForm() {
       toast.success('🎉 Bookmark berhasil ditambahkan!');
       setFormData({ title: '', url: '', description: '', tags: [] });
       
-      // Trigger refresh untuk melihat bookmark baru
+      // Trigger success callback dan refresh
       setTimeout(() => {
-        window.dispatchEvent(new Event('bookmark-added'));
+        onSuccess?.();
         window.location.reload();
-      }, 1500);
+      }, 1000);
 
     } catch (error) {
       console.error('Error adding bookmark:', error);
@@ -78,6 +79,15 @@ export function AddBookmarkForm() {
         ? prev.tags.filter(id => id !== tagId)
         : [...prev.tags, tagId]
     }));
+  };
+
+  const isValidUrl = (url: string) => {
+    try {
+      new URL(url.startsWith('http') ? url : `https://${url}`);
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   return (
@@ -106,7 +116,7 @@ export function AddBookmarkForm() {
         />
       </motion.div>
 
-      {/* URL Input */}
+      {/* URL Input with Preview */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -117,17 +127,48 @@ export function AddBookmarkForm() {
           <LinkIcon className="w-4 h-4" />
           URL <span className="text-red-400">*</span>
         </label>
-        <motion.input
-          whileFocus={{ scale: 1.01 }}
-          type="url"
-          id="url"
-          name="url"
-          value={formData.url}
-          onChange={handleChange}
-          required
-          className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-          placeholder="https://example.com"
-        />
+        <div className="flex gap-2">
+          <motion.input
+            whileFocus={{ scale: 1.01 }}
+            type="url"
+            id="url"
+            name="url"
+            value={formData.url}
+            onChange={handleChange}
+            required
+            className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+            placeholder="https://example.com"
+          />
+          {formData.url && isValidUrl(formData.url) && (
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowPreview(!showPreview)}
+              className="px-4 py-3 bg-indigo-600/20 text-indigo-400 border border-indigo-600/30 rounded-xl hover:bg-indigo-600/30 transition-all"
+            >
+              <EyeIcon className="w-5 h-5" />
+            </motion.button>
+          )}
+        </div>
+        
+        {/* Preview */}
+        {showPreview && formData.url && isValidUrl(formData.url) && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-3 p-3 bg-gray-800/30 border border-gray-700 rounded-lg overflow-hidden"
+          >
+            <p className="text-xs text-gray-400 mb-2">Preview:</p>
+            <iframe
+              src={formData.url.startsWith('http') ? formData.url : `https://${formData.url}`}
+              className="w-full h-32 rounded border border-gray-600"
+              title="Website Preview"
+              onError={() => setShowPreview(false)}
+            />
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Description Input */}
