@@ -1,147 +1,172 @@
-'use client';
+"use client";
 
-import { createContext, useContext, useEffect, useState } from 'react';
-import { User } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabaseClient';
-import toast from 'react-hot-toast';
+import { createContext, useContext, useEffect, useState, useRef } from "react";
+import { User } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
+import Swal from "sweetalert2";
 
 interface AuthContextType {
-  user: User | null;
-  loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ needsVerification: boolean }>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  verifyOtp: (email: string, token: string) => Promise<void>;
-  resendOtp: (email: string) => Promise<void>;
+	user: User | null;
+	loading: boolean;
+	signUp: (
+		email: string,
+		password: string
+	) => Promise<{ needsVerification: boolean }>;
+	signIn: (email: string, password: string) => Promise<void>;
+	signOut: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+	const [user, setUser] = useState<User | null>(null);
+	const [loading, setLoading] = useState(true);
+	const router = useRouter();
+	const hasInitialized = useRef(false);
+	const lastAuthEvent = useRef<string | null>(null);
+	const authEventTime = useRef<number>(0);
 
-  useEffect(() => {
-    // Get initial session
-    const getSession = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setUser(session?.user ?? null);
-      } catch (error) {
-        console.error('Error getting session:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+	useEffect(() => {
+		// Get initial session
+		const getSession = async () => {
+			try {
+				const {
+					data: { session },
+				} = await supabase.auth.getSession();
+				setUser(session?.user ?? null);
+			} catch (error) {
+				console.error("Error getting session:", error);
+			} finally {
+				setLoading(false);
+				hasInitialized.current = true;
+			}
+		};
 
-    getSession();
+		getSession();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth event:', event);
-        setUser(session?.user ?? null);
-        setLoading(false);
+		// Listen for auth changes
+		const {
+			data: { subscription },
+		} = supabase.auth.onAuthStateChange(async (event, session) => {
+			console.log("Auth event:", event, "Initialized:", hasInitialized.current);
+			
+			const now = Date.now();
+			const timeSinceLastEvent = now - authEventTime.current;
+			
+			setUser(session?.user ?? null);
+			setLoading(false);
 
-        if (event === 'SIGNED_IN') {
-          toast.success('🎉 Berhasil masuk!');
-        } else if (event === 'SIGNED_OUT') {
-          toast.success('👋 Sampai jumpa!');
-        }
-      }
-    );
+			// Only show toasts for genuine auth events
+			if (hasInitialized.current && 
+				event !== lastAuthEvent.current && 
+				timeSinceLastEvent > 1000) { // Debounce 1 second
+				
+				if (event === "SIGNED_IN") {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Berhasil masuk!",
+                        showConfirmButton: false,
+                        timer: 1500,
+                    });
+				} else if (event === "SIGNED_OUT") {
+					toast.success("👋 Sampai jumpa!");
+				}
+				
+				lastAuthEvent.current = event;
+				authEventTime.current = now;
+			}
+		});
 
-    return () => subscription.unsubscribe();
-  }, []);
+		return () => subscription.unsubscribe();
+	}, []);
 
-  const signUp = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
-      }
-    });
+	const signUp = async (email: string, password: string) => {
+		const { data, error } = await supabase.auth.signUp({
+			email,
+			password,
+			options: {
+				emailRedirectTo: `${
+					process.env.NODE_ENV === "production"
+						? "https://bookmark-manager-neon.vercel.app"
+						: window.location.origin
+				}/auth/callback`,
+			},
+		});
 
-    if (error) {
-      console.error('Sign up error:', error);
-      throw error;
-    }
+		if (error) {
+			console.error("Sign up error:", error);
+			throw error;
+		}
 
-    // Jika email confirmation diperlukan
-    if (data.user && !data.session) {
-      return { needsVerification: true };
-    }
+		// Jika email confirmation diperlukan
+		if (data.user && !data.session) {
+			return { needsVerification: true };
+		}
 
-    return { needsVerification: false };
-  };
+		return { needsVerification: false };
+	};
 
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
+	const signIn = async (email: string, password: string) => {
+		const { error } = await supabase.auth.signInWithPassword({
+			email,
+			password,
+		});
 
-    if (error) {
-      console.error('Sign in error:', error);
-      throw error;
-    }
-  };
+		if (error) {
+			console.error("Sign in error:", error);
+			throw error;
+		}
 
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    if (error) {
-      console.error('Sign out error:', error);
-      throw error;
-    }
-  };
+		
+	};
 
-  const verifyOtp = async (email: string, token: string) => {
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token,
-      type: 'signup'
-    });
+	const signOut = async () => {
+		try {
+			// Set loading state untuk mencegah flash
+			setLoading(true);
 
-    if (error) {
-      console.error('OTP verification error:', error);
-      throw error;
-    }
-  };
+			const { error } = await supabase.auth.signOut();
+			if (error) {
+				console.error("Sign out error:", error);
+				setLoading(false);
+				throw error;
+			}
 
-  const resendOtp = async (email: string) => {
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email
-    });
+			// Clear user state
+			setUser(null);
 
-    if (error) {
-      console.error('Resend OTP error:', error);
-      throw error;
-    }
-  };
+			// Clear cached data
+			if (typeof window !== "undefined") {
+				localStorage.removeItem("supabase.auth.token");
+			}
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        signUp,
-        signIn,
-        signOut,
-        verifyOtp,
-        resendOtp
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
+			// Immediate redirect tanpa delay
+			router.replace("/");
+		} catch (error) {
+			setLoading(false);
+			throw error;
+		}
+	};
+	return (
+		<AuthContext.Provider
+			value={{
+				user,
+				loading,
+				signUp,
+				signIn,
+				signOut,
+			}}>
+			{children}
+		</AuthContext.Provider>
+	);
 }
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+	const context = useContext(AuthContext);
+	if (context === undefined) {
+		throw new Error("useAuth must be used within an AuthProvider");
+	}
+	return context;
 };

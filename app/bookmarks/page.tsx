@@ -12,7 +12,7 @@ export default function BookmarksPage() {
   const [showAddForm, setShowAddForm] = useState(false);
 
   return (
-    <ProtectedRoute>
+    <ProtectedRoute redirectToHome={true}>
       <div className="min-h-screen py-8 px-4">
       {/* Background Effect */}
       <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 -z-10" />

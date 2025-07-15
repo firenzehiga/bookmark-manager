@@ -1,32 +1,39 @@
 'use client';
 
 import { useAuth } from '@/contexts/AuthContext';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   fallback?: React.ReactNode;
+  redirectToHome?: boolean; // Option to redirect to home
 }
 
-export function ProtectedRoute({ children, fallback }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, fallback, redirectToHome = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
-  const [showContent, setShowContent] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
-      setShowContent(true);
+    if (!loading && !user && redirectToHome) {
+      // Immediate redirect to home if no user and redirectToHome is true
+      router.replace('/');
+      return;
     }
-  }, [loading]);
+  }, [loading, user, redirectToHome, router]);
 
-  if (loading || !showContent) {
+  // Show loading only briefly
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-900">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
-          <p className="text-gray-400">Loading...</p>
-        </div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
       </div>
     );
+  }
+
+  // If user is not logged in and we're set to redirect, return null while redirecting
+  if (!user && redirectToHome) {
+    return null;
   }
 
   if (!user) {

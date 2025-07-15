@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabaseClient';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { Bookmark, BOOKMARK_CATEGORIES } from '@/types/bookmark';
 import { 
   TableCellsIcon, 
@@ -127,7 +128,8 @@ export default function BookmarksTablePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-indigo-900/30">
+    <ProtectedRoute redirectToHome={true}>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900/20 to-indigo-900/30">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="glass-dark rounded-2xl p-6 mb-8 border border-gray-700/50">
@@ -406,5 +408,6 @@ export default function BookmarksTablePage() {
         )}
       </div>
     </div>
+    </ProtectedRoute>
   );
 }

@@ -11,15 +11,14 @@ interface AuthModalProps {
   onClose: () => void;
 }
 
-type AuthStep = 'login' | 'register' | 'verify';
+type AuthStep = 'login' | 'register' | 'success';
 
 export function AuthModal({ isOpen, onClose }: AuthModalProps) {
   const [step, setStep] = useState<AuthStep>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [otpCode, setOtpCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, verifyOtp, resendOtp } = useAuth();
+  const { signIn, signUp } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,8 +39,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
       if (errorMessage.includes('Invalid login credentials')) {
         toast.error('❌ Email atau password salah');
       } else if (errorMessage.includes('Email not confirmed')) {
-        toast.error('📧 Silakan verifikasi email Anda terlebih dahulu');
-        setStep('verify');
+        toast.error('📧 Silakan cek email untuk verifikasi akun Anda');
       } else {
         toast.error('❌ Gagal masuk. Silakan coba lagi.');
       }
@@ -66,8 +64,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     try {
       const result = await signUp(email, password);
       if (result.needsVerification) {
-        toast.success('📧 Kode verifikasi telah dikirim ke email Anda!');
-        setStep('verify');
+        toast.success('📧 Link verifikasi telah dikirim ke email Anda!');
+        setStep('success');
       } else {
         toast.success('🎉 Pendaftaran berhasil!');
         onClose();
@@ -89,57 +87,9 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
     }
   };
 
-  const handleVerifyOtp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!otpCode || otpCode.length !== 6) {
-      toast.error('Kode verifikasi harus 6 digit!');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await verifyOtp(email, otpCode);
-      toast.success('✅ Email berhasil diverifikasi!');
-      onClose();
-      resetForm();
-    } catch (error: unknown) {
-      console.error('OTP verification error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      
-      if (errorMessage.includes('Token has expired')) {
-        toast.error('🕐 Kode sudah kedaluwarsa. Silakan minta kode baru.');
-      } else if (errorMessage.includes('Invalid token')) {
-        toast.error('❌ Kode verifikasi salah');
-      } else {
-        toast.error('❌ Verifikasi gagal. Silakan coba lagi.');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleResendOtp = async () => {
-    if (!email) {
-      toast.error('Email tidak boleh kosong!');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await resendOtp(email);
-      toast.success('📧 Kode verifikasi baru telah dikirim!');
-    } catch (error: unknown) {
-      console.error('Resend OTP error:', error);
-      toast.error('❌ Gagal mengirim ulang kode');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const resetForm = () => {
     setEmail('');
     setPassword('');
-    setOtpCode('');
     setStep('login');
   };
 
@@ -164,7 +114,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             <h2 className="text-xl font-bold text-white">
               {step === 'login' && '🔐 Masuk'}
               {step === 'register' && '📝 Daftar'}
-              {step === 'verify' && '📧 Verifikasi Email'}
+              {step === 'success' && '📧 Cek Email Anda'}
             </h2>
             <button
               onClick={handleClose}
@@ -208,7 +158,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-                  placeholder="••••••••"
+                  placeholder="password Anda"
                 />
               </div>
 
@@ -251,7 +201,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-300">
                   <EnvelopeIcon className="w-4 h-4" />
-                  Email
+                  Email Aktif
                 </label>
                 <input
                   type="email"
@@ -310,74 +260,62 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
             </motion.form>
           )}
 
-          {/* OTP Verification Form */}
-          {step === 'verify' && (
-            <motion.form
+          {/* Success Message */}
+          {step === 'success' && (
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              onSubmit={handleVerifyOtp}
-              className="space-y-4"
+              className="space-y-6"
             >
-              <div className="text-center mb-4">
-                <div className="text-4xl mb-2">📧</div>
-                <p className="text-gray-300 text-sm mb-1">
-                  Kode verifikasi telah dikirim ke:
+              <div className="text-center">
+                <div className="text-6xl mb-4">�</div>
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  Email Verifikasi Terkirim!
+                </h3>
+                <p className="text-gray-300 text-sm mb-4">
+                  Kami telah mengirim link verifikasi ke:
                 </p>
-                <p className="text-indigo-400 font-medium break-all">{email}</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  Cek folder spam jika tidak menemukan email
-                </p>
+                <p className="text-indigo-400 font-medium break-all mb-4">{email}</p>
               </div>
 
-              <div className="space-y-2">
-                <label className="flex items-center justify-center gap-2 text-sm font-medium text-gray-300">
-                  🔢 Kode Verifikasi (6 digit)
-                </label>
-                <input
-                  type="text"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  required
-                  maxLength={6}
-                  className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-center text-2xl tracking-widest font-mono"
-                  placeholder="123456"
-                />
+              <div className="bg-gray-800/50 border border-gray-600 rounded-xl p-4">
+                <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                  <span className="text-lg">📋</span>
+                  Langkah selanjutnya:
+                </h4>
+                <ol className="text-sm text-gray-300 space-y-2">
+                  <li className="flex items-start gap-2">
+                    <span className="text-indigo-400 font-mono">1.</span>
+                    Buka aplikasi email Anda
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-indigo-400 font-mono">2.</span>
+                    Cari email dari bookmark manager
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-indigo-400 font-mono">3.</span>
+                    Klik tombol &quot;Confirm your signup&quot; di dalam email
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-indigo-400 font-mono">4.</span>
+                    Anda akan dialihkan kembali ke aplikasi dan otomatis login
+                  </li>
+                </ol>
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2"
-              >
-                {loading ? (
-                  <>
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    Memverifikasi...
-                  </>
-                ) : (
-                  '✅ Verifikasi'
-                )}
-              </button>
-
-              <div className="text-center space-y-2">
-                <button
-                  type="button"
-                  onClick={handleResendOtp}
-                  disabled={loading}
-                  className="text-gray-400 hover:text-white text-sm transition-colors underline"
-                >
-                  📤 Kirim ulang kode
-                </button>
-                <br />
+              <div className="text-center space-y-3">
+                <p className="text-xs text-gray-400">
+                  Tidak menerima email? Cek folder spam
+                </p>
                 <button
                   type="button"
                   onClick={() => setStep('register')}
-                  className="text-indigo-400 hover:text-indigo-300 text-sm transition-colors"
+                  className="text-gray-400 hover:text-gray-300 text-sm transition-colors"
                 >
                   ← Kembali ke pendaftaran
                 </button>
               </div>
-            </motion.form>
+            </motion.div>
           )}
         </motion.div>
       </div>
