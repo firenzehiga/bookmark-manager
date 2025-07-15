@@ -332,10 +332,10 @@ export default function Home() {
 								/>
 							</motion.div>
 							<div className="text-left">
-								<h1 className="text-5xl font-bold text-indigo-400 leading-tight">
+								<h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent leading-tight">
 									Bookmark
 								</h1>
-								<h1 className="text-5xl font-bold text-indigo-400 leading-tight">
+								<h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent leading-tight">
 									Manager
 								</h1>
 							</div>
@@ -386,7 +386,7 @@ export default function Home() {
 						className="text-center mt-10">
 						<div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
 							<SparklesIcon className="w-5 h-5 text-indigo-400" />
-							<span>Powered by Next.js, TypeScript & Supabase</span>
+							<span>Made by frnzehiga_</span> | <span>Powered by Next.js & Supabase</span>
 							<SparklesIcon className="w-5 h-5 text-indigo-400" />
 						</div>
 					</motion.div>
