@@ -395,7 +395,7 @@ export default function Home() {
 						className="text-center mt-10">
 						<div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
 							<SparklesIcon className="w-5 h-5 text-indigo-400" />
-							<span>Powered by Next.js, TypeScript & Supabase</span>
+							<span>Made by frenzehiga_ | Powered by Next.js & Supabase</span>
 							<SparklesIcon className="w-5 h-5 text-indigo-400" />
 						</div>
 					</motion.div>
