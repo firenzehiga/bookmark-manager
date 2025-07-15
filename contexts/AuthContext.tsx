@@ -51,29 +51,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange(async (event, session) => {
 			console.log("Auth event:", event, "Initialized:", hasInitialized.current);
-			
+
 			const now = Date.now();
 			const timeSinceLastEvent = now - authEventTime.current;
-			
+
 			setUser(session?.user ?? null);
 			setLoading(false);
 
 			// Only show toasts for genuine auth events
-			if (hasInitialized.current && 
-				event !== lastAuthEvent.current && 
-				timeSinceLastEvent > 1000) { // Debounce 1 second
-				
+			if (
+				hasInitialized.current &&
+				event !== lastAuthEvent.current &&
+				timeSinceLastEvent > 1000
+			) {
+				// Debounce 1 second
+
 				if (event === "SIGNED_IN") {
-                    Swal.fire({
-                        icon: "success",
-                        title: "Berhasil masuk!",
-                        showConfirmButton: false,
-                        timer: 1500,
-                    });
+					toast.success("👋 Selamat datang!", { position: "top-left" });
 				} else if (event === "SIGNED_OUT") {
-					toast.success("👋 Sampai jumpa!");
+					toast.success("👋 Sampai jumpa!", { position: "top-left" });
 				}
-				
+
 				lastAuthEvent.current = event;
 				authEventTime.current = now;
 			}
@@ -118,8 +116,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			console.error("Sign in error:", error);
 			throw error;
 		}
-
-		
 	};
 
 	const signOut = async () => {
