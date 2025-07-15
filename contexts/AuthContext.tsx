@@ -29,13 +29,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const authEventTime = useRef<number>(0);
 
 	useEffect(() => {
-		// Get initial session
+		// Get initial session with aggressive persistence
 		const getSession = async () => {
 			try {
 				const {
 					data: { session },
 				} = await supabase.auth.getSession();
-				setUser(session?.user ?? null);
+				
+				if (session) {
+					setUser(session.user);
+					setLoading(false);
+					hasInitialized.current = true;
+					return;
+				}
+				
+				// Try to refresh token if no active session
+				const { data: { session: refreshedSession } } = await supabase.auth.refreshSession();
+				if (refreshedSession) {
+					setUser(refreshedSession.user);
+				} else {
+					setUser(null);
+				}
 			} catch (error) {
 				console.error("Error getting session:", error);
 			} finally {
@@ -62,7 +76,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			if (
 				hasInitialized.current &&
 				event !== lastAuthEvent.current &&
-				timeSinceLastEvent > 1000
+				timeSinceLastEvent > 1000 &&
+				event !== "TOKEN_REFRESHED" // Ignore automatic token refresh
 			) {
 				// Debounce 1 second
 

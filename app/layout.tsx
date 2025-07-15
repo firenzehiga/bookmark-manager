@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ToastProvider } from "@/components/ToastProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AuthButton } from "@/components/AuthButton";
+import { QuickAddBookmark } from "@/components/QuickAddBookmark";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <AuthButton />
+          <QuickAddBookmark />
           <main>
             {children}
           </main>
