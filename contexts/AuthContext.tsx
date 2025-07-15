@@ -5,7 +5,7 @@ import { User } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 
 interface AuthContextType {
 	user: User | null;
