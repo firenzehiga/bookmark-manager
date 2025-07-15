@@ -48,11 +48,23 @@ export function AuthButton() {
 	// Show skeleton button saat loading initial
 	if (loading) {
 		return (
-			<div className="fixed top-4 right-4 z-50">
-				<div className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 text-transparent px-6 py-2 rounded-xl animate-pulse">
-					<span className="opacity-0">Masuk</span>
-				</div>
-			</div>
+			<AnimatePresence>
+				<motion.div
+					initial={{ opacity: 0, y: 40 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.8 }}
+					className="fixed bottom-6 right-6 z-50">
+					{/* Floating Action Button */}
+					<div className="fixed top-4 right-4 z-50">
+						<div className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 text-transparent px-6 py-2 rounded-xl animate-pulse">
+							<span className="opacity-0">Masuk</span>
+						</div>
+					</div>
+					<button className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 text-transparent p-4 rounded-full shadow-lg animate-pulse">
+						<UserCircleIcon className="w-6 h-6" />
+					</button>
+				</motion.div>
+			</AnimatePresence>
 		);
 	}
 
@@ -61,21 +73,29 @@ export function AuthButton() {
 			<div className="fixed top-4 right-4 z-50">
 				{user ? (
 					<div className="relative">
-						<button
-							onClick={() => setIsProfileOpen(!isProfileOpen)}
-							className="flex items-center gap-2 bg-gray-900/90 backdrop-blur-sm border border-gray-700 text-white px-4 py-2 rounded-xl hover:bg-gray-800/90 transition-all duration-200 shadow-lg">
-							<UserCircleIcon className="w-5 h-5" />
-							<span className="hidden sm:block">
-								{user.email?.split("@")[0]}
-							</span>
-						</button>
+						<AnimatePresence>
+							<motion.div
+								initial={{ opacity: 0, y: 40 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ delay: 0.8 }}
+								className="">
+								{/* Floating Action Button */}
+								<button
+									onClick={() => setIsProfileOpen(!isProfileOpen)}
+									className="flex items-center gap-2 bg-gray-900/90 backdrop-blur-sm border border-gray-700 text-white px-4 py-2 rounded-xl hover:bg-gray-800/90 transition-all duration-200 shadow-lg">
+									<UserCircleIcon className="w-5 h-5" />
+									<span className="hidden sm:block">
+										{user.email?.split("@")[0]}
+									</span>
+								</button>
+							</motion.div>
+						</AnimatePresence>
 
 						<AnimatePresence>
 							{isProfileOpen && (
 								<motion.div
 									initial={{ opacity: 0, scale: 0.95, y: -10 }}
 									animate={{ opacity: 1, scale: 1, y: 0 }}
-									exit={{ opacity: 0, scale: 0.95, y: -10 }}
 									className="absolute right-0 mt-2 w-48 bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg overflow-hidden">
 									<div className="p-3 border-b border-gray-700">
 										<p className="text-sm font-medium text-white truncate">
@@ -103,8 +123,7 @@ export function AuthButton() {
 					<motion.div
 						initial={{ opacity: 0, scale: 0.95, y: 20 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
-						exit={{ opacity: 0, scale: 0.95, y: 20 }}
-					>
+						exit={{ opacity: 0, scale: 0.95, y: 20 }}>
 						<button
 							onClick={() => setShowAuthModal(true)}
 							className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">

@@ -129,27 +129,36 @@ export default function Home() {
     // Show loading state only if we haven't fetched yet
     if (isLoading && !hasFetchedOnce) {
       return (
-		  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
-			{[...Array(6)].map((_, idx) => (
-			  <div
-				key={idx}
-				className="glass-dark rounded-xl p-4 border border-gray-700/50 animate-pulse"
-			  >
-				<div className="flex items-start justify-between mb-3">
-				  <div className="flex-1 min-w-0">
-					<div className="h-4 bg-gray-700/60 rounded w-3/4 mb-2"></div>
-					<div className="h-3 bg-gray-700/40 rounded w-1/2"></div>
-				  </div>
-				  <div className="w-4 h-4 bg-gray-700/40 rounded ml-2"></div>
-				</div>
-				<div className="h-3 bg-gray-700/40 rounded mb-3 w-full"></div>
-				<div className="flex gap-2">
-				  <div className="h-5 w-16 bg-gray-700/40 rounded-full"></div>
-				  <div className="h-5 w-12 bg-gray-700/40 rounded-full"></div>
-				</div>
-			  </div>
-			))}
-		  </div>
+        
+          <><div className="text-center mb-8">
+          <h2 className="text-3xl font-bold text-white mb-2 opacity-5">
+            🔖 Bookmark Terbaru
+          </h2>
+          <p className="text-gray-400 opacity-5">
+            Akses cepat ke link yang baru-baru ini Anda simpan
+          </p>
+        </div><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
+
+            {[...Array(6)].map((_, idx) => (
+              <div
+                key={idx}
+                className="glass-dark rounded-xl p-4 border border-gray-700/50 animate-pulse"
+              >
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1 min-w-0">
+                    <div className="h-4 bg-gray-600/60 rounded w-3/4 mb-2"></div>
+                    <div className="h-3 bg-gray-600/40 rounded w-1/2"></div>
+                  </div>
+                  <div className="w-4 h-4 bg-gray-600/40 rounded ml-2"></div>
+                </div>
+                <div className="h-3 bg-gray-600/40 rounded mb-3 w-full"></div>
+                <div className="flex gap-2">
+                  <div className="h-5 w-16 bg-gray-600/40 rounded-full"></div>
+                  <div className="h-5 w-12 bg-gray-600/40 rounded-full"></div>
+                </div>
+              </div>
+            ))}
+          </div></>
       );
     }
     
@@ -186,7 +195,7 @@ export default function Home() {
           key={`bookmarks-section-${user.id}-${recentBookmarks.length}`} // Stable key with user and count
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.6 }}
+          transition={{ delay: 0.8 }}
           className="mb-16">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-white mb-2">
@@ -203,7 +212,7 @@ export default function Home() {
                 key={`${bookmark.id}-stable`} // More stable key
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.8 + index * 0.1 }}
+                transition={{ delay: 0.8 + index * 0.1 }}
                 className="glass-dark rounded-xl p-4 border border-gray-700/50 hover:border-indigo-400/50 transition-all duration-300 group cursor-pointer"
                 onClick={() => handleVisit(bookmark.url)}>
               <div className="flex items-start justify-between mb-3">
@@ -332,10 +341,10 @@ export default function Home() {
 								/>
 							</motion.div>
 							<div className="text-left">
-								<h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent leading-tight">
+								<h1 className="text-5xl font-bold text-indigo-400 leading-tight">
 									Bookmark
 								</h1>
-								<h1 className="text-5xl font-bold bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent leading-tight">
+								<h1 className="text-5xl font-bold text-indigo-400 leading-tight">
 									Manager
 								</h1>
 							</div>
@@ -382,11 +391,11 @@ export default function Home() {
 					<motion.div
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
-						transition={{ delay: 1.8 }}
+						transition={{ delay: 0.8 }}
 						className="text-center mt-10">
 						<div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
 							<SparklesIcon className="w-5 h-5 text-indigo-400" />
-							<span>Made by frnzehiga_</span> | <span>Powered by Next.js & Supabase</span>
+							<span>Powered by Next.js, TypeScript & Supabase</span>
 							<SparklesIcon className="w-5 h-5 text-indigo-400" />
 						</div>
 					</motion.div>
