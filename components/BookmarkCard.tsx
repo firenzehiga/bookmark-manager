@@ -5,6 +5,8 @@ import { Bookmark, BOOKMARK_CATEGORIES } from '@/types/bookmark';
 import { ArrowTopRightOnSquareIcon, TrashIcon, ClockIcon, EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { HeartIcon } from '@heroicons/react/24/solid';
 import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import toast from 'react-hot-toast';
 
 interface BookmarkCardProps {
   bookmark: Bookmark;
@@ -13,6 +15,7 @@ interface BookmarkCardProps {
 }
 
 export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
+  const { user } = useAuth();
   const [isLiked, setIsLiked] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -30,6 +33,12 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
   };
 
   const handleDelete = () => {
+    // Check if user owns this bookmark
+    if (!user || bookmark.user_id !== user.id) {
+      toast.error('❌ Anda tidak memiliki akses untuk menghapus bookmark ini');
+      return;
+    }
+
     const confirmDelete = window.confirm('Yakin ingin menghapus bookmark ini?');
     if (confirmDelete) {
       onDelete(bookmark.id);

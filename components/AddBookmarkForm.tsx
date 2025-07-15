@@ -6,9 +6,11 @@ import toast from 'react-hot-toast';
 import { supabase } from '@/lib/supabaseClient';
 import { BookmarkFormData } from '@/types/bookmark';
 import { CategorySelector } from './CategorySelector';
+import { useAuth } from '@/contexts/AuthContext';
 import { PlusIcon, LinkIcon, DocumentTextIcon, EyeIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
 export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
+  const { user } = useAuth();
   const [formData, setFormData] = useState<BookmarkFormData>({
     title: '',
     url: '',
@@ -25,6 +27,12 @@ export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
     
     if (!formData.title || !formData.url) {
       toast.error('Judul dan URL wajib diisi!');
+      return;
+    }
+
+    // Check if user is authenticated
+    if (!user) {
+      toast.error('Silakan login terlebih dahulu');
       return;
     }
 
@@ -45,6 +53,7 @@ export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
             url: validUrl,
             description: formData.description || null,
             tags: formData.tags.length > 0 ? formData.tags : null,
+            user_id: user.id, // Add user_id from authenticated user
           }
         ]);
 

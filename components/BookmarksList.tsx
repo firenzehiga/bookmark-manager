@@ -6,8 +6,10 @@ import { supabase } from "@/lib/supabaseClient";
 import { Bookmark } from "@/types/bookmark";
 import { BookmarkCard } from "./BookmarkCard";
 import { BookmarkFilter } from "./BookmarkFilter";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function BookmarksList() {
+	const { user } = useAuth();
 	const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 	const [filteredBookmarks, setFilteredBookmarks] = useState<Bookmark[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -15,11 +17,18 @@ export function BookmarksList() {
 	const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
 	const fetchBookmarks = async () => {
+		if (!user) {
+			setIsLoading(false);
+			return;
+		}
+
 		try {
 			setIsLoading(true);
+			// Only fetch bookmarks for the current user
 			const { data, error } = await supabase
 				.from("bookmarks")
 				.select("*")
+				.eq("user_id", user.id) // Filter by user_id
 				.order("created_at", { ascending: false });
 
 			if (error) {
@@ -37,8 +46,15 @@ export function BookmarksList() {
 	};
 
 	useEffect(() => {
-		fetchBookmarks();
-	}, []);
+		if (user) {
+			fetchBookmarks();
+		} else {
+			setBookmarks([]);
+			setFilteredBookmarks([]);
+			setIsLoading(false);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [user]); // Re-fetch when user changes
 
 	useEffect(() => {
 		let filtered = bookmarks;

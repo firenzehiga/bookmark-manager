@@ -5,6 +5,7 @@ export interface Bookmark {
   description?: string;
   tags?: string[];
   created_at: string;
+  user_id: string; // Add user_id field
 }
 
 export interface BookmarkFormData {

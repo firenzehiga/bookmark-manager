@@ -5,13 +5,15 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookmarksList } from '@/components/BookmarksList';
 import { AddBookmarkForm } from '@/components/AddBookmarkForm';
-import { BookmarkIcon, PlusIcon, XMarkIcon, TableCellsIcon, ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { BookmarkIcon, PlusIcon, XMarkIcon, TableCellsIcon } from '@heroicons/react/24/outline';
 
 export default function BookmarksPage() {
   const [showAddForm, setShowAddForm] = useState(false);
 
   return (
-    <div className="min-h-screen py-8 px-4">
+    <ProtectedRoute>
+      <div className="min-h-screen py-8 px-4">
       {/* Background Effect */}
       <div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 -z-10" />
       <div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] -z-10" />
@@ -56,7 +58,7 @@ export default function BookmarksPage() {
               href="/"
               className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all"
             >
-              <ArrowLeftCircleIcon className="w-5 h-5" />
+              <BookmarkIcon className="w-5 h-5" />
               Kembali ke Home
             </Link>
             <Link
@@ -131,5 +133,6 @@ export default function BookmarksPage() {
         </motion.div>
       </div>
     </div>
+    </ProtectedRoute>
   );
 }
