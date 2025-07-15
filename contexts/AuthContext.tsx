@@ -8,11 +8,8 @@ import toast from 'react-hot-toast';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string) => Promise<{ needsVerification: boolean }>;
-  signIn: (email: string, password: string) => Promise<void>;
+  signInWithMagicLink: (email: string) => Promise<void>;
   signOut: () => Promise<void>;
-  verifyOtp: (email: string, token: string) => Promise<void>;
-  resendOtp: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -54,36 +51,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signUp({
+  const signInWithMagicLink = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
       email,
-      password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        shouldCreateUser: true, // Automatically create user if not exists
       }
     });
 
     if (error) {
-      console.error('Sign up error:', error);
-      throw error;
-    }
-
-    // Jika email confirmation diperlukan
-    if (data.user && !data.session) {
-      return { needsVerification: true };
-    }
-
-    return { needsVerification: false };
-  };
-
-  const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-
-    if (error) {
-      console.error('Sign in error:', error);
+      console.error('Sign in with magic link error:', error);
       throw error;
     }
   };
@@ -96,41 +74,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const verifyOtp = async (email: string, token: string) => {
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token,
-      type: 'signup'
-    });
-
-    if (error) {
-      console.error('OTP verification error:', error);
-      throw error;
-    }
-  };
-
-  const resendOtp = async (email: string) => {
-    const { error } = await supabase.auth.resend({
-      type: 'signup',
-      email
-    });
-
-    if (error) {
-      console.error('Resend OTP error:', error);
-      throw error;
-    }
-  };
-
   return (
     <AuthContext.Provider
       value={{
         user,
         loading,
-        signUp,
-        signIn,
-        signOut,
-        verifyOtp,
-        resendOtp
+        signInWithMagicLink,
+        signOut
       }}
     >
       {children}
