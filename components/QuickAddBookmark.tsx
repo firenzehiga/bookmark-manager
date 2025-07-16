@@ -18,25 +18,6 @@ export function QuickAddBookmark() {
 	// ✅ Use React Query mutation
 	const createBookmarkMutation = useCreateBookmark();
 
-	// Predefined tags
-	const availableTags = [
-		"Work",
-		"Personal",
-		"Tutorial",
-		"News",
-		"Entertainment",
-		"Shopping",
-		"Social Media",
-		"Documentation",
-		"Tools",
-		"Design",
-		"Programming",
-		"Research",
-		"Education",
-		"Finance",
-		"Health",
-	];
-
 	const extractTitle = async (url: string) => {
 		try {
 			// Try to fetch the page title
