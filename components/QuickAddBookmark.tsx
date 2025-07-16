@@ -171,7 +171,7 @@ export function QuickAddBookmark() {
 										type="url"
 										value={url}
 										onChange={(e) => setUrl(e.target.value)}
-										placeholder="Paste URL here... (use Paste button)"
+										placeholder="Paste URL here... (use paste button below)"
 										required
 										className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:border-indigo-500 focus:outline-none"
 										autoFocus
