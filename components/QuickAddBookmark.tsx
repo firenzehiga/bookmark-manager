@@ -5,36 +5,37 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlusIcon, BookmarkIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
-import { CategorySelector } from "./CategorySelector";
-import { supabase } from "@/lib/supabaseClient";
+import { useCreateBookmark } from "@/hooks/useBookmarks";
 import toast from "react-hot-toast";
-
+import { CategorySelector } from "./CategorySelector";
 export function QuickAddBookmark() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [url, setUrl] = useState("");
 	const [title, setTitle] = useState("");
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
-	const [isLoading, setIsLoading] = useState(false);
 	const { user } = useAuth();
+	
+	// ✅ Use React Query mutation
+	const createBookmarkMutation = useCreateBookmark();
 
-	// // Predefined tags
-	// const availableTags = [
-	// 	"Work",
-	// 	"Personal",
-	// 	"Tutorial",
-	// 	"News",
-	// 	"Entertainment",
-	// 	"Shopping",
-	// 	"Social Media",
-	// 	"Documentation",
-	// 	"Tools",
-	// 	"Design",
-	// 	"Programming",
-	// 	"Research",
-	// 	"Education",
-	// 	"Finance",
-	// 	"Health",
-	// ];
+	// Predefined tags
+	const availableTags = [
+		"Work",
+		"Personal",
+		"Tutorial",
+		"News",
+		"Entertainment",
+		"Shopping",
+		"Social Media",
+		"Documentation",
+		"Tools",
+		"Design",
+		"Programming",
+		"Research",
+		"Education",
+		"Finance",
+		"Health",
+	];
 
 	const extractTitle = async (url: string) => {
 		try {
@@ -76,30 +77,26 @@ export function QuickAddBookmark() {
 			return;
 		}
 
-		setIsLoading(true);
 		try {
 			const finalTitle = title.trim() || (await extractTitle(url));
 
-			const { error } = await supabase.from("bookmarks").insert({
+			// ✅ Use React Query mutation
+			await createBookmarkMutation.mutateAsync({
 				title: finalTitle,
 				url: url.trim(),
 				tags: selectedTags,
 				user_id: user.id,
-				created_at: new Date().toISOString(),
+				description: '', // Add default description
 			});
 
-			if (error) throw error;
-
-			toast.success("🔖 Bookmark berhasil ditambahkan!");
+			// Reset form
 			setUrl("");
 			setTitle("");
 			setSelectedTags([]);
 			setIsOpen(false);
 		} catch (error) {
 			console.error("Error adding bookmark:", error);
-			toast.error("Gagal menambahkan bookmark");
-		} finally {
-			setIsLoading(false);
+			// Error handling is done in the hook
 		}
 	};
 
@@ -189,28 +186,15 @@ export function QuickAddBookmark() {
 								</div>
 
 								<div>
-									{/* <label className="block text-sm font-medium text-gray-300 mb-2">
-										Tags (pilih yang sesuai)
-									</label> */}
-									{/* <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-										{availableTags.map((tag) => (
-											<button
-												key={tag}
-												type="button"
-												onClick={() => toggleTag(tag)}
-												className={`px-3 py-1 rounded-full text-sm transition-all ${
-													selectedTags.includes(tag)
-														? "bg-indigo-600 text-white"
-														: "bg-gray-700 text-gray-300 hover:bg-gray-600"
-												}`}>
-												{tag}
-											</button>
-										))}
-									</div> */}
 									<CategorySelector
 										selectedTags={selectedTags}
 										onTagToggle={toggleTag}
 									/>
+									{selectedTags.length > 0 && (
+										<div className="mt-2 text-sm text-gray-400">
+											Selected: {selectedTags.join(", ")}
+										</div>
+									)}
 								</div>
 
 								<div className="flex gap-20">
@@ -223,9 +207,9 @@ export function QuickAddBookmark() {
 
 									<button
 										type="submit"
-										disabled={isLoading || !url.trim()}
+										disabled={createBookmarkMutation.isPending || !url.trim()}
 										className="flex-1 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-										{isLoading ? "..." : "Tambah"}
+										{createBookmarkMutation.isPending ? "..." : "Tambah"}
 									</button>
 								</div>
 							</form>
