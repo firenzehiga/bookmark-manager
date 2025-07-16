@@ -11,6 +11,8 @@ import { Bookmark, BOOKMARK_CATEGORIES } from "@/types/bookmark";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import Image from "next/image";
+import Squares from "@/components/Squares";
+import SquaresEnhanced from "@/components/Squares"; 
 export default function Home() {
   const [recentBookmarks, setRecentBookmarks] = useState<Bookmark[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -284,15 +286,34 @@ export default function Home() {
     return null;
   }, [recentBookmarks, isLoading, user, handleVisit, handleAddFirstBookmark, formatDate, getDomainFromUrl, hasFetchedOnce]);
 
-  return (
+	return (
 		<div className="min-h-screen relative overflow-hidden">
-			{/* Background */}
-			<div className="fixed inset-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900" />
-			<div className="fixed inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))]" />
+			{/* Background Layers - urutan penting! */}
+			
+			{/* 1. Base Background */}
+			<div className="fixed inset-0 bg-black" />
+			
+			{/* 2. Animated Squares */}
+			<div className="fixed inset-0 z-10">
+				<SquaresEnhanced
+					speed={0.5}
+					squareSize={40}
+					direction="up"
+					borderColor="rgba(79, 70, 229, 0.5)"
+					hoverFillColor="rgba(79, 70, 229, 0.2)"
+					debug={false}
+				/>
+			</div>
+			
+			{/* 3. Gradient Overlay */}
+			<div className="fixed inset-0 z-20 bg-gradient-to-br from-slate-900/80 via-purple-900/80 to-slate-900/80" />
+			
+			{/* 4. Grid Pattern */}
+			<div className="fixed inset-0 z-30 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0.1))] opacity-20" />
 			{/* <SplashCursor /> */}
 
 			{/* Floating Elements */}
-			<div className="fixed inset-0 overflow-hidden pointer-events-none">
+			<div className="fixed inset-0 z-40 overflow-hidden pointer-events-none">
 				<motion.div
 					animate={{
 						x: [0, 100, 0],
@@ -313,7 +334,7 @@ export default function Home() {
 				/>
 			</div>
 
-			<div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+			<div className="relative z-50 flex items-center justify-center min-h-screen p-4">
 				<div className="max-w-4xl w-full">
 					<motion.div
 						initial={{ opacity: 0, y: 50 }}
@@ -359,7 +380,6 @@ export default function Home() {
 							<span className="text-indigo-400 font-semibold"> mudah</span>
 						</motion.p>
 
-									
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
@@ -381,7 +401,6 @@ export default function Home() {
 								</motion.div>
 							</button>
 						</motion.div>
-
 					</motion.div>
 
 					{/* Recent Bookmarks Section */}
@@ -403,9 +422,9 @@ export default function Home() {
 			</div>
 
 			{/* Auth Modal */}
-			<AuthModal 
-				isOpen={showAuthModal} 
-				onClose={() => setShowAuthModal(false)} 
+			<AuthModal
+				isOpen={showAuthModal}
+				onClose={() => setShowAuthModal(false)}
 			/>
 		</div>
 	);
