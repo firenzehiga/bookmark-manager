@@ -289,12 +289,12 @@ export default function Home() {
 	return (
 		<div className="min-h-screen relative overflow-hidden">
 			{/* Background Layers - urutan penting! */}
-			
+
 			{/* 1. Base Background */}
 			<div className="fixed inset-0 bg-black" />
-			
+
 			{/* 2. Animated Squares */}
-			<div className="fixed inset-0 z-10">
+			<div className="fixed inset-0 z-10 pointer-events-none">
 				<SquaresEnhanced
 					speed={0.5}
 					squareSize={40}
@@ -304,12 +304,12 @@ export default function Home() {
 					debug={false}
 				/>
 			</div>
-			
+
 			{/* 3. Gradient Overlay */}
-			<div className="fixed inset-0 z-20 bg-gradient-to-br from-slate-900/80 via-purple-900/80 to-slate-900/80" />
-			
+			<div className="fixed inset-0 z-20 bg-gradient-to-br from-slate-900/80 via-purple-900/80 to-slate-900/80 pointer-events-none" />
+
 			{/* 4. Grid Pattern */}
-			<div className="fixed inset-0 z-30 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0.1))] opacity-20" />
+			<div className="fixed inset-0 z-30 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0.1))] opacity-20 pointer-events-none" />
 			{/* <SplashCursor /> */}
 
 			{/* Floating Elements */}
@@ -321,7 +321,7 @@ export default function Home() {
 						rotate: [0, 180, 360],
 					}}
 					transition={{ duration: 20, repeat: Infinity }}
-					className="absolute top-20 left-20 w-20 h-20 bg-indigo-500/10 rounded-full blur-xl"
+					className="absolute bottom-20 right-20 w-32 h-32 bg-purple-500/10 rounded-full blur-xl"
 				/>
 				<motion.div
 					animate={{

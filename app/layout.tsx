@@ -35,9 +35,9 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             <AuthButton />
-            <QuickAddBookmark />
             <main>
               {children}
+            <QuickAddBookmark />
             </main>
             <ToastProvider />
           </AuthProvider>
