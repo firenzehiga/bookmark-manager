@@ -5,6 +5,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { PlusIcon, BookmarkIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
+import { CategorySelector } from "./CategorySelector";
 import { supabase } from "@/lib/supabaseClient";
 import toast from "react-hot-toast";
 
@@ -16,24 +17,24 @@ export function QuickAddBookmark() {
 	const [isLoading, setIsLoading] = useState(false);
 	const { user } = useAuth();
 
-	// Predefined tags
-	const availableTags = [
-		"Work",
-		"Personal",
-		"Tutorial",
-		"News",
-		"Entertainment",
-		"Shopping",
-		"Social Media",
-		"Documentation",
-		"Tools",
-		"Design",
-		"Programming",
-		"Research",
-		"Education",
-		"Finance",
-		"Health",
-	];
+	// // Predefined tags
+	// const availableTags = [
+	// 	"Work",
+	// 	"Personal",
+	// 	"Tutorial",
+	// 	"News",
+	// 	"Entertainment",
+	// 	"Shopping",
+	// 	"Social Media",
+	// 	"Documentation",
+	// 	"Tools",
+	// 	"Design",
+	// 	"Programming",
+	// 	"Research",
+	// 	"Education",
+	// 	"Finance",
+	// 	"Health",
+	// ];
 
 	const extractTitle = async (url: string) => {
 		try {
@@ -188,10 +189,10 @@ export function QuickAddBookmark() {
 								</div>
 
 								<div>
-									<label className="block text-sm font-medium text-gray-300 mb-2">
+									{/* <label className="block text-sm font-medium text-gray-300 mb-2">
 										Tags (pilih yang sesuai)
-									</label>
-									<div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+									</label> */}
+									{/* <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
 										{availableTags.map((tag) => (
 											<button
 												key={tag}
@@ -205,12 +206,11 @@ export function QuickAddBookmark() {
 												{tag}
 											</button>
 										))}
-									</div>
-									{selectedTags.length > 0 && (
-										<div className="mt-2 text-sm text-gray-400">
-											Selected: {selectedTags.join(", ")}
-										</div>
-									)}
+									</div> */}
+									<CategorySelector
+										selectedTags={selectedTags}
+										onTagToggle={toggleTag}
+									/>
 								</div>
 
 								<div className="flex gap-20">
