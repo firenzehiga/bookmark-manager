@@ -1,77 +1,56 @@
-# Bookmark Manager - Next.js, TypeScript & Supabase
+<p align="center">
+  <img src="public/images/logo.png" alt="Bookmark Manager Logo" width="120"/>
+</p>
 
-Aplikasi web sederhana untuk menyimpan, mengelola, dan mencari link penting. Cocok untuk menyimpan video TikTok, artikel, meme, atau apapun yang ingin diingat.  
-Dibangun dengan Next.js (App Router), TypeScript, dan Tailwind CSS.  
-Data bookmark **disimpan di Supabase** agar bisa diakses dari mana saja, bukan hanya di browser.
+# 🔖 Bookmark Manager
 
-## Fitur Utama
-- Tambah bookmark (judul, URL, deskripsi, tag/kategori)
-- Lihat daftar bookmark dari Supabase
-- Edit dan hapus bookmark
-- Filter berdasarkan kategori/tag (opsional)
-- Cari bookmark (opsional)
-- Data tetap tersimpan walau browser di-refresh dan bisa diakses dari device mana saja
+Solusi digital untuk menyimpan & mengatur semua link pentingmu di berbagai platform internet lalu diletakkan didalam satu tempat dengan tampilan modern dan cloud sync!
 
-## Contoh Data Bookmark (Supabase Table)
-- id: bigint (auto-increment, primary key)
-- title: text
-- url: text
-- description: text (optional)
-- tags: text[] (optional)
-- created_at: timestamp (ISO date)
+<p align="center">
+  <img src="https://img.shields.io/badge/Next.js-13+-gray?style=flat&logo=next.js" />
+  <img src="https://img.shields.io/badge/TypeScript-blue?style=flat&logo=typescript" />
+  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?style=flat&logo=tailwind-css" />
+  <img src="https://img.shields.io/badge/Supabase-3ECF8E?style=flat&logo=supabase" />
+</p>
 
-## Teknologi
-- Next.js App Router
-- TypeScript
-- Tailwind CSS
-- Supabase (Postgres & API)
+---
 
-## Setup dan Instalasi
+## 🌟 Tentang Bookmark Manager
 
-### 1. Clone dan Install Dependencies
-```bash
-git clone <repo-url>
-cd bookmark-manager
-npm install
-```
+**Bookmark Manager** adalah aplikasi web yang memudahkan kamu menyimpan, mengelola, aplikasi ini cocok menyimpan link apapun di internet yang menurutmu diperlukan lagi ataupun referensi lain yang ingin kamu simpan agar tidak lupa. Semua data tersimpan di cloud, dan bisa diakses dari device manapun!
 
-### 2. Setup Supabase
-1. Buat project baru di [Supabase](https://supabase.com)
-2. Di SQL Editor, jalankan script dari file `supabase-setup.sql`
-3. Dapatkan URL project dan anon key dari Settings > API
+---
 
-### 3. Environment Variables
-1. Copy file `.env.example` menjadi `.env.local`
-2. Isi dengan nilai dari Supabase:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+## ✨ Fitur Utama
 
-### 4. Jalankan Aplikasi
-```bash
-npm run dev
-```
+### 📌 Tambah, & Hapus Bookmark
+- **Tambah Bookmark Cepat** – Simpan link beserta judul, deskripsi, kategori/tag hanya dengan beberapa klik.
+- **Edit & Hapus** – Kelola link dengan mudah, kapanpun.
 
-Buka [http://localhost:3000](http://localhost:3000) untuk melihat aplikasi.
+### 🔎 Filter & Pencarian
+- **Filter Kategori/Tag** – Temukan link sesuai kategori atau tag yang kamu buat.
+- **Pencarian Real-time** – Cari bookmark berdasarkan judul, deskripsi, atau URL.
 
-## Struktur Project
-```
-├── app/
-│   ├── page.tsx              # Halaman utama
-│   ├── bookmarks/
-│   │   └── page.tsx          # Halaman daftar bookmarks
-│   └── layout.tsx
-├── components/
-│   ├── AddBookmarkForm.tsx   # Form tambah bookmark
-│   ├── BookmarksList.tsx     # Daftar bookmarks
-│   └── BookmarkCard.tsx      # Card individual bookmark
-├── types/
-│   └── bookmark.ts           # TypeScript types
-├── lib/
-│   └── supabaseClient.ts     # Konfigurasi Supabase
-└── supabase-setup.sql        # Script setup database
+### ☁️ Cloud Sync
+- **Supabase Storage** – Semua bookmark tersimpan di cloud, jadi tetap ada walau browser di-refresh.
+- **Akses Multi-Device** – Bookmark bisa diakses dari mana saja, tidak terbatas di device tertentu.
 
-## Catatan
-- Untuk tahap pengembangan, akses data di Supabase diatur agar semua user bisa CRUD (Row Level Security diaktifkan dengan policy permisif).
-- Fitur filter dan pencarian bookmark bersifat opsional.
+### 🖼️ Preview Website
+- Saat menambah bookmark, tampilkan preview website biar makin yakin dan simpel.
+
+### 🔒 Autentikasi Aman
+- Daftar & login dengan email, serta integrasi verifikasi email Supabase supaya data lebih aman.
+
+---
+
+## 🚀 Teknologi
+
+- **Next.js (App Router)**
+- **TypeScript**
+- **Tailwind CSS**
+- **Supabase (database & API)**
+
+---
+
+Bookmark Manager dibuat untuk bikin hidupmu makin mudah!  
+Simpan, kelola, dan temukan semua link penting dengan satu aplikasi simpel.
