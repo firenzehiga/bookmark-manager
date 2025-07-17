@@ -11,7 +11,6 @@ import { Bookmark, BOOKMARK_CATEGORIES } from "@/types/bookmark";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import Image from "next/image";
-import Squares from "@/components/Squares";
 import SquaresEnhanced from "@/components/Squares"; 
 export default function Home() {
   const [recentBookmarks, setRecentBookmarks] = useState<Bookmark[]>([]);

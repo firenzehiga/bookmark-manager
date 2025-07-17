@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { supabase } from "@/lib/supabaseClient";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
