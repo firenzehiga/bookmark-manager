@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-'use client';
+"use client";
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { BookmarkIcon, SparklesIcon, RocketLaunchIcon, ArrowTopRightOnSquareIcon} from "@heroicons/react/24/outline";
+import {
+	BookmarkIcon,
+	SparklesIcon,
+	RocketLaunchIcon,
+	ArrowTopRightOnSquareIcon,
+} from "@heroicons/react/24/outline";
 import ShinyText from "@/components/ShinyText";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { supabase } from "@/lib/supabaseClient";
@@ -11,279 +16,299 @@ import { Bookmark, BOOKMARK_CATEGORIES } from "@/types/bookmark";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import Image from "next/image";
-import SquaresEnhanced from "@/components/Squares"; 
+import SquaresEnhanced from "@/components/Squares";
 export default function Home() {
-  const [recentBookmarks, setRecentBookmarks] = useState<Bookmark[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showAuthModal, setShowAuthModal] = useState(false);
-  const { user, loading: authLoading } = useAuth();
-  const [lastFetchedUserId, setLastFetchedUserId] = useState<string | null>(null);
-  const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
+	const [recentBookmarks, setRecentBookmarks] = useState<Bookmark[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [showAuthModal, setShowAuthModal] = useState(false);
+	const { user, loading: authLoading } = useAuth();
+	const [lastFetchedUserId, setLastFetchedUserId] = useState<string | null>(
+		null
+	);
+	const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
 
-  // const features = [
-  //   { icon: "📱", title: "Responsif", desc: "Bekerja di semua device" },
-  //   { icon: "🎨", title: "Modern UI", desc: "Design yang elegan dan interaktif" },
-  //   { icon: "⚡", title: "Real-time", desc: "Data tersimpan langsung di cloud" },
-  //   { icon: "🔍", title: "Pencarian", desc: "Temukan bookmark dengan mudah" },
-  // ];
+	// const features = [
+	//   { icon: "📱", title: "Responsif", desc: "Bekerja di semua device" },
+	//   { icon: "🎨", title: "Modern UI", desc: "Design yang elegan dan interaktif" },
+	//   { icon: "⚡", title: "Real-time", desc: "Data tersimpan langsung di cloud" },
+	//   { icon: "🔍", title: "Pencarian", desc: "Temukan bookmark dengan mudah" },
+	// ];
 
-  const fetchRecentBookmarks = useCallback(async () => {    
-    try {
-      // Only fetch if user is logged in
-      if (!user) {
-        setRecentBookmarks([]);
-        setIsLoading(false);
-        setLastFetchedUserId(null);
-        setHasFetchedOnce(false);
-        return;
-      }
+	const fetchRecentBookmarks = useCallback(async () => {
+		try {
+			// Only fetch if user is logged in
+			if (!user) {
+				setRecentBookmarks([]);
+				setIsLoading(false);
+				setLastFetchedUserId(null);
+				setHasFetchedOnce(false);
+				return;
+			}
 
-      // Prevent duplicate fetches for the same user
-      if (hasFetchedOnce && lastFetchedUserId === user.id) {
-        // console.log('Skipping fetch - already have data for user:', user.id);
-        setIsLoading(false);
-        return;
-      }
+			// Prevent duplicate fetches for the same user
+			if (hasFetchedOnce && lastFetchedUserId === user.id) {
+				// console.log('Skipping fetch - already have data for user:', user.id);
+				setIsLoading(false);
+				return;
+			}
 
-      setIsLoading(true);
-    //   console.log('Fetching bookmarks for user:', user.id);
+			setIsLoading(true);
+			//   console.log('Fetching bookmarks for user:', user.id);
 
-      const { data, error } = await supabase
-        .from('bookmarks')
-        .select('*')
-        .eq('user_id', user.id) // Filter by user_id
-        .order('created_at', { ascending: false })
-        .limit(6);
+			const { data, error } = await supabase
+				.from("bookmarks")
+				.select("*")
+				.eq("user_id", user.id) // Filter by user_id
+				.order("created_at", { ascending: false })
+				.limit(3);
 
-    //   if (error) {
-    //     console.error('Error fetching bookmarks:', error);
-    //     return;
-    //   }
+			//   if (error) {
+			//     console.error('Error fetching bookmarks:', error);
+			//     return;
+			//   }
 
-    //   console.log('Fetched bookmarks:', data);
-      setRecentBookmarks(data || []);
-      setLastFetchedUserId(user.id);
-      setHasFetchedOnce(true);
-    } catch (error) {
-    //   console.error('Error:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user, hasFetchedOnce, lastFetchedUserId]);
+			//   console.log('Fetched bookmarks:', data);
+			setRecentBookmarks(data || []);
+			setLastFetchedUserId(user.id);
+			setHasFetchedOnce(true);
+		} catch (error) {
+			//   console.error('Error:', error);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [user, hasFetchedOnce, lastFetchedUserId]);
 
-  useEffect(() => {
-    // Only fetch when user actually changes (login/logout)
-    const currentUserId = user?.id || null;
-    
-    if (currentUserId !== lastFetchedUserId) {
-      setHasFetchedOnce(false); // Reset the flag when user changes
-      fetchRecentBookmarks();
-    }
-  }, [user?.id, lastFetchedUserId, fetchRecentBookmarks]);
+	useEffect(() => {
+		// Only fetch when user actually changes (login/logout)
+		const currentUserId = user?.id || null;
 
-  const handleStartNow = useCallback(() => {
-    if (user) {
-      // User is logged in, navigate to bookmarks
-      window.location.href = '/bookmarks';
-    } else {
-      // User not logged in, show auth modal
-      setShowAuthModal(true);
-    }
-  }, [user]);
+		if (currentUserId !== lastFetchedUserId) {
+			setHasFetchedOnce(false); // Reset the flag when user changes
+			fetchRecentBookmarks();
+		}
+	}, [user?.id, lastFetchedUserId, fetchRecentBookmarks]);
 
-  const handleAddFirstBookmark = useCallback(() => {
-    if (user) {
-      // User is logged in, navigate to bookmarks
-      window.location.href = '/bookmarks';
-    } else {
-      // User not logged in, show auth modal
-      setShowAuthModal(true);
-    }
-  }, [user]);
+	const handleStartNow = useCallback(() => {
+		if (user) {
+			// User is logged in, navigate to bookmarks
+			window.location.href = "/bookmarks";
+		} else {
+			// User not logged in, show auth modal
+			setShowAuthModal(true);
+		}
+	}, [user]);
 
-  const handleVisit = useCallback((url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
-  }, []);
+	const handleAddFirstBookmark = useCallback(() => {
+		if (user) {
+			// User is logged in, navigate to bookmarks
+			window.location.href = "/bookmarks";
+		} else {
+			// User not logged in, show auth modal
+			setShowAuthModal(true);
+		}
+	}, [user]);
 
-  const formatDate = useCallback((dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
-      day: '2-digit',
-      month: 'short'
-    });
-  }, []);
+	const handleVisit = useCallback((url: string) => {
+		window.open(url, "_blank", "noopener,noreferrer");
+	}, []);
 
-  const getDomainFromUrl = useCallback((url: string) => {
-    try {
-      return new URL(url).hostname.replace('www.', '');
-    } catch {
-      return url;
-    }
-  }, []);
+	const formatDate = useCallback((dateString: string) => {
+		return new Date(dateString).toLocaleDateString("id-ID", {
+			day: "2-digit",
+			month: "short",
+		});
+	}, []);
 
-  // Memoize recent bookmarks section to prevent unnecessary re-renders
-  const recentBookmarksSection = useMemo(() => {
-    console.log('Rendering section - isLoading:', isLoading, 'user:', !!user, 'bookmarks:', recentBookmarks.length, 'hasFetched:', hasFetchedOnce);
-    
-    // Don't show anything if no user
-    if (!user) return null;
-    
-    // Show loading state only if we haven't fetched yet
-    if (isLoading && !hasFetchedOnce) {
-      return (
-        
-          <><div className="text-center mb-8">
-          <h2 className="text-3xl font-bold text-white mb-2 opacity-5">
-            🔖 Bookmark Terbaru
-          </h2>
-          <p className="text-gray-400 opacity-5">
-            Akses cepat ke link yang baru-baru ini Anda simpan
-          </p>
-        </div><div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
+	const getDomainFromUrl = useCallback((url: string) => {
+		try {
+			return new URL(url).hostname.replace("www.", "");
+		} catch {
+			return url;
+		}
+	}, []);
 
-            {[...Array(6)].map((_, idx) => (
-              <div
-                key={idx}
-                className="glass-dark rounded-xl p-4 border border-gray-700/50 animate-pulse"
-              >
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="h-4 bg-gray-600/60 rounded w-3/4 mb-2"></div>
-                    <div className="h-3 bg-gray-600/40 rounded w-1/2"></div>
-                  </div>
-                  <div className="w-4 h-4 bg-gray-600/40 rounded ml-2"></div>
-                </div>
-                <div className="h-3 bg-gray-600/40 rounded mb-3 w-full"></div>
-                <div className="flex gap-2">
-                  <div className="h-5 w-16 bg-gray-600/40 rounded-full"></div>
-                  <div className="h-5 w-12 bg-gray-600/40 rounded-full"></div>
-                </div>
-              </div>
-            ))}
-          </div></>
-      );
-    }
-    
-    if (recentBookmarks.length === 0 && hasFetchedOnce) {
-      return (
-        <motion.div
-          key={`empty-${user.id}`}
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 3 }}
-          className="mb-16 text-center">
-          <div className="glass-dark rounded-2xl p-8 border border-gray-700/50">
-            <div className="text-5xl mb-4 opacity-50">📚</div>
-            <h3 className="text-xl font-semibold text-white mb-2">
-              Belum Ada Bookmark
-            </h3>
-            <p className="text-gray-400 mb-6">
-              Mulai simpan link favorit Anda untuk akses yang lebih mudah
-            </p>
-            <button
-              onClick={handleAddFirstBookmark}
-              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-colors">
-              <BookmarkIcon className="w-4 h-4" />
-              Tambah Bookmark Pertama
-            </button>
-          </div>
-        </motion.div>
-      );
-    }
+	// Memoize recent bookmarks section to prevent unnecessary re-renders
+	const recentBookmarksSection = useMemo(() => {
+		console.log(
+			"Rendering section - isLoading:",
+			isLoading,
+			"user:",
+			!!user,
+			"bookmarks:",
+			recentBookmarks.length,
+			"hasFetched:",
+			hasFetchedOnce
+		);
 
-    if (recentBookmarks.length > 0 && hasFetchedOnce) {
-      return (
-        <motion.div
-          key={`bookmarks-section-${user.id}-${recentBookmarks.length}`} // Stable key with user and count
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-white mb-2">
-              🔖 Bookmark Terbaru
-            </h2>
-            <p className="text-gray-400">
-              Akses cepat ke link yang baru-baru ini Anda simpan
-            </p>
-          </div>
+		// Don't show anything if no user
+		if (!user) return null;
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {recentBookmarks.map((bookmark, index) => (
-              <motion.div
-                key={`${bookmark.id}-stable`} // More stable key
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.8 + index * 0.1 }}
-                className="glass-dark rounded-xl p-4 border border-gray-700/50 hover:border-indigo-400/50 transition-all duration-300 group cursor-pointer"
-                onClick={() => handleVisit(bookmark.url)}>
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-indigo-300 transition-colors">
-                    {bookmark.title}
-                  </h3>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {getDomainFromUrl(bookmark.url)} •{" "}
-                    {formatDate(bookmark.created_at)}
-                  </p>
-                </div>
-                <ArrowTopRightOnSquareIcon className="w-4 h-4 text-gray-400 group-hover:text-indigo-400 transition-colors flex-shrink-0 ml-2" />
-              </div>
+		// Show loading state only if we haven't fetched yet
+		if (isLoading && !hasFetchedOnce) {
+			return (
+				<>
+					<div className="text-center mb-8">
+						<h2 className="text-3xl font-bold text-white mb-2 opacity-5">
+							Bookmark Terbaru
+						</h2>
+						<p className="text-gray-400 opacity-5">
+							Akses cepat ke link yang baru-baru ini Anda simpan
+						</p>
+					</div>
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+						{[...Array(3)].map((_, idx) => (
+							<div
+								key={idx}
+								className="glass-dark rounded-xl p-4 border border-gray-700/50 animate-pulse">
+								<div className="flex items-start justify-between mb-3">
+									<div className="flex-1 min-w-0">
+										<div className="h-4 bg-gray-600/60 rounded w-3/4 mb-2"></div>
+										<div className="h-3 bg-gray-600/40 rounded w-1/2"></div>
+									</div>
+									<div className="w-4 h-4 bg-gray-600/40 rounded ml-2"></div>
+								</div>
+								<div className="h-3 bg-gray-600/40 rounded mb-3 w-full"></div>
+								<div className="flex gap-2">
+									<div className="h-5 w-16 bg-gray-600/40 rounded-full"></div>
+									<div className="h-5 w-12 bg-gray-600/40 rounded-full"></div>
+								</div>
+							</div>
+						))}
+					</div>
+				</>
+			);
+		}
 
-              {bookmark.description && (
-                <p className="text-gray-400 text-xs line-clamp-2 mb-3">
-                  {bookmark.description}
-                </p>
-              )}
+		if (recentBookmarks.length === 0 && hasFetchedOnce) {
+			return (
+				<motion.div
+					key={`empty-${user.id}`}
+					initial={{ opacity: 0, y: 50 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 3 }}
+					className="mb-16 text-center">
+					<div className="glass-dark rounded-2xl p-8 border border-gray-700/50">
+						<div className="text-5xl mb-4 opacity-50">📚</div>
+						<h3 className="text-xl font-semibold text-white mb-2">
+							Belum Ada Bookmark
+						</h3>
+						<p className="text-gray-400 mb-6">
+							Mulai simpan link favorit Anda untuk akses yang lebih mudah
+						</p>
+						<button
+							onClick={handleAddFirstBookmark}
+							className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-colors">
+							<BookmarkIcon className="w-4 h-4" />
+							Tambah Bookmark Pertama
+						</button>
+					</div>
+				</motion.div>
+			);
+		}
 
-              {bookmark.tags && bookmark.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1">
-                  {bookmark.tags.slice(0, 2).map((tagId) => {
-                    const category = BOOKMARK_CATEGORIES.find(
-                      (c) => c.id === tagId
-                    );
-                    return category ? (
-                      <span
-                        key={tagId}
-                        className="text-xs px-2 py-1 rounded-full border"
-                        style={{
-                          backgroundColor: `${category.color}15`,
-                          borderColor: `${category.color}40`,
-                          color: category.color,
-                        }}>
-                        {category.icon} {category.label}
-                      </span>
-                    ) : null;
-                  })}
-                  {bookmark.tags.length > 2 && (
-                    <span className="text-xs text-gray-500">
-                      +{bookmark.tags.length - 2}
-                    </span>
-                  )}
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </div>
+		if (recentBookmarks.length > 0 && hasFetchedOnce) {
+			return (
+				<motion.div
+					key={`bookmarks-section-${user.id}-${recentBookmarks.length}`} // Stable key with user and count
+					initial={{ opacity: 0, y: 50 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ delay: 0.8 }}
+					className="mb-4">
+					<div className="text-center mb-8">
+						<h2 className="text-3xl font-bold text-white mb-2">
+							Bookmark Terbaru
+						</h2>
+						<p className="text-gray-400">
+							Akses cepat ke link yang baru-baru ini Anda simpan
+						</p>
+					</div>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 2.2 }}
-          className="text-center mt-8">
-          <Link
-            href="/bookmarks"
-            className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
-            Lihat Semua Bookmark
-            <ArrowTopRightOnSquareIcon className="w-4 h-4" />
-          </Link>
-        </motion.div>
-      </motion.div>
-    );
-    }
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+						{recentBookmarks.map((bookmark, index) => (
+							<motion.div
+								key={`${bookmark.id}-stable`} // More stable key
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ delay: 0.8 + index * 0.1 }}
+								className="glass-dark rounded-xl p-4 border border-gray-700/50 hover:border-indigo-400/50 transition-all duration-300 group cursor-pointer"
+								onClick={() => handleVisit(bookmark.url)}>
+								<div className="flex items-start justify-between mb-3">
+									<div className="flex-1 min-w-0">
+										<h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-indigo-300 transition-colors">
+											{bookmark.title}
+										</h3>
+										<p className="text-xs text-gray-500 mt-1">
+											{getDomainFromUrl(bookmark.url)} •{" "}
+											{formatDate(bookmark.created_at)}
+										</p>
+									</div>
+									<ArrowTopRightOnSquareIcon className="w-4 h-4 text-gray-400 group-hover:text-indigo-400 transition-colors flex-shrink-0 ml-2" />
+								</div>
 
-    // Return null if no conditions are met
-    return null;
-  }, [recentBookmarks, isLoading, user, handleVisit, handleAddFirstBookmark, formatDate, getDomainFromUrl, hasFetchedOnce]);
+								{bookmark.description && (
+									<p className="text-gray-400 text-xs line-clamp-2 mb-3">
+										{bookmark.description}
+									</p>
+								)}
+
+								{bookmark.tags && bookmark.tags.length > 0 && (
+									<div className="flex flex-wrap gap-1">
+										{bookmark.tags.slice(0, 2).map((tagId) => {
+											const category = BOOKMARK_CATEGORIES.find(
+												(c) => c.id === tagId
+											);
+											return category ? (
+												<span
+													key={tagId}
+													className="text-xs px-2 py-1 rounded-full border"
+													style={{
+														backgroundColor: `${category.color}15`,
+														borderColor: `${category.color}40`,
+														color: category.color,
+													}}>
+													{category.icon} {category.label}
+												</span>
+											) : null;
+										})}
+										{bookmark.tags.length > 2 && (
+											<span className="text-xs text-gray-500">
+												+{bookmark.tags.length - 2}
+											</span>
+										)}
+									</div>
+								)}
+							</motion.div>
+						))}
+					</div>
+
+					<motion.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						transition={{ delay: 2.2 }}
+						className="text-center mt-8">
+						<Link
+							href="/bookmarks"
+							className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
+							Lihat Semua Bookmark
+							<ArrowTopRightOnSquareIcon className="w-4 h-4" />
+						</Link>
+					</motion.div>
+				</motion.div>
+			);
+		}
+
+		// Return null if no conditions are met
+		return null;
+	}, [
+		recentBookmarks,
+		isLoading,
+		user,
+		handleVisit,
+		handleAddFirstBookmark,
+		formatDate,
+		getDomainFromUrl,
+		hasFetchedOnce,
+	]);
 
 	return (
 		<div className="min-h-screen relative overflow-hidden">
@@ -374,7 +399,7 @@ export default function Home() {
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={{ delay: 0.6 }}
-							className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+							className="text-xl text-gray-300 mb-5 max-w-2xl mx-auto leading-relaxed">
 							Simpan, kelola, dan temukan kembali link penting Anda dengan
 							<span className="text-indigo-400 font-semibold"> mudah</span>
 						</motion.p>
@@ -383,7 +408,7 @@ export default function Home() {
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.8 }}
-							className="flex flex-col sm:flex-row gap-4 justify-center mb-7">
+							className="flex flex-col sm:flex-row gap-1 justify-center mb-1">
 							<button onClick={handleStartNow} className="group relative">
 								<motion.div
 									whileHover={{ scale: 1.05 }}
@@ -410,7 +435,7 @@ export default function Home() {
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						transition={{ delay: 0.8 }}
-						className="text-center mt-10">
+						className="text-center mt-2">
 						<div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
 							<SparklesIcon className="w-5 h-5 text-indigo-400" />
 							<span>Made by frenzehiga_ | Powered by Next.js & Supabase</span>

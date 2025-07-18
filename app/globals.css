@@ -18,6 +18,11 @@
   background: #6366f1;
 }
 
+.swal-custom-backdrop {
+  background-size: 500px auto !important;
+  /* Ukuran gif jadi 150px */
+}
+
 /* Line clamp utilities */
 .line-clamp-2 {
   overflow: hidden;
@@ -56,6 +61,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -66,6 +72,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -75,6 +82,7 @@
   0%, 100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.5;
   }
@@ -133,14 +141,12 @@ body {
 
 /* Shiny Text Animation */
 .shiny-text {
-  background: linear-gradient(
-    110deg,
-    #ffffff 10%,
-    #60a5fa 30%,
-    #a855f7 50%,
-    #60a5fa 70%,
-    #ffffff 90%
-  );
+  background: linear-gradient(110deg,
+      #ffffff 10%,
+      #60a5fa 30%,
+      #a855f7 50%,
+      #60a5fa 70%,
+      #ffffff 90%);
   background-size: 300% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -152,8 +158,8 @@ body {
   0% {
     background-position: 300% 0%;
   }
+
   100% {
     background-position: -300% 0%;
   }
 }
-

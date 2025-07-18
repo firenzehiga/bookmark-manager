@@ -8,6 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "./AuthModal";
+import Swal from "sweetalert2";
 
 export function AuthButton() {
 	const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -23,13 +24,32 @@ export function AuthButton() {
 	}, [loading, user]);
 
 	const handleSignOut = async () => {
-		try {
-			setIsSigningOut(true);
-			setIsProfileOpen(false);
-			await signOut();
-		} catch (error) {
-			console.error("Error signing out:", error);
-			setIsSigningOut(false);
+		const result = await Swal.fire({
+			title: "Want to Sign Out?",
+			width: 330,
+			showCancelButton: true,
+			confirmButtonText: "Yes, sign out",
+			cancelButtonText: "Cancel",
+			reverseButtons: true,
+			backdrop: `
+				url("/images/nyan-cat.gif")
+				right 65rem bottom 20rem
+				no-repeat
+			`,
+			customClass: {
+				container: "swal-custom-backdrop",
+			},
+		});
+
+		if (result.isConfirmed) {
+			try {
+				setIsSigningOut(true);
+				setIsProfileOpen(false);
+				await signOut();
+			} catch (error) {
+				console.error("Error signing out:", error);
+				setIsSigningOut(false);
+			}
 		}
 	};
 
@@ -82,7 +102,7 @@ export function AuthButton() {
 								{/* Floating Action Button */}
 								<button
 									onClick={() => setIsProfileOpen(!isProfileOpen)}
-									className="flex items-center gap-2 bg-gray-900/90 backdrop-blur-sm border border-gray-700 text-white px-4 py-2 rounded-xl hover:bg-gray-800/90 transition-all duration-200 shadow-lg">
+									className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 backdrop-blur-sm border border-gray-700 text-white px-4 py-2 rounded-xl hover:bg-gray-800/90 transition-all duration-200 shadow-lg">
 									<UserCircleIcon className="w-5 h-5" />
 									<span className="hidden sm:block">
 										{user.email?.split("@")[0]}
@@ -96,21 +116,23 @@ export function AuthButton() {
 								<motion.div
 									initial={{ opacity: 0, scale: 0.95, y: -10 }}
 									animate={{ opacity: 1, scale: 1, y: 0 }}
-									className="absolute right-0 mt-2 w-48 bg-gray-900/95 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg overflow-hidden">
-									<div className="p-3 border-b border-gray-700">
+									className="absolute right-0 mt-2 w-48 bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-500 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg overflow-hidden"
+								>
+									<div className="p-3 border-b border-gray-600 bg-gradient-to-r from-indigo-600/80 to-purple-700/80">
 										<p className="text-sm font-medium text-white truncate">
 											{user.email}
 										</p>
-										<p className="text-xs text-gray-400">
+										<p className="text-xs text-blue-100 mt-2">
 											{user.user_metadata?.full_name || "User"}
 										</p>
 									</div>
 
-									<div className="py-1">
+									<div className="py-1 bg-gradient-to-r from-indigo-700/60 to-purple-800/60">
 										<button
 											onClick={handleSignOut}
 											disabled={isSigningOut}
-											className="flex items-center gap-3 w-full px-3 py-2 text-sm text-red-400 hover:bg-gray-800 hover:text-red-300 transition-colors disabled:opacity-50">
+											className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-red-100 transition-colors disabled:opacity-50"
+										>
 											<ArrowRightOnRectangleIcon className="w-4 h-4" />
 											Keluar
 										</button>
