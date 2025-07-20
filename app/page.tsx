@@ -91,7 +91,7 @@ export default function Home() {
 	const handleStartNow = useCallback(
 		(e: React.MouseEvent<HTMLAnchorElement>) => {
 			if (!user) {
-				e.preventDefault(); 
+				e.preventDefault(); 	
 				setShowAuthModal(true);
 			}
 			// Jika user ada, biarkan Link navigate normal
@@ -231,7 +231,7 @@ export default function Home() {
 								initial={{ opacity: 0, y: 20 }}
 								animate={{ opacity: 1, y: 0 }}
 								transition={{ delay: 0.8 + index * 0.1 }}
-								className="glass-dark rounded-xl p-4 border border-gray-700/50 hover:border-indigo-400/50 transition-all duration-300 group cursor-pointer"
+								className="glass-dark rounded-xl p-4 border border-gray-800/50 hover:border-indigo-500/50 transition-all duration-300 group cursor-pointer"
 								onClick={() => handleVisit(bookmark.url)}>
 								<div className="flex items-start justify-between mb-3">
 									<div className="flex-1 min-w-0">

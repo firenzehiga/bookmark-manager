@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BookmarksList } from '@/components/BookmarksList';
 import { AddBookmarkForm } from '@/components/AddBookmarkForm';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { BookmarkIcon, PlusIcon, XMarkIcon, TableCellsIcon } from '@heroicons/react/24/outline';
+import { BookmarkIcon, PlusIcon, XMarkIcon, TableCellsIcon, ArrowLeftCircleIcon } from '@heroicons/react/24/outline';
 
 export default function BookmarksPage() {
   const [showAddForm, setShowAddForm] = useState(false);
@@ -58,7 +58,7 @@ export default function BookmarksPage() {
               href="/"
               className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all"
             >
-              <BookmarkIcon className="w-5 h-5" />
+              <ArrowLeftCircleIcon className="w-5 h-5" />
               Kembali ke Home
             </Link>
             <Link
