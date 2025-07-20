@@ -88,15 +88,16 @@ export default function Home() {
 		}
 	}, [user?.id, lastFetchedUserId, fetchRecentBookmarks]);
 
-	const handleStartNow = useCallback(() => {
-		if (user) {
-			// User is logged in, navigate to bookmarks
-			window.location.href = "/bookmarks";
-		} else {
-			// User not logged in, show auth modal
-			setShowAuthModal(true);
-		}
-	}, [user]);
+	const handleStartNow = useCallback(
+		(e: React.MouseEvent<HTMLAnchorElement>) => {
+			if (!user) {
+				e.preventDefault(); 
+				setShowAuthModal(true);
+			}
+			// Jika user ada, biarkan Link navigate normal
+		},
+		[user]
+	);
 
 	const handleAddFirstBookmark = useCallback(() => {
 		if (user) {
@@ -409,7 +410,7 @@ export default function Home() {
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.8 }}
 							className="flex flex-col sm:flex-row gap-1 justify-center mb-1">
-							<button onClick={handleStartNow} className="group relative">
+							<Link href="/bookmarks" onClick={handleStartNow} className="group relative">
 								<motion.div
 									whileHover={{ scale: 1.05 }}
 									whileTap={{ scale: 0.95 }}
@@ -423,7 +424,7 @@ export default function Home() {
 									/>
 									<RocketLaunchIcon className="w-5 h-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
 								</motion.div>
-							</button>
+							</Link>
 						</motion.div>
 					</motion.div>
 
