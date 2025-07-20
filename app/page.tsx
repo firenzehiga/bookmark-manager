@@ -217,7 +217,7 @@ export default function Home() {
 					className="mb-4">
 					<div className="text-center mb-8">
 						<h2 className="text-3xl font-bold text-white mb-2">
-							Bookmark Terbaru
+								Bookmark Terbaru
 						</h2>
 						<p className="text-gray-400">
 							Akses cepat ke link yang baru-baru ini Anda simpan
@@ -378,19 +378,19 @@ export default function Home() {
 									scale: [1, 1.1, 1],
 								}}
 								transition={{ duration: 4, repeat: Infinity }}
-								className="text-7xl">
+								className="text-6xl">
 								<Image
 									src="/images/logo.png"
 									alt="Logo"
-									width={120}
-									height={120}
+									width={100}
+									height={100}
 								/>
 							</motion.div>
 							<div className="text-left">
-								<h1 className="text-5xl font-bold text-indigo-400 leading-tight">
+								<h1 className="text-4xl font-bold text-indigo-400 leading-tight">
 									Bookmark
 								</h1>
-								<h1 className="text-5xl font-bold text-indigo-400 leading-tight">
+								<h1 className="text-4xl font-bold text-indigo-400 leading-tight">
 									Manager
 								</h1>
 							</div>
@@ -400,7 +400,7 @@ export default function Home() {
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={{ delay: 0.6 }}
-							className="text-xl text-gray-300 mb-5 max-w-2xl mx-auto leading-relaxed">
+							className="text-lg text-gray-300 mb-5 max-w-2xl mx-auto leading-relaxed">
 							Simpan, kelola, dan temukan kembali link penting Anda dengan
 							<span className="text-indigo-400 font-semibold"> mudah</span>
 						</motion.p>
@@ -409,7 +409,7 @@ export default function Home() {
 							initial={{ opacity: 0, y: 20 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.8 }}
-							className="flex flex-col sm:flex-row gap-1 justify-center mb-1">
+							className="flex flex-col sm:flex-row gap-1 justify-center">
 							<Link href="/bookmarks" onClick={handleStartNow} className="group relative">
 								<motion.div
 									whileHover={{ scale: 1.05 }}

@@ -102,7 +102,7 @@ export function AuthButton() {
 								{/* Floating Action Button */}
 								<button
 									onClick={() => setIsProfileOpen(!isProfileOpen)}
-									className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 backdrop-blur-sm border border-gray-700 text-white px-4 py-2 rounded-xl hover:bg-gray-800/90 transition-all duration-200 shadow-lg">
+									className="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 backdrop-blur-sm border border-indigo-700 text-white px-4 py-2 rounded-xl hover:bg-gray-800/90 transition-all duration-200 shadow-lg">
 									<UserCircleIcon className="w-5 h-5" />
 									<span className="hidden sm:block">
 										{user.email?.split("@")[0]}
@@ -116,7 +116,7 @@ export function AuthButton() {
 								<motion.div
 									initial={{ opacity: 0, scale: 0.95, y: -10 }}
 									animate={{ opacity: 1, scale: 1, y: 0 }}
-									className="absolute right-0 mt-2 w-48 bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-500 backdrop-blur-sm border border-gray-700 rounded-xl shadow-lg overflow-hidden"
+									className="absolute right-0 mt-2 w-48 bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-500 backdrop-blur-sm border border-indigo-700 rounded-xl shadow-lg overflow-hidden"
 								>
 									<div className="p-3 border-b border-gray-600 bg-gradient-to-r from-indigo-600/80 to-purple-700/80">
 										<p className="text-sm font-medium text-white truncate">
@@ -131,7 +131,7 @@ export function AuthButton() {
 										<button
 											onClick={handleSignOut}
 											disabled={isSigningOut}
-											className="flex items-center gap-3 w-full px-3 py-2 text-sm text-gray-700 hover:bg-red-500 hover:text-red-100 transition-colors disabled:opacity-50"
+											className="flex items-center gap-3 w-full px-3 py-2 text-sm text-white hover:bg-red-500 hover:text-red-100 transition-colors disabled:opacity-50"
 										>
 											<ArrowRightOnRectangleIcon className="w-4 h-4" />
 											Keluar
