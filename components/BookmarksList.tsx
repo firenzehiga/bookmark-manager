@@ -4,42 +4,52 @@ import { useState, useMemo } from "react";
 import { BookmarkCard } from "./BookmarkCard";
 import { BookmarkFilter } from "./BookmarkFilter";
 import { useBookmarks, useDeleteBookmark } from "@/hooks/useBookmarks";
+import {motion} from "framer-motion";
 
 export function BookmarksList() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("all");
+	const [visibleData, setVisibleData] = useState(6); // State to control how many bookmarks to show
 	
+
 	// ✅ Use React Query hooks
 	const { data: bookmarks = [], isLoading, error } = useBookmarks();
 	const deleteBookmarkMutation = useDeleteBookmark();
-
+	
 	// ✅ Memoized filtered bookmarks for performance
 	const filteredBookmarks = useMemo(() => {
 		let filtered = bookmarks;
-
+		
 		// Filter berdasarkan search query
 		if (searchQuery) {
 			filtered = filtered.filter(
 				(bookmark) =>
 					bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-					bookmark.description
-						?.toLowerCase()
-						.includes(searchQuery.toLowerCase()) ||
-					bookmark.url.toLowerCase().includes(searchQuery.toLowerCase())
+				bookmark.description
+				?.toLowerCase()
+				.includes(searchQuery.toLowerCase()) ||
+				bookmark.url.toLowerCase().includes(searchQuery.toLowerCase())
 			);
 		}
-
+		
 		// Filter berdasarkan kategori
 		if (selectedCategory !== "all") {
 			filtered = filtered.filter((bookmark) =>
 				bookmark.tags?.includes(selectedCategory)
-			);
-		}
+		);
+	}
+	
+	return filtered;
+}, [bookmarks, searchQuery, selectedCategory]);
 
-		return filtered;
-	}, [bookmarks, searchQuery, selectedCategory]);
+const showMore = () => {
+	setVisibleData(bookmarks.length); // Increase by 6 each time
+}
 
-	const handleDelete = async (id: number) => {
+const showLess = () => {
+	setVisibleData(6); // Reset to initial 6 bookmarks
+}
+const handleDelete = async (id: number) => {
 		deleteBookmarkMutation.mutate(id);
 	};
 
@@ -105,7 +115,7 @@ export function BookmarksList() {
 					</div>
 				) : (
 					<div className="grid gap-4 md:gap-6 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3">
-						{filteredBookmarks.map((bookmark, index) => (
+						{filteredBookmarks.slice(0, visibleData).map((bookmark, index) => (
 							<BookmarkCard
 								key={bookmark.id}
 								bookmark={bookmark}
@@ -114,6 +124,32 @@ export function BookmarksList() {
 							/>
 						))}
 					</div>
+				)}
+
+				{visibleData < filteredBookmarks.length ? (
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.8 }}
+						className="flex flex-col sm:flex-row gap-1 justify-center">
+						<button
+							onClick={showMore}
+							className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 btn-hover">
+							Show More
+						</button>
+					</motion.div>
+				) : (
+					<motion.div
+						initial={{ opacity: 0, y: 20 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ delay: 0.8 }}
+						className="flex flex-col sm:flex-row gap-1 justify-center">
+						<button
+							onClick={showLess}
+							className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 btn-hover">
+							Show Less
+						</button>
+					</motion.div>
 				)}
 			</div>
 		</div>

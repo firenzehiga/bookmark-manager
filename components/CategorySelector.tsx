@@ -33,7 +33,7 @@ export function CategorySelector({
 						whileTap={{ scale: 0.95 }}
 						onClick={() => onTagToggle(category.id)}
 						className={`
-              relative p-3 rounded-xl border-2 transition-all duration-300 group
+              relative p-2 rounded-xl border-2 transition-all duration-300 group
               ${
 								selectedTags.includes(category.id)
 									? "border-indigo-400 bg-indigo-500/20 shadow-lg shadow-indigo-500/25"
