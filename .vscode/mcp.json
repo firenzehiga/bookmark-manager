@@ -16,8 +16,11 @@
       }
     },
     "brave-search": {
-      "command": "cmd",
-      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-brave-search"]
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-brave-search"],
+      "env": {
+        "BRAVE_API_KEY": "BSARpnHPh_7Jc1agbJEsJ9GfqQb0y4m"
+      }
     }
   }
 }

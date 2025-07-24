@@ -6,16 +6,20 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BookmarksList } from "@/components/BookmarksList";
 import { AddBookmarkForm } from "@/components/AddBookmarkForm";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ImportExportModal } from "@/components/ImportExportModal";
 import {
 	BookmarkIcon,
 	PlusIcon,
 	XMarkIcon,
 	TableCellsIcon,
 	ArrowLeftCircleIcon,
+	ChartBarIcon,
+	ArrowsRightLeftIcon,
 } from "@heroicons/react/24/outline";
 
 export default function BookmarksPage() {
 	const [showAddForm, setShowAddForm] = useState(false);
+	const [showImportExport, setShowImportExport] = useState(false);
 
 	return (
 		<ProtectedRoute redirectToHome={true}>
@@ -68,6 +72,18 @@ export default function BookmarksPage() {
 								<TableCellsIcon className="w-5 h-5" />
 								Table View
 							</Link>
+							<Link
+								href="/analytics"
+								className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all">
+								<ChartBarIcon className="w-5 h-5" />
+								Analytics
+							</Link>
+							<button
+								onClick={() => setShowImportExport(true)}
+								className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all">
+								<ArrowsRightLeftIcon className="w-5 h-5" />
+								Import/Export
+							</button>
 						</motion.div>
 					</motion.div>
 
@@ -128,6 +144,12 @@ export default function BookmarksPage() {
 						transition={{ delay: 0.5, duration: 0.6 }}>
 						<BookmarksList />
 					</motion.div>
+
+					{/* Import/Export Modal */}
+					<ImportExportModal
+						isOpen={showImportExport}
+						onClose={() => setShowImportExport(false)}
+					/>
 				</div>
 			</div>
 		</ProtectedRoute>

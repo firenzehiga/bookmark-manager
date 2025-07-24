@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
+import { MoveCard } from "@/components/MoveCard";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -91,7 +92,7 @@ export default function Home() {
 	const handleStartNow = useCallback(
 		(e: React.MouseEvent<HTMLAnchorElement>) => {
 			if (!user) {
-				e.preventDefault(); 	
+				e.preventDefault();
 				setShowAuthModal(true);
 			}
 			// Jika user ada, biarkan Link navigate normal
@@ -217,7 +218,7 @@ export default function Home() {
 					className="mb-4">
 					<div className="text-center mb-8">
 						<h2 className="text-3xl font-bold text-white mb-2">
-								Bookmark Terbaru
+							Bookmark Terbaru
 						</h2>
 						<p className="text-gray-400">
 							Akses cepat ke link yang baru-baru ini Anda simpan
@@ -410,7 +411,10 @@ export default function Home() {
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.8 }}
 							className="flex flex-col sm:flex-row gap-1 justify-center">
-							<Link href="/bookmarks" onClick={handleStartNow} className="group relative">
+							<Link
+								href="/bookmarks"
+								onClick={handleStartNow}
+								className="group relative">
 								<motion.div
 									whileHover={{ scale: 1.05 }}
 									whileTap={{ scale: 0.95 }}
@@ -428,8 +432,8 @@ export default function Home() {
 						</motion.div>
 					</motion.div>
 
-					{/* Recent Bookmarks Section */}
-					{recentBookmarksSection}
+					{/* Recent Bookmarks Marquee */}
+					<MoveCard />
 
 					{/* Call to Action */}
 					<motion.div
