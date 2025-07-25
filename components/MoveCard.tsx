@@ -7,6 +7,7 @@ import {
 	ArrowTopRightOnSquareIcon,
 	CalendarIcon,
 } from "@heroicons/react/24/outline";
+import BookmarkSkeleton from "@/components/skeleton/BookmarkSkeleton";
 
 interface Bookmark {
 	id: string;
@@ -108,11 +109,13 @@ const BookmarkCard = ({
 export function MoveCard() {
 	const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 	const [loading, setLoading] = useState(true);
-	const { user } = useAuth();
+	const { user, loading: authLoading } = useAuth(); // pastikan ada loading dari context
 
 	useEffect(() => {
 		const fetchRecentBookmarks = async () => {
+			if (authLoading) return; // tunggu auth selesai
 			if (!user) {
+				setBookmarks([]);
 				setLoading(false);
 				return;
 			}
@@ -123,7 +126,7 @@ export function MoveCard() {
 					.select("*")
 					.eq("user_id", user.id)
 					.order("created_at", { ascending: false })
-					.limit(10); // Ambil 10 untuk dibagi 2 row
+					.limit(10);
 
 				if (error) throw error;
 				setBookmarks(data || []);
@@ -135,66 +138,41 @@ export function MoveCard() {
 		};
 
 		fetchRecentBookmarks();
-	}, [user]);
-
-	// Jika tidak ada user atau loading
-	if (!user || loading) {
-		return (
-			<div className="relative flex w-full flex-col items-center justify-center overflow-hidden rounded-2xl py-8">
-				<div className="text-center mb-8">
-					<h2 className="text-2xl font-bold text-white mb-2">
-						Recent Bookmarks
-					</h2>
-					<p className="text-gray-400">
-						{loading
-							? "Memuat bookmark..."
-							: "Login untuk melihat bookmark Anda"}
-					</p>
-				</div>
-			</div>
-		);
-	}
-
-	// Jika tidak ada bookmark
-	if (bookmarks.length === 0) {
-		return (
-			<div className="relative flex w-full flex-col items-center justify-center overflow-hidden rounded-2xl py-8">
-				<div className="text-center mb-8">
-					<h2 className="text-2xl font-bold text-white mb-2">
-						Recent Bookmarks
-					</h2>
-					<p className="text-gray-400">
-						Belum ada bookmark. Mulai simpan link favorit Anda!
-					</p>
-				</div>
-			</div>
-		);
-	}
+	}, [user, authLoading]);
 
 	return (
-		<div className="relative w-full overflow-hidden">
-			{/* Header */}
+		<div className="relative flex w-full flex-col items-center justify-center overflow-hidden rounded-2xl">
 			<div className="text-center mb-8">
 				<h2 className="text-2xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent mb-2">
 					Recent Bookmarks
 				</h2>
 				<p className="text-gray-400">Bookmark terbaru yang Anda simpan</p>
 			</div>
-
-			{/* Single Row Marquee - Only Left Direction */}
 			<div
-				className="relative w-full"
+				className="relative w-full flex justify-center min-h-[180px]" // min height biar stabil
 				style={{
 					maskImage:
 						"linear-gradient(to right, transparent 0%, rgba(0,0,0,0.2) 5%, black 15%, black 85%, rgba(0,0,0,0.2) 95%, transparent 100%)",
 					WebkitMaskImage:
 						"linear-gradient(to right, transparent 0%, rgba(0,0,0,0.2) 5%, black 15%, black 85%, rgba(0,0,0,0.2) 95%, transparent 100%)",
 				}}>
-				<Marquee pauseOnHover className="[--duration:60s]">
-					{bookmarks.map((bookmark) => (
-						<BookmarkCard key={bookmark.id} {...bookmark} />
-					))}
-				</Marquee>
+				{loading ? (
+					<Marquee pauseOnHover className="[--duration:60s]">
+						{[...Array(3)].map((_, i) => (
+							<BookmarkSkeleton key={i} />
+						))}
+					</Marquee>
+				) : bookmarks.length === 0 ? (
+					<div className="w-72 flex items-center justify-center text-gray-400 text-center mx-auto">
+						Belum ada bookmark. Mulai simpan link favorit Anda!
+					</div>
+				) : (
+					<Marquee pauseOnHover className="[--duration:60s]">
+						{bookmarks.map((bookmark) => (
+							<BookmarkCard key={bookmark.id} {...bookmark} />
+						))}
+					</Marquee>
+				)}
 			</div>
 		</div>
 	);

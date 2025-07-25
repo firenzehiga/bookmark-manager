@@ -3,6 +3,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+
+@layer utilities {
+  .animate-shimmer {
+    background-size: 200% 100%;
+    animation: shimmer 5.5s infinite linear;
+  }
+
+  @keyframes shimmer {
+    0% {
+      background-position: -100% 0;
+    }
+    100% {
+      background-position: 100% 0;
+    }
+  }
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -34,7 +50,6 @@
   -webkit-line-clamp: 2;
   line-clamp: 2;
 }
-
 .line-clamp-3 {
   overflow: hidden;
   display: -webkit-box;
@@ -289,6 +304,7 @@ body {
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
 }
 
 @layer base {

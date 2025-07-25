@@ -145,42 +145,6 @@ export default function Home() {
 		// Don't show anything if no user
 		if (!user) return null;
 
-		// Show loading state only if we haven't fetched yet
-		if (isLoading && !hasFetchedOnce) {
-			return (
-				<>
-					<div className="text-center mb-8">
-						<h2 className="text-3xl font-bold text-white mb-2 opacity-5">
-							Bookmark Terbaru
-						</h2>
-						<p className="text-gray-400 opacity-5">
-							Akses cepat ke link yang baru-baru ini Anda simpan
-						</p>
-					</div>
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
-						{[...Array(3)].map((_, idx) => (
-							<div
-								key={idx}
-								className="glass-dark rounded-xl p-4 border border-gray-700/50 animate-pulse">
-								<div className="flex items-start justify-between mb-3">
-									<div className="flex-1 min-w-0">
-										<div className="h-4 bg-gray-600/60 rounded w-3/4 mb-2"></div>
-										<div className="h-3 bg-gray-600/40 rounded w-1/2"></div>
-									</div>
-									<div className="w-4 h-4 bg-gray-600/40 rounded ml-2"></div>
-								</div>
-								<div className="h-3 bg-gray-600/40 rounded mb-3 w-full"></div>
-								<div className="flex gap-2">
-									<div className="h-5 w-16 bg-gray-600/40 rounded-full"></div>
-									<div className="h-5 w-12 bg-gray-600/40 rounded-full"></div>
-								</div>
-							</div>
-						))}
-					</div>
-				</>
-			);
-		}
-
 		if (recentBookmarks.length === 0 && hasFetchedOnce) {
 			return (
 				<motion.div

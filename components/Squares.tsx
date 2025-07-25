@@ -36,7 +36,7 @@ const SquaresEnhanced: React.FC<SquaresProps> = ({
 		const canvas = canvasRef.current;
 		if (!canvas) return;
 		const ctx = canvas.getContext("2d");
-		
+
 		if (debug) {
 			console.log("🎨 Squares Enhanced: Canvas initialized");
 		}
@@ -46,9 +46,11 @@ const SquaresEnhanced: React.FC<SquaresProps> = ({
 			canvas.height = canvas.offsetHeight;
 			numSquaresX.current = Math.ceil(canvas.width / squareSize) + 1;
 			numSquaresY.current = Math.ceil(canvas.height / squareSize) + 1;
-			
+
 			if (debug) {
-				console.log(`📐 Canvas resized: ${canvas.width}x${canvas.height}, Squares: ${numSquaresX.current}x${numSquaresY.current}`);
+				console.log(
+					`📐 Canvas resized: ${canvas.width}x${canvas.height}, Squares: ${numSquaresX.current}x${numSquaresY.current}`
+				);
 			}
 		};
 
@@ -73,7 +75,8 @@ const SquaresEnhanced: React.FC<SquaresProps> = ({
 					// Hover effect
 					if (
 						hoveredSquareRef.current &&
-						Math.floor((x - startX) / squareSize) === hoveredSquareRef.current.x &&
+						Math.floor((x - startX) / squareSize) ===
+							hoveredSquareRef.current.x &&
 						Math.floor((y - startY) / squareSize) === hoveredSquareRef.current.y
 					) {
 						ctx.fillStyle = hoverFillColor;
@@ -92,7 +95,13 @@ const SquaresEnhanced: React.FC<SquaresProps> = ({
 				ctx.fillStyle = "#00ff00";
 				ctx.font = "12px monospace";
 				ctx.fillText(`FPS: ${Math.round(1000 / 16)}`, 10, 20);
-				ctx.fillText(`Offset: ${Math.round(gridOffset.current.x)}, ${Math.round(gridOffset.current.y)}`, 10, 40);
+				ctx.fillText(
+					`Offset: ${Math.round(gridOffset.current.x)}, ${Math.round(
+						gridOffset.current.y
+					)}`,
+					10,
+					40
+				);
 				ctx.fillText(`Direction: ${direction}`, 10, 60);
 				ctx.fillText(`Speed: ${speed}`, 10, 80);
 			}
@@ -101,23 +110,29 @@ const SquaresEnhanced: React.FC<SquaresProps> = ({
 		const updateAnimation = () => {
 			setIsAnimating(true);
 			const effectiveSpeed = Math.max(speed, 0.1);
-			
+
 			switch (direction) {
 				case "right":
-					gridOffset.current.x = (gridOffset.current.x - effectiveSpeed + squareSize) % squareSize;
+					gridOffset.current.x =
+						(gridOffset.current.x - effectiveSpeed + squareSize) % squareSize;
 					break;
 				case "left":
-					gridOffset.current.x = (gridOffset.current.x + effectiveSpeed + squareSize) % squareSize;
+					gridOffset.current.x =
+						(gridOffset.current.x + effectiveSpeed + squareSize) % squareSize;
 					break;
 				case "up":
-					gridOffset.current.y = (gridOffset.current.y + effectiveSpeed + squareSize) % squareSize;
+					gridOffset.current.y =
+						(gridOffset.current.y + effectiveSpeed + squareSize) % squareSize;
 					break;
 				case "down":
-					gridOffset.current.y = (gridOffset.current.y - effectiveSpeed + squareSize) % squareSize;
+					gridOffset.current.y =
+						(gridOffset.current.y - effectiveSpeed + squareSize) % squareSize;
 					break;
 				case "diagonal":
-					gridOffset.current.x = (gridOffset.current.x - effectiveSpeed + squareSize) % squareSize;
-					gridOffset.current.y = (gridOffset.current.y - effectiveSpeed + squareSize) % squareSize;
+					gridOffset.current.x =
+						(gridOffset.current.x - effectiveSpeed + squareSize) % squareSize;
+					gridOffset.current.y =
+						(gridOffset.current.y - effectiveSpeed + squareSize) % squareSize;
 					break;
 				default:
 					break;
@@ -135,8 +150,12 @@ const SquaresEnhanced: React.FC<SquaresProps> = ({
 			const startX = Math.floor(gridOffset.current.x / squareSize) * squareSize;
 			const startY = Math.floor(gridOffset.current.y / squareSize) * squareSize;
 
-			const hoveredSquareX = Math.floor((mouseX + gridOffset.current.x - startX) / squareSize);
-			const hoveredSquareY = Math.floor((mouseY + gridOffset.current.y - startY) / squareSize);
+			const hoveredSquareX = Math.floor(
+				(mouseX + gridOffset.current.x - startX) / squareSize
+			);
+			const hoveredSquareY = Math.floor(
+				(mouseY + gridOffset.current.y - startY) / squareSize
+			);
 
 			if (
 				!hoveredSquareRef.current ||
@@ -161,7 +180,7 @@ const SquaresEnhanced: React.FC<SquaresProps> = ({
 			canvas.removeEventListener("mousemove", handleMouseMove);
 			canvas.removeEventListener("mouseleave", handleMouseLeave);
 			setIsAnimating(false);
-			
+
 			if (debug) {
 				console.log("🧹 Squares Enhanced: Cleaned up");
 			}
@@ -175,6 +194,7 @@ const SquaresEnhanced: React.FC<SquaresProps> = ({
 				className="w-full h-full border-none block"
 				style={{ background: debug ? "rgba(255,0,0,0.1)" : "transparent" }}
 			/>
+
 			{debug && (
 				<div className="absolute top-4 left-4 bg-black/80 text-green-400 p-2 rounded text-xs font-mono">
 					<div>Squares Enhanced Debug</div>
