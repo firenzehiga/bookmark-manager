@@ -8,8 +8,6 @@ import { supabase } from "@/lib/supabaseClient";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Bookmark, BOOKMARK_CATEGORIES } from "@/types/bookmark";
 import {
-	TableCellsIcon,
-	Squares2X2Icon,
 	MagnifyingGlassIcon,
 	FunnelIcon,
 	TrashIcon,
