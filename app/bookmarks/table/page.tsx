@@ -29,13 +29,12 @@ export default function BookmarksTablePage() {
 	const [selectedCategory, setSelectedCategory] = useState<string>("all");
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-	// Menggunakan custom hooks
-	const { data: bookmarks = [], isLoading, isFetching } = useBookmarks();
+	// ✅ Menggunakan custom hooks
+	const { data: bookmarks = [], isLoading, error, isFetching } = useBookmarks();
 	const deleteBookmark = useDeleteBookmark();
 	const refreshBookmarks = useRefreshBookmarks();
 
-	// Error handling dengan menghapus destructuring error yang tidak dipakai
-	const { error } = useBookmarks();
+	// Error handling
 	useEffect(() => {
 		if (error) {
 			console.error("Error fetching bookmarks:", error);
