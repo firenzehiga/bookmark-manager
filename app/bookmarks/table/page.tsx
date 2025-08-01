@@ -30,17 +30,11 @@ export default function BookmarksTablePage() {
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
 	// ✅ Menggunakan custom hooks
-	const { data: bookmarks = [], isLoading, error, isFetching } = useBookmarks();
+	const { data: bookmarks = [], isLoading, isFetching } = useBookmarks();
 	const deleteBookmark = useDeleteBookmark();
 	const refreshBookmarks = useRefreshBookmarks();
 
-	// Error handling
-	useEffect(() => {
-		if (error) {
-			console.error("Error fetching bookmarks:", error);
-			toast.error("Gagal memuat bookmark");
-		}
-	}, [error]);
+
 
 	useEffect(() => {
 		let filtered = bookmarks;
