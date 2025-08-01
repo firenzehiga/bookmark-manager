@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { supabase } from "@/lib/supabaseClient";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { Bookmark, BOOKMARK_CATEGORIES } from "@/types/bookmark";
 import {
@@ -14,43 +13,34 @@ import {
 	ArrowTopRightOnSquareIcon,
 	EyeIcon,
 	XMarkIcon,
+	ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import TableSkeleton from "@/components/skeleton/TableSkeleton";
 import { ArrowLeftCircleIcon } from "lucide-react";
+import {
+	useBookmarks,
+	useDeleteBookmark,
+	useRefreshBookmarks,
+} from "@/hooks/useBookmarks";
 
 export default function BookmarksTablePage() {
-	const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 	const [filteredBookmarks, setFilteredBookmarks] = useState<Bookmark[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("all");
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-	const fetchBookmarks = async () => {
-		try {
-			setIsLoading(true);
-			const { data, error } = await supabase
-				.from("bookmarks")
-				.select("*")
-				.order("created_at", { ascending: false });
+	// ✅ Menggunakan custom hooks
+	const { data: bookmarks = [], isLoading, error, isFetching } = useBookmarks();
+	const deleteBookmark = useDeleteBookmark();
+	const refreshBookmarks = useRefreshBookmarks();
 
-			if (error) {
-				throw error;
-			}
-
-			setBookmarks(data || []);
-			setFilteredBookmarks(data || []);
-		} catch (error) {
+	// Error handling
+	useEffect(() => {
+		if (error) {
 			console.error("Error fetching bookmarks:", error);
 			toast.error("Gagal memuat bookmark");
-		} finally {
-			setIsLoading(false);
 		}
-	};
-
-	useEffect(() => {
-		fetchBookmarks();
-	}, []);
+	}, [error]);
 
 	useEffect(() => {
 		let filtered = bookmarks;
@@ -77,21 +67,29 @@ export default function BookmarksTablePage() {
 		setFilteredBookmarks(filtered);
 	}, [bookmarks, searchQuery, selectedCategory]);
 
+	// ✅ Fungsi untuk delete bookmark
 	const handleDelete = async (id: number) => {
 		if (!confirm("Yakin ingin menghapus bookmark ini?")) return;
 
+		// ✅ Menggunakan custom hook untuk delete
+		deleteBookmark.mutate(id);
+	};
+
+	// ✅ Fungsi untuk refresh manual
+	const handleRefresh = async () => {
+		// console.log("🔄 Refresh button clicked");
+		// console.log("Current bookmarks count:", bookmarks.length);
+		// console.log("isFetching:", isFetching);
+
 		try {
-			const { error } = await supabase.from("bookmarks").delete().eq("id", id);
+			// Invalidate cache dan trigger refetch
+			refreshBookmarks();
 
-			if (error) {
-				throw error;
-			}
-
-			setBookmarks((prev) => prev.filter((bookmark) => bookmark.id !== id));
-			toast.success("🗑️ Bookmark berhasil dihapus");
+			// console.log("✅ Refresh completed");
+			toast.success("🔄 Data bookmark diperbarui!");
 		} catch (error) {
-			console.error("Error deleting bookmark:", error);
-			toast.error("❌ Gagal menghapus bookmark");
+			// console.error("❌ Error refreshing bookmarks:", error);
+			toast.error("❌ Gagal memperbarui data");
 		}
 	};
 
@@ -152,6 +150,23 @@ export default function BookmarksTablePage() {
 								</div>
 
 								<div className="flex gap-3">
+									<button
+										onClick={handleRefresh}
+										disabled={isFetching}
+										className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-all">
+										{isFetching ? (
+											<>
+												<div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+												Refreshing...
+											</>
+										) : (
+											<>
+												<ArrowPathIcon className="w-5 h-5" />
+												Refresh
+											</>
+										)}
+									</button>
+
 									<Link
 										href="/bookmarks"
 										className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all">
@@ -210,9 +225,30 @@ export default function BookmarksTablePage() {
 									</div>
 
 									{/* Stats */}
-									<div className="mt-4 text-sm text-gray-400">
-										Menampilkan {filteredBookmarks.length} dari{" "}
-										{bookmarks.length} bookmark
+									<div className="mt-4 flex items-center justify-between text-sm text-gray-400">
+										<span>
+											Menampilkan {filteredBookmarks.length} dari{" "}
+											{bookmarks.length} bookmark
+										</span>
+
+										{/* Cache Status */}
+										<div className="flex items-center gap-2">
+											{isFetching && (
+												<span className="text-xs bg-blue-600/20 text-blue-400 px-2 py-1 rounded-full">
+													🔄 Memuat ulang...
+												</span>
+											)}
+											{!isLoading && !isFetching && (
+												<span className="text-xs bg-green-600/20 text-green-400 px-2 py-1 rounded-full">
+													📚 Data tersimpan di cache
+												</span>
+											)}
+											{deleteBookmark.isPending && (
+												<span className="text-xs bg-red-600/20 text-red-400 px-2 py-1 rounded-full">
+													🗑️ Menghapus...
+												</span>
+											)}
+										</div>
 									</div>
 								</div>
 							</motion.div>
