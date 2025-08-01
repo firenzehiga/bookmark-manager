@@ -81,7 +81,7 @@ export default function BookmarksTablePage() {
 
 			// console.log("✅ Refresh completed");
 			toast.success("🔄 Data bookmark diperbarui!");
-		} catch (error) {
+		} catch (_error) {
 			// console.error("❌ Error refreshing bookmarks:", error);
 			toast.error("❌ Gagal memperbarui data");
 		}
