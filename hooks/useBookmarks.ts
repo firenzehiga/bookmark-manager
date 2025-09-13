@@ -85,19 +85,7 @@ export function useBookmarks() {
     enabled: !!user,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-    // ✅ Tambahkan retry yang smart
-    retry: (failureCount, error: any) => {
-      // Jangan retry client errors (4xx)
-      if (error?.status >= 400 && error?.status < 500) {
-        return false;
-      }
-      // Retry maksimal 3x untuk server errors
-      return failureCount < 3;
-    },
-    retryDelay: (attemptIndex) => {
-      // Exponential backoff: 1s, 2s, 4s
-      return Math.min(1000 * 2 ** attemptIndex, 30000);
-    },
+  
   });
 }
 
