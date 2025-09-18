@@ -189,13 +189,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									try {
 										setLoading(true);
 										await signInWithGoogle();
-									} catch (error: any) {
+									} catch (error: unknown) {
 										console.error("Google sign in error:", error);
-										toast.error(
-											`❌ Gagal masuk dengan Google: ${
-												error.message || "Unknown error"
-											}`
-										);
+										const message =
+											error instanceof Error
+												? error.message
+												: String(error) || "Unknown error";
+										toast.error(`❌ Gagal masuk dengan Google: ${message}`);
 									} finally {
 										setLoading(false);
 									}
@@ -286,13 +286,13 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									try {
 										setLoading(true);
 										await signInWithGoogle();
-									} catch (error: any) {
+									} catch (error: unknown) {
 										console.error("Google sign in error:", error);
-										toast.error(
-											`❌ Gagal mendaftar dengan Google: ${
-												error.message || "Unknown error"
-											}`
-										);
+										const message =
+											error instanceof Error
+												? error.message
+												: String(error) || "Unknown error";
+										toast.error(`❌ Gagal mendaftar dengan Google: ${message}`);
 									} finally {
 										setLoading(false);
 									}
