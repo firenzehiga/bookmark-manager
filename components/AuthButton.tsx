@@ -45,6 +45,9 @@ export function AuthButton() {
 			try {
 				setIsSigningOut(true);
 				setIsProfileOpen(false);
+
+				// Tambahkan delay kecil untuk animasi
+				await new Promise((resolve) => setTimeout(resolve, 500));
 				await signOut();
 			} catch (error) {
 				console.error("Error signing out:", error);
@@ -57,10 +60,16 @@ export function AuthButton() {
 	if (isSigningOut) {
 		return (
 			<div className="fixed top-4 right-4 z-50">
-				<div className="flex items-center gap-2 bg-gray-900/90 backdrop-blur-sm border border-gray-700 text-white px-4 py-2 rounded-xl">
-					<div className="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"></div>
+				<motion.div
+					initial={{ opacity: 0, scale: 0.8 }}
+					animate={{ opacity: 1, scale: 1 }}
+					className="flex items-center gap-2  bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 backdrop-blur-sm border border-gray-700 text-white px-4 py-2 rounded-xl shadow-lg">
+					<motion.div
+						animate={{ rotate: 360 }}
+						transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+						className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"></motion.div>
 					<span className="hidden sm:block text-sm">Keluar...</span>
-				</div>
+				</motion.div>
 			</div>
 		);
 	}
@@ -116,8 +125,7 @@ export function AuthButton() {
 								<motion.div
 									initial={{ opacity: 0, scale: 0.95, y: -10 }}
 									animate={{ opacity: 1, scale: 1, y: 0 }}
-									className="absolute right-0 mt-2 w-48 bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-500 backdrop-blur-sm border border-indigo-700 rounded-xl shadow-lg overflow-hidden"
-								>
+									className="absolute right-0 mt-2 w-48 bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-500 backdrop-blur-sm border border-indigo-700 rounded-xl shadow-lg overflow-hidden">
 									<div className="p-3 border-b border-gray-600 bg-gradient-to-r from-indigo-600/80 to-purple-700/80">
 										<p className="text-sm font-medium text-white truncate">
 											{user.email}
@@ -131,8 +139,7 @@ export function AuthButton() {
 										<button
 											onClick={handleSignOut}
 											disabled={isSigningOut}
-											className="flex items-center gap-3 w-full px-3 py-2 text-sm text-white hover:bg-red-500 hover:text-red-100 transition-colors disabled:opacity-50"
-										>
+											className="flex items-center gap-3 w-full px-3 py-2 text-sm text-white hover:bg-red-500 hover:text-red-100 transition-colors disabled:opacity-50">
 											<ArrowRightOnRectangleIcon className="w-4 h-4" />
 											Keluar
 										</button>

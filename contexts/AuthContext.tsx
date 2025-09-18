@@ -15,6 +15,7 @@ interface AuthContextType {
 		password: string
 	) => Promise<{ needsVerification: boolean }>;
 	signIn: (email: string, password: string) => Promise<void>;
+	signInWithGoogle: () => Promise<void>;
 	signOut: () => Promise<void>;
 }
 
@@ -38,23 +39,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				
 				if (session) {
 					setUser(session.user);
-					setLoading(false);
 					hasInitialized.current = true;
-					return;
-				}
-				
-				// Try to refresh token if no active session
-				const { data: { session: refreshedSession } } = await supabase.auth.refreshSession();
-				if (refreshedSession) {
-					setUser(refreshedSession.user);
 				} else {
-					setUser(null);
+					// Try to refresh token if no active session
+					const { data: { session: refreshedSession } } = await supabase.auth.refreshSession();
+					if (refreshedSession) {
+						setUser(refreshedSession.user);
+					} else {
+						setUser(null);
+					}
 				}
 			} catch (error) {
 				console.error("Error getting session:", error);
 			} finally {
-				setLoading(false);
-				hasInitialized.current = true;
+				// Set loading to false after a short delay to ensure smooth transitions
+				setTimeout(() => {
+					setLoading(false);
+					hasInitialized.current = true;
+				}, 300);
 			}
 		};
 
@@ -70,7 +72,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			const timeSinceLastEvent = now - authEventTime.current;
 
 			setUser(session?.user ?? null);
-			setLoading(false);
 
 			// Only show toasts for genuine auth events
 			if (
@@ -89,6 +90,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 				lastAuthEvent.current = event;
 				authEventTime.current = now;
+			}
+			
+			// Set loading to false after auth events
+			if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
+				setTimeout(() => {
+					setLoading(false);
+				}, 300);
 			}
 		});
 
@@ -133,30 +141,57 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		}
 	};
 
-	const signOut = async () => {
+	const signInWithGoogle = async () => {
 		try {
-			// Set loading state untuk mencegah flash
-			setLoading(true);
+			// Gunakan URL lengkap untuk redirect
+			const redirectTo = `${window.location.origin}/auth/callback`;
+			
+			const { error } = await supabase.auth.signInWithOAuth({
+				provider: "google",
+				options: {
+					redirectTo: redirectTo,
+					// Tambahkan scopes yang diperlukan
+					scopes: 'email profile',
+				},
+			});
 
-			const { error } = await supabase.auth.signOut();
 			if (error) {
-				console.error("Sign out error:", error);
-				setLoading(false);
+				console.error("Google sign in error:", error);
 				throw error;
 			}
+			
+			// Jika berhasil, pengguna akan diarahkan ke halaman Google untuk login
+			// Setelah login, mereka akan diarahkan kembali ke /auth/callback
+			return;
+		} catch (error) {
+			console.error("Google sign in error:", error);
+			throw error;
+		}
+	};
 
-			// Clear user state
+	const signOut = async () => {
+		try {
+			// Clear user state immediately for better UX
 			setUser(null);
-
+			
 			// Clear cached data
 			if (typeof window !== "undefined") {
 				localStorage.removeItem("supabase.auth.token");
 			}
 
-			// Immediate redirect tanpa delay
-			router.replace("/");
+			// Sign out from Supabase
+			const { error } = await supabase.auth.signOut();
+			if (error) {
+				console.error("Sign out error:", error);
+				throw error;
+			}
+
+			// Redirect to home with smooth transition
+			router.push("/");
 		} catch (error) {
-			setLoading(false);
+			console.error("Sign out error:", error);
+			// Still redirect to home even if there's an error
+			router.push("/");
 			throw error;
 		}
 	};
@@ -167,6 +202,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				loading,
 				signUp,
 				signIn,
+				signInWithGoogle,
 				signOut,
 			}}>
 			{children}

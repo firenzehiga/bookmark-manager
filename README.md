@@ -52,5 +52,22 @@ Solusi digital untuk menyimpan & mengatur semua link pentingmu di berbagai platf
 
 ---
 
+## ⚙️ Konfigurasi Environment Variables
+
+Untuk menjalankan aplikasi ini, Anda perlu membuat file `.env.local` di root project dengan konfigurasi berikut:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+Untuk mengaktifkan Google Sign-In, Anda perlu:
+1. Mengonfigurasi Google OAuth di Google Cloud Console
+2. Memasukkan Client ID dan Secret di dashboard Supabase Authentication > Providers > Google
+
+Untuk panduan lengkap setup Google Sign-In, lihat [GOOGLE_SIGN_IN_SETUP.md](GOOGLE_SIGN_IN_SETUP.md)
+
+---
+
 Bookmark Manager dibuat untuk bikin hidupmu makin mudah!  
 Simpan, kelola, dan temukan semua link penting dengan satu aplikasi simpel.

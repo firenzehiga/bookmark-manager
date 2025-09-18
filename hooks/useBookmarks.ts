@@ -35,6 +35,7 @@ const bookmarkApi = {
       .from('bookmarks')
       .insert({
         ...bookmark,
+        user_id: bookmark.user_id, // Pastikan user_id disertakan
         created_at: new Date().toISOString(),
       })
       .select()
