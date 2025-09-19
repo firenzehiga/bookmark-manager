@@ -39,7 +39,8 @@ Solusi digital untuk menyimpan & mengatur semua link pentingmu di berbagai platf
 - Saat menambah bookmark, tampilkan preview website biar makin yakin dan simpel.
 
 ### 🔒 Autentikasi Aman
-- Daftar & login dengan email, serta integrasi verifikasi email Supabase supaya data lebih aman.
+- Daftar & login dengan email, serta integrasi verifikasi email Supabase.
+- Supabase Google Sign In Integration
 
 ---
 
