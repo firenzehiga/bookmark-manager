@@ -213,7 +213,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 								className="mx-auto w-full "
 							/>
 							<p className="text-center text-gray-400 text-sm">
-								Don't have an account?{" "}
+								{"Don't have an account?"}{" "}
 								<button
 									type="button"
 									onClick={() => setStep("register")}
@@ -310,12 +310,12 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 								className="mx-auto w-full "
 							/>
 							<p className="text-center text-gray-400 text-sm">
-								Sudah punya akun?{" "}
+								Already have an account?{" "}
 								<button
 									type="button"
 									onClick={() => setStep("login")}
 									className="text-indigo-400 hover:text-indigo-300 transition-colors underline">
-									Masuk di sini
+									Sign in here
 								</button>
 							</p>
 						</motion.form>
