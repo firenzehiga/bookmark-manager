@@ -171,7 +171,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 							<button
 								type="submit"
 								disabled={loading}
-								className="w-full bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
+								className="mx-auto  bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-purple-600 text-white py-3 px-25 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
 								{loading ? (
 									<>
 										<Loader2 className="animate-spin rounded-full h-5 w-5" />
@@ -201,11 +201,11 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									}
 								}}
 								disabled={loading}
-								className="w-full bg-white hover:bg-gray-300 text-gray-900 py-2 px-3 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
+								className="mx-auto bg-neutral-100 text-gray-900 py-1 px-4 hover:bg-gray-300 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
 								<Image
 									width={50}
 									height={50}
-									src="/images/google.png"
+									src="/images/google1.png"
 									alt="Google"
 									className="w-10 h-10"
 								/>
@@ -265,7 +265,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 							<button
 								type="submit"
 								disabled={loading}
-								className="w-full bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
+								className="mx-auto  bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-purple-600 text-white py-3 px-22 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
 								{loading ? (
 									<>
 										<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -279,7 +279,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 								)}
 							</button>
 
-							{/* Google Sign In Button */}
+							{/* Google Sign In Button
 							<button
 								type="button"
 								onClick={async () => {
@@ -298,16 +298,16 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									}
 								}}
 								disabled={loading}
-								className="w-full bg-white text-gray-900 py-2 px-3 hover:bg-gray-300 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
+								className="mx-auto bg-neutral-100 text-gray-900 py-1 px-4 hover:bg-gray-300 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
 								<Image
 									width={50}
 									height={50}
-									src="/images/google.png"
+									src="/images/google1.png"
 									alt="Google"
 									className="w-10 h-10"
 								/>
 								Daftar dengan Google
-							</button>
+							</button> */}
 
 							<p className="text-center text-gray-400 text-sm">
 								Sudah punya akun?{" "}
