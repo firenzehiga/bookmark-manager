@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
+import GoogleSignButton from "./button/GoogleSignButton";
 
 interface AuthModalProps {
 	isOpen: boolean;
@@ -119,10 +120,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 					className="bg-gray-900/95 backdrop-blur-xl border border-gray-700 rounded-2xl p-6 w-full max-w-md">
 					{/* Header */}
 					<div className="flex items-center justify-between mb-6">
-						<h2 className="text-xl font-bold text-white">
-							{step === "login" && "🔐 Masuk"}
-							{step === "register" && "📝 Daftar"}
-							{step === "success" && "📧 Cek Email Anda"}
+						<h2 className="text-xl font-bold text-white ">
+							{step === "login" && "Sign in"}
+							{step === "register" && "Sign up"}
+							{step === "success" && "📧 Check Your Email"}
 						</h2>
 						<button
 							onClick={handleClose}
@@ -149,7 +150,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									onChange={(e) => setEmail(e.target.value)}
 									required
 									className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-									placeholder="nama@example.com"
+									placeholder="Your email address"
 								/>
 							</div>
 
@@ -164,27 +165,33 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									onChange={(e) => setPassword(e.target.value)}
 									required
 									className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-									placeholder="password Anda"
+									placeholder="Your password"
 								/>
 							</div>
 
 							<button
 								type="submit"
 								disabled={loading}
-								className="mx-auto  bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-purple-600 text-white py-3 px-25 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
+								className="w-full bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-purple-600 text-white py-3  rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
 								{loading ? (
 									<>
 										<Loader2 className="animate-spin rounded-full h-5 w-5" />
-										Sedang Masuk...
+										Logging in...
 									</>
 								) : (
-									"Masuk"
+									"Continue"
 								)}
 							</button>
 
+							{/* Separator */}
+							<div className="flex items-center gap-3 my-5">
+								<div className="flex-1 h-px bg-gray-700" />
+								<span className="text-sm text-gray-400">OR</span>
+								<div className="flex-1 h-px bg-gray-700" />
+							</div>
+
 							{/* Google Sign In Button */}
-							<button
-								type="button"
+							<GoogleSignButton
 								onClick={async () => {
 									try {
 										setLoading(true);
@@ -201,24 +208,18 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									}
 								}}
 								disabled={loading}
-								className="mx-auto bg-neutral-100 text-gray-900 py-1 px-4 hover:bg-gray-300 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
-								<Image
-									width={50}
-									height={50}
-									src="/images/google1.png"
-									alt="Google"
-									className="w-10 h-10"
-								/>
-								Masuk dengan Google
-							</button>
-
+								label="Continue with Google"
+								size="md"
+								variant="default"
+								className="mx-auto w-full "
+							/>
 							<p className="text-center text-gray-400 text-sm">
-								Belum punya akun?{" "}
+								Don't have an account?{" "}
 								<button
 									type="button"
 									onClick={() => setStep("register")}
 									className="text-indigo-400 hover:text-indigo-300 transition-colors underline">
-									Daftar di sini
+									Sign up here
 								</button>
 							</p>
 						</motion.form>
@@ -234,7 +235,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 							<div className="space-y-2">
 								<label className="flex items-center gap-2 text-sm font-medium text-gray-300">
 									<EnvelopeIcon className="w-4 h-4" />
-									Email Aktif
+									Email
 								</label>
 								<input
 									type="email"
@@ -242,7 +243,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									onChange={(e) => setEmail(e.target.value)}
 									required
 									className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-									placeholder="nama@example.com"
+									placeholder="Your email address"
 								/>
 							</div>
 
@@ -258,30 +259,36 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									required
 									minLength={6}
 									className="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-									placeholder="Minimal 6 karakter"
+									placeholder="At least 6 characters"
 								/>
 							</div>
 
 							<button
 								type="submit"
 								disabled={loading}
-								className="mx-auto  bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-purple-600 text-white py-3 px-22 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
+								className="w-full  bg-gradient-to-r hover:bg-gradient-to-l from-indigo-600 to-purple-600 text-white py-3 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
 								{loading ? (
 									<>
 										<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-										Mendaftar...
+										Signing Up...
 									</>
 								) : (
 									<>
 										<UserIcon className="w-5 h-5" />
-										Daftar
+										Sign Up
 									</>
 								)}
 							</button>
 
-							{/* Google Sign In Button
-							<button
-								type="button"
+							{/* Separator */}
+							<div className="flex items-center gap-3 my-5">
+								<div className="flex-1 h-px bg-gray-700" />
+								<span className="text-sm text-gray-400">OR</span>
+								<div className="flex-1 h-px bg-gray-700" />
+							</div>
+
+							{/* Google Sign In Button */}
+							<GoogleSignButton
 								onClick={async () => {
 									try {
 										setLoading(true);
@@ -292,23 +299,17 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 											error instanceof Error
 												? error.message
 												: String(error) || "Unknown error";
-										toast.error(`❌ Gagal mendaftar dengan Google: ${message}`);
+										toast.error(`❌ Gagal masuk dengan Google: ${message}`);
 									} finally {
 										setLoading(false);
 									}
 								}}
 								disabled={loading}
-								className="mx-auto bg-neutral-100 text-gray-900 py-1 px-4 hover:bg-gray-300 rounded-md font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2">
-								<Image
-									width={50}
-									height={50}
-									src="/images/google1.png"
-									alt="Google"
-									className="w-10 h-10"
-								/>
-								Daftar dengan Google
-							</button> */}
-
+								label="Continue with Google"
+								size="md"
+								variant="default"
+								className="mx-auto w-full "
+							/>
 							<p className="text-center text-gray-400 text-sm">
 								Sudah punya akun?{" "}
 								<button

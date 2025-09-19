@@ -162,7 +162,11 @@ export function MoveCard() {
 							<BookmarkSkeleton key={i} />
 						))}
 					</Marquee>
-				) : bookmarks.length === 0 ? (
+				) : !user ? (
+					<div className="w-72 flex items-center justify-center text-gray-400 text-center mx-auto">
+						Silakan login untuk melihat bookmark terbaru Anda.
+					</div>
+				) : user && bookmarks.length === 0 ? (
 					<div className="w-72 flex items-center justify-center text-gray-400 text-center mx-auto">
 						Belum ada bookmark. Mulai simpan link favorit Anda!
 					</div>

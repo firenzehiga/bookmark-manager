@@ -68,20 +68,6 @@ export const metadata: Metadata = {
 			},
 		],
 	},
-	twitter: {
-		card: "summary_large_image",
-		title: "Bookmark Manager - Kelola Bookmark Dengan Mudah",
-		description:
-			"Platform terbaik untuk menyimpan, mengorganisir, dan mengelola bookmark Anda.",
-		images: ["/images/og-image.png"],
-		creator: "@firenzehiga",
-	},
-	verification: {
-		google: "your-google-verification-code",
-	},
-	alternates: {
-		canonical: "https://bookmark-manager.vercel.app",
-	},
 };
 
 export default function RootLayout({

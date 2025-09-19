@@ -129,171 +129,6 @@ export default function Home() {
 		}
 	}, []);
 
-	// Memoize recent bookmarks section to prevent unnecessary re-renders
-	const recentBookmarksSection = useMemo(() => {
-		console.log(
-			"Rendering section - isLoading:",
-			isLoading,
-			"user:",
-			!!user,
-			"bookmarks:",
-			recentBookmarks.length,
-			"hasFetched:",
-			hasFetchedOnce
-		);
-
-		// Show loading state with better UX
-		if (isLoading && user) {
-			return (
-				<motion.div
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					className="mb-16 text-center">
-					<div className="glass-dark rounded-2xl p-8 border border-gray-700/50 flex flex-col items-center">
-						<motion.div
-							animate={{ rotate: 360 }}
-							transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-							className="w-8 h-8 rounded-full border-4 border-indigo-500 border-t-transparent mb-4"></motion.div>
-						<p className="text-gray-400">Memuat bookmark terbaru...</p>
-					</div>
-				</motion.div>
-			);
-		}
-
-		// Don't show anything if no user
-		if (!user) return null;
-
-		if (recentBookmarks.length === 0 && hasFetchedOnce) {
-			return (
-				<motion.div
-					key={`empty-${user.id}`}
-					initial={{ opacity: 0, y: 50 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 3 }}
-					className="mb-16 text-center">
-					<div className="glass-dark rounded-2xl p-8 border border-gray-700/50">
-						<div className="text-5xl mb-4 opacity-50">📚</div>
-						<h3 className="text-xl font-semibold text-white mb-2">
-							Belum Ada Bookmark
-						</h3>
-						<p className="text-gray-400 mb-6">
-							Mulai simpan link favorit Anda untuk akses yang lebih mudah
-						</p>
-						<button
-							onClick={handleAddFirstBookmark}
-							className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl font-medium transition-colors">
-							<BookmarkIcon className="w-4 h-4" />
-							Tambah Bookmark Pertama
-						</button>
-					</div>
-				</motion.div>
-			);
-		}
-
-		if (recentBookmarks.length > 0 && hasFetchedOnce) {
-			return (
-				<motion.div
-					key={`bookmarks-section-${user.id}-${recentBookmarks.length}`} // Stable key with user and count
-					initial={{ opacity: 0, y: 50 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ delay: 0.8 }}
-					className="mb-4">
-					<div className="text-center mb-8">
-						<h2 className="text-3xl font-bold text-white mb-2">
-							Bookmark Terbaru
-						</h2>
-						<p className="text-gray-400">
-							Akses cepat ke link yang baru-baru ini Anda simpan
-						</p>
-					</div>
-
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-						{recentBookmarks.map((bookmark, index) => (
-							<motion.div
-								key={`${bookmark.id}-stable`} // More stable key
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ delay: 0.8 + index * 0.1 }}
-								className="glass-dark rounded-xl p-4 border border-gray-800/50 hover:border-indigo-500/50 transition-all duration-300 group cursor-pointer"
-								onClick={() => handleVisit(bookmark.url)}>
-								<div className="flex items-start justify-between mb-3">
-									<div className="flex-1 min-w-0">
-										<h3 className="text-white font-semibold text-sm line-clamp-2 group-hover:text-indigo-300 transition-colors">
-											{bookmark.title}
-										</h3>
-										<p className="text-xs text-gray-500 mt-1">
-											{getDomainFromUrl(bookmark.url)} •{" "}
-											{formatDate(bookmark.created_at)}
-										</p>
-									</div>
-									<ArrowTopRightOnSquareIcon className="w-4 h-4 text-gray-400 group-hover:text-indigo-400 transition-colors flex-shrink-0 ml-2" />
-								</div>
-
-								{bookmark.description && (
-									<p className="text-gray-400 text-xs line-clamp-2 mb-3">
-										{bookmark.description}
-									</p>
-								)}
-
-								{bookmark.tags && bookmark.tags.length > 0 && (
-									<div className="flex flex-wrap gap-1">
-										{bookmark.tags.slice(0, 2).map((tagId) => {
-											const category = BOOKMARK_CATEGORIES.find(
-												(c) => c.id === tagId
-											);
-											return category ? (
-												<span
-													key={tagId}
-													className="text-xs px-2 py-1 rounded-full border"
-													style={{
-														backgroundColor: `${category.color}15`,
-														borderColor: `${category.color}40`,
-														color: category.color,
-													}}>
-													{category.icon} {category.label}
-												</span>
-											) : null;
-										})}
-										{bookmark.tags.length > 2 && (
-											<span className="text-xs text-gray-500">
-												+{bookmark.tags.length - 2}
-											</span>
-										)}
-									</div>
-								)}
-							</motion.div>
-						))}
-					</div>
-
-					<motion.div
-						initial={{ opacity: 0 }}
-						animate={{ opacity: 1 }}
-						transition={{ delay: 2.2 }}
-						className="text-center mt-8">
-						<Link
-							href="/bookmarks"
-							className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 font-medium transition-colors">
-							Lihat Semua Bookmark
-							<ArrowTopRightOnSquareIcon className="w-4 h-4" />
-						</Link>
-					</motion.div>
-				</motion.div>
-			);
-		}
-
-		// Return null if no conditions are met
-		return null;
-	}, [
-		recentBookmarks,
-		isLoading,
-		user,
-		handleVisit,
-		handleAddFirstBookmark,
-		formatDate,
-		getDomainFromUrl,
-		hasFetchedOnce,
-	]);
-
 	return (
 		<div className="min-h-screen relative overflow-hidden">
 			{/* Background Layers - urutan penting! */}
@@ -429,7 +264,6 @@ export default function Home() {
 
 						{/* Recent Bookmarks Marquee */}
 						<MoveCard />
-
 						{/* Call to Action */}
 						<motion.div
 							initial={{ opacity: 0 }}
@@ -438,7 +272,7 @@ export default function Home() {
 							className="text-center mt-2">
 							<div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
 								<SparklesIcon className="w-5 h-5 text-indigo-400" />
-								<span>Made by frenzehiga_ | Powered by Next.js & Supabase</span>
+								<span>Made with ❤️ | by @frenzehiga_</span>
 								<SparklesIcon className="w-5 h-5 text-indigo-400" />
 							</div>
 						</motion.div>
