@@ -145,17 +145,20 @@ export default function Home() {
 	const guestSection = (
 		<div>
 			{/* Center heading and selector to avoid weird left alignment */}
-			<div className="flex flex-col items-center gap-4 mb-6">
+			<div className="flex flex-col items-center gap-2 mb-6">
 				<div className="w-full max-w-lg mx-auto px-4">
 					<CategorySelector
 						selectedTags={selectedCategoryForPublic}
 						onTagToggle={(tagId) => {
-							setSelectedCategoryForPublic((prev) =>
-								prev.includes(tagId)
-									? prev.filter((t) => t !== tagId)
-									: [...prev, tagId]
-							);
+							setSelectedCategoryForPublic((prev) => {
+								// single-select behavior: clicking a category selects it as the only one;
+								// clicking the already-selected category clears the selection.
+								if (prev.length === 1 && prev[0] === tagId) return [];
+								return [tagId];
+							});
 						}}
+						singleSelect
+						showTags={false}
 					/>
 				</div>
 			</div>

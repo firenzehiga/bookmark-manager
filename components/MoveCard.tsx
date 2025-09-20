@@ -195,9 +195,9 @@ export function MoveCard({
 						Silakan login untuk melihat bookmark terbaru Anda.
 					</div>
 				) : bookmarks.length === 0 ? (
-					<div className="w-72 flex items-center justify-center text-gray-400 text-center mx-auto">
+					<div className="w-77 flex items-center relative p-2 transition-all duration-300 group rounded-xl bg-gray-900/50 justify-center text-purple-500 font-semibold text-center mx-auto">
 						{data
-							? "Tidak ada public bookmarks untuk kategori ini."
+							? "Tidak ada bookmark untuk kategori ini."
 							: "Belum ada bookmark. Mulai simpan link favorit Anda!"}
 					</div>
 				) : (

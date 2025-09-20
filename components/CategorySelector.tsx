@@ -7,11 +7,15 @@ import { CheckIcon } from "@heroicons/react/24/solid";
 interface CategorySelectorProps {
 	selectedTags: string[];
 	onTagToggle: (tagId: string) => void;
+	singleSelect?: boolean;
+	showTags?: boolean;
 }
 
 export function CategorySelector({
 	selectedTags,
 	onTagToggle,
+	singleSelect = false,
+	showTags = true,
 }: CategorySelectorProps) {
 	return (
 		<div className="space-y-3">
@@ -24,14 +28,19 @@ export function CategorySelector({
 						key={category.id}
 						type="button"
 						disabled={
-							selectedTags.length >= 2 && !selectedTags.includes(category.id)
+							!singleSelect &&
+							selectedTags.length >= 2 &&
+							!selectedTags.includes(category.id)
 						}
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: index * 0.1 }}
 						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
-						onClick={() => onTagToggle(category.id)}
+						onClick={() => {
+							// In singleSelect mode, parent will replace the selection with this id (or clear if same)
+							onTagToggle(category.id);
+						}}
 						className={`
               relative p-2 rounded-xl border-2 transition-all duration-300 group
               ${
@@ -80,7 +89,7 @@ export function CategorySelector({
 				))}
 			</div>
 
-			{selectedTags.length > 0 && (
+			{showTags && selectedTags.length > 0 && (
 				<motion.div
 					initial={{ opacity: 0, height: 0 }}
 					animate={{ opacity: 1, height: "auto" }}
