@@ -54,21 +54,41 @@ const bookmarkApi = {
     if (error) throw error;
   },
 
-  update: async (id: number, updates: Partial<Bookmark>): Promise<Bookmark> => {
-    const { data, error } = await supabase
+  update: async (id: number, updates: Partial<Bookmark>, userId?: string): Promise<Bookmark> => {
+    // Add `update_at` timestamp (note: your DB column is named `update_at`, not `updated_at`)
+    // This will set the update timestamp to the current time.
+    let builder = supabase
       .from('bookmarks')
       .update({
         ...updates,
-        updated_at: new Date().toISOString(),
+        update_at: new Date().toISOString(),
       })
-      .eq('id', id)
-      .select()
-      .single();
+      .eq('id', id);
+
+    if (userId) {
+      // include user filter to satisfy RLS policies that require owner match
+      builder = builder.eq('user_id', userId);
+    }
+
+    const { data, error } = await builder.select().single();
 
     if (error) throw error;
     return data;
   },
+
+  // new: fetch public bookmarks (anyone)
+  getPublic: async (): Promise<Bookmark[]> => {
+    const { data, error } = await supabase
+      .from('bookmarks')
+      .select('*')
+      .eq('is_public', true)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  },
 };
+
 
 // ===============================
 // CUSTOM HOOKS
@@ -77,6 +97,7 @@ const bookmarkApi = {
 /**
  * Hook untuk fetch semua bookmarks user
  */
+
 export function useBookmarks() {
   const { user } = useAuth();
 
@@ -87,6 +108,15 @@ export function useBookmarks() {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   
+  });
+}
+
+export function usePublicBookmarks() {
+return useQuery({
+    queryKey: bookmarkKeys.lists(),
+    queryFn: () => bookmarkApi.getPublic(),
+    staleTime: 1000 * 60, // 1 minute
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 
@@ -167,7 +197,8 @@ export function useUpdateBookmark() {
 
   return useMutation({
     mutationFn: ({ id, updates }: { id: number; updates: Partial<Bookmark> }) =>
-      bookmarkApi.update(id, updates),
+      // pass current user id so the update query enforces owner match (helps with RLS)
+      bookmarkApi.update(id, updates, user?.id),
     onSuccess: (updatedBookmark) => {
       // Update the bookmark in cache
       queryClient.setQueryData(
@@ -178,11 +209,16 @@ export function useUpdateBookmark() {
           )
       );
       
+      // Also invalidate public bookmarks so visibility changes are reflected for guests
+      queryClient.invalidateQueries({ queryKey: bookmarkKeys.lists() });
+
       toast.success('✅ Bookmark berhasil diperbarui');
     },
     onError: (error) => {
       console.error('Error updating bookmark:', error);
-      toast.error('❌ Gagal memperbarui bookmark');
+      // try to extract message from Supabase error shape
+      const errMsg = (error as any)?.message || (error as any)?.error || JSON.stringify(error);
+      toast.error(`❌ Gagal memperbarui bookmark: ${errMsg}`);
     },
   });
 }

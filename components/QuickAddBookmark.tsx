@@ -8,13 +8,15 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useCreateBookmark } from "@/hooks/useBookmarks";
 import toast from "react-hot-toast";
 import { CategorySelector } from "./CategorySelector";
+import Switch from "@mui/material/Switch";
 export function QuickAddBookmark() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [url, setUrl] = useState("");
 	const [title, setTitle] = useState("");
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
+	const [isPublic, setIsPublic] = useState(false);
 	const { user } = useAuth();
-	
+
 	// ✅ Use React Query mutation
 	const createBookmarkMutation = useCreateBookmark();
 
@@ -66,14 +68,16 @@ export function QuickAddBookmark() {
 				title: finalTitle,
 				url: url.trim(),
 				tags: selectedTags,
+				is_public: isPublic,
 				user_id: user.id,
-				description: '', // Add default description
+				description: "", // Add default description
 			});
 
 			// Reset form
 			setUrl("");
 			setTitle("");
 			setSelectedTags([]);
+			setIsPublic(false);
 			setIsOpen(false);
 		} catch (error) {
 			console.error("Error adding bookmark:", error);
@@ -171,6 +175,24 @@ export function QuickAddBookmark() {
 										selectedTags={selectedTags}
 										onTagToggle={toggleTag}
 									/>
+								</div>
+
+								{/* Public toggle */}
+								<div className="flex items-center gap-3">
+									<label className="inline-flex items-center gap-2">
+										<Switch
+											checked={isPublic}
+											onChange={(
+												e: React.ChangeEvent<HTMLInputElement>,
+												checked: boolean
+											) => setIsPublic(checked)}
+											color="primary"
+											inputProps={{ "aria-label": "controlled" }}
+										/>
+									</label>
+									<span className="text-sm text-gray-300">
+										{isPublic ? "Bookmark is Public" : "Bookmark is Private"}
+									</span>
 								</div>
 
 								<div className="flex gap-20">

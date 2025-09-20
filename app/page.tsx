@@ -8,16 +8,17 @@ import {
 	BookmarkIcon,
 	SparklesIcon,
 	RocketLaunchIcon,
-	ArrowTopRightOnSquareIcon,
 } from "@heroicons/react/24/outline";
 import ShinyText from "@/components/ShinyText";
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { Bookmark, BOOKMARK_CATEGORIES } from "@/types/bookmark";
+import { Bookmark } from "@/types/bookmark";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/AuthModal";
 import Image from "next/image";
 import SquaresEnhanced from "@/components/Squares";
+import { usePublicBookmarks, useBookmarks } from "@/hooks/useBookmarks";
+import { CategorySelector } from "@/components/CategorySelector";
 export default function Home() {
 	const [recentBookmarks, setRecentBookmarks] = useState<Bookmark[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
@@ -27,6 +28,12 @@ export default function Home() {
 		null
 	);
 	const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
+
+	// Hooks for bookmarks
+	const { data: publicBookmarks, isLoading: loadingPublic } =
+		usePublicBookmarks();
+	const { data: userBookmarks, isLoading: loadingUserBookmarks } =
+		useBookmarks();
 
 	// const features = [
 	//   { icon: "📱", title: "Responsif", desc: "Bekerja di semua device" },
@@ -129,6 +136,43 @@ export default function Home() {
 		}
 	}, []);
 
+	// Category filter state for public bookmarks (multi-select)
+	const [selectedCategoryForPublic, setSelectedCategoryForPublic] = useState<
+		string[]
+	>([]);
+
+	// Precompute guest and logged-in sections using MoveCard
+	const guestSection = (
+		<div>
+			{/* Center heading and selector to avoid weird left alignment */}
+			<div className="flex flex-col items-center gap-4 mb-6">
+				<div className="w-full max-w-lg mx-auto px-4">
+					<CategorySelector
+						selectedTags={selectedCategoryForPublic}
+						onTagToggle={(tagId) => {
+							setSelectedCategoryForPublic((prev) =>
+								prev.includes(tagId)
+									? prev.filter((t) => t !== tagId)
+									: [...prev, tagId]
+							);
+						}}
+					/>
+				</div>
+			</div>
+
+			{/* Use MoveCard and pass public data; add top padding so it doesn't collide visually */}
+			<div className="max-w-full pt-4">
+				<MoveCard
+					data={publicBookmarks || []}
+					title="Public Bookmarks"
+					categoryFilter={
+						selectedCategoryForPublic.length ? selectedCategoryForPublic : null
+					}
+				/>
+			</div>
+		</div>
+	);
+
 	return (
 		<div className="min-h-screen relative overflow-hidden">
 			{/* Background Layers - urutan penting! */}
@@ -179,104 +223,112 @@ export default function Home() {
 
 			<div className="relative z-50 flex items-center justify-center min-h-screen p-4">
 				<div className="max-w-4xl w-full">
-					{/* {authLoading ? (
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							className="text-center">
-							<motion.div
-								animate={{ rotate: 360 }}
-								transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-								className="w-12 h-12 rounded-full border-4 bg-gradient-to-br from-slate-900/80 via-purple-900/80 to-slate-900/80 border-t-transparent mx-auto mb-4"></motion.div>
+					{authLoading ? (
+						<div className="text-center items-center justify-center flex flex-col gap-4">
+							<Image
+								src="/images/logo.png"
+								alt="loading.."
+								width={55}
+								height={55}
+								className="animate-spin "
+							/>
 							<p className="text-indigo-200">Memverifikasi sesi...</p>
-						</motion.div>
-					) : ( */}
-					<>
-						<motion.div
-							initial={{ opacity: 0, y: 50 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.8 }}
-							className="text-center mb-12">
-							{/* Logo Animation */}
+						</div>
+					) : (
+						<>
 							<motion.div
-								initial={{ scale: 0 }}
-								animate={{ scale: 1 }}
-								transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-								className="flex items-center gap-3 justify-center mb-3">
+								initial={{ opacity: 0, y: 50 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.8 }}
+								className="text-center mb-12">
+								{/* Logo Animation */}
 								<motion.div
-									animate={{
-										rotate: [0, 10, -10, 0],
-										scale: [1, 1.1, 1],
-									}}
-									transition={{ duration: 4, repeat: Infinity }}
-									className="text-6xl">
-									<Image
-										src="/images/logo.png"
-										alt="Logo"
-										width={100}
-										height={100}
-									/>
+									initial={{ scale: 0 }}
+									animate={{ scale: 1 }}
+									transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+									className="flex items-center gap-3 justify-center mb-3">
+									<motion.div
+										animate={{
+											rotate: [0, 10, -10, 0],
+											scale: [1, 1.1, 1],
+										}}
+										transition={{ duration: 4, repeat: Infinity }}
+										className="text-6xl">
+										<Image
+											src="/images/logo.png"
+											alt="Logo"
+											width={100}
+											height={100}
+										/>
+									</motion.div>
+									<div className="text-left">
+										<h1 className="text-4xl font-bold text-indigo-400 leading-tight">
+											Bookmark
+										</h1>
+										<h1 className="text-4xl font-bold text-indigo-400 leading-tight">
+											Manager
+										</h1>
+									</div>
 								</motion.div>
-								<div className="text-left">
-									<h1 className="text-4xl font-bold text-indigo-400 leading-tight">
-										Bookmark
-									</h1>
-									<h1 className="text-4xl font-bold text-indigo-400 leading-tight">
-										Manager
-									</h1>
-								</div>
+
+								<motion.p
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ delay: 0.6 }}
+									className="text-lg text-gray-300 mb-5 max-w-2xl mx-auto leading-relaxed">
+									Simpan, kelola, dan temukan kembali link penting Anda dengan
+									<span className="text-indigo-400 font-semibold"> mudah</span>
+								</motion.p>
+
+								<motion.div
+									initial={{ opacity: 0, y: 20 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: 0.8 }}
+									className="flex flex-col sm:flex-row gap-1 justify-center">
+									<Link
+										href="/bookmarks"
+										onClick={handleStartNow}
+										className="group relative">
+										<motion.div
+											whileHover={{ scale: 1.05 }}
+											whileTap={{ scale: 0.95 }}
+											className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 flex items-center justify-center gap-2 w-full sm:w-auto">
+											<BookmarkIcon className="w-5 h-5 flex-shrink-0" />
+											<ShinyText
+												text="Mulai Sekarang"
+												disabled={false}
+												speed={5}
+												className="font-semibold whitespace-nowrap"
+											/>
+											<RocketLaunchIcon className="w-5 h-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+										</motion.div>
+									</Link>
+								</motion.div>
 							</motion.div>
 
-							<motion.p
+							{/* Recent Bookmarks Marquee */}
+							{user && <MoveCard />}
+
+							{!user && (
+								<section className="mt-4">
+									{/* moved up a bit */}
+									{guestSection}
+								</section>
+							)}
+							{/* Call to Action */}
+							<motion.div
 								initial={{ opacity: 0 }}
 								animate={{ opacity: 1 }}
-								transition={{ delay: 0.6 }}
-								className="text-lg text-gray-300 mb-5 max-w-2xl mx-auto leading-relaxed">
-								Simpan, kelola, dan temukan kembali link penting Anda dengan
-								<span className="text-indigo-400 font-semibold"> mudah</span>
-							</motion.p>
-
-							<motion.div
-								initial={{ opacity: 0, y: 20 }}
-								animate={{ opacity: 1, y: 0 }}
 								transition={{ delay: 0.8 }}
-								className="flex flex-col sm:flex-row gap-1 justify-center">
-								<Link
-									href="/bookmarks"
-									onClick={handleStartNow}
-									className="group relative">
-									<motion.div
-										whileHover={{ scale: 1.05 }}
-										whileTap={{ scale: 0.95 }}
-										className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 flex items-center justify-center gap-2 w-full sm:w-auto">
-										<BookmarkIcon className="w-5 h-5 flex-shrink-0" />
-										<ShinyText
-											text="Mulai Sekarang"
-											disabled={false}
-											speed={5}
-											className="font-semibold whitespace-nowrap"
-										/>
-										<RocketLaunchIcon className="w-5 h-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
-									</motion.div>
-								</Link>
+								className="text-center mt-2">
+								<div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
+									<SparklesIcon className="w-5 h-5 text-indigo-400" />
+									<span>Made with ❤️ | by @frenzehiga_</span>
+									<SparklesIcon className="w-5 h-5 text-indigo-400" />
+								</div>
 							</motion.div>
-						</motion.div>
-
-						{/* Recent Bookmarks Marquee */}
-						<MoveCard />
-						{/* Call to Action */}
-						<motion.div
-							initial={{ opacity: 0 }}
-							animate={{ opacity: 1 }}
-							transition={{ delay: 0.8 }}
-							className="text-center mt-2">
-							<div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
-								<SparklesIcon className="w-5 h-5 text-indigo-400" />
-								<span>Made with ❤️ | by @frenzehiga_</span>
-								<SparklesIcon className="w-5 h-5 text-indigo-400" />
-							</div>
-						</motion.div>
-					</>
+						</>
+					)}
 					{/* )} */}
 				</div>
 			</div>

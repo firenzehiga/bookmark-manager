@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { createPortal } from "react-dom";
 import { Bookmark, BOOKMARK_CATEGORIES } from "@/types/bookmark";
 import {
 	ArrowTopRightOnSquareIcon,
@@ -9,10 +10,11 @@ import {
 	EyeIcon,
 	XMarkIcon,
 } from "@heroicons/react/24/outline";
-import { HeartIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
+import EditBookmarkModal from "./EditBookmarkModal";
+import { useUpdateBookmark } from "@/hooks/useBookmarks";
 
 interface BookmarkCardProps {
 	bookmark: Bookmark;
@@ -22,8 +24,28 @@ interface BookmarkCardProps {
 
 export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 	const { user } = useAuth();
-	const [isLiked, setIsLiked] = useState(false);
+	// removed favorites feature: isLiked state removed
 	const [showPreview, setShowPreview] = useState(false);
+	const [showMenu, setShowMenu] = useState<boolean>(false);
+	const [showEdit, setShowEdit] = useState(false);
+	const update = useUpdateBookmark();
+
+	// Close this card's edit modal when another card opens its edit modal
+	useEffect(() => {
+		const handler = (e: Event) => {
+			try {
+				const detail = (e as CustomEvent).detail as number | undefined;
+				if (detail !== undefined && detail !== bookmark.id) {
+					setShowEdit(false);
+				}
+			} catch {}
+		};
+		window.addEventListener("bm:open-edit", handler as EventListener);
+		return () =>
+			window.removeEventListener("bm:open-edit", handler as EventListener);
+	}, [bookmark.id]);
+
+	// favorites removed: no local favorite state
 
 	const formatDate = (dateString: string) => {
 		const date = new Date(dateString);
@@ -77,6 +99,15 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 						className="text-xl font-bold text-white mb-2 line-clamp-2 group-hover:text-indigo-300 transition-colors"
 						whileHover={{ scale: 1.01 }}>
 						{bookmark.title}
+						{/* Visibility badge */}
+						<span
+							className={`ml-3 inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${
+								bookmark.is_public
+									? "bg-green-600 text-white"
+									: "bg-gray-700 text-gray-200"
+							}`}>
+							{bookmark.is_public ? "Public" : "Private"}
+						</span>
 					</motion.h3>
 
 					<div className="flex items-center gap-2 text-sm text-gray-400 mb-3">
@@ -91,48 +122,97 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 					</div>
 				</div>
 
-				{/* Action Buttons */}
-				<div className="flex items-center gap-1 flex-shrink-0 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-gray-800/80 sm:bg-transparent backdrop-blur-sm sm:backdrop-blur-none rounded-lg sm:rounded-none p-1 sm:p-0">
-					<motion.button
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						onClick={() => setIsLiked(!isLiked)}
-						className={`p-2 sm:p-2 rounded-full transition-colors ${
-							isLiked
-								? "text-red-500 bg-red-500/20"
-								: "text-gray-400 hover:text-red-400"
-						}`}>
-						<HeartIcon
-							className={`w-5 h-5 sm:w-4 sm:h-4 ${
-								isLiked ? "fill-current" : ""
-							}`}
-						/>
-					</motion.button>
+				{/* Compact action menu */}
+				<div className="relative flex-shrink-0">
+					<button
+						onClick={() => setShowMenu((s) => !s)}
+						className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-gray-800/60 transition-colors"
+						title="Actions">
+						{/* three-dot vertical icon */}
+						<span className="inline-block w-1.5 h-1.5 bg-current rounded-full" />
+						<span className="inline-block w-1.5 h-1.5 bg-current rounded-full mx-0.5" />
+						<span className="inline-block w-1.5 h-1.5 bg-current rounded-full" />
+					</button>
 
-					<motion.button
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						onClick={() => setShowPreview(true)}
-						className="p-2 sm:p-2 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-indigo-400/20 transition-colors"
-						title="Preview">
-						<EyeIcon className="w-5 h-5 sm:w-4 sm:h-4" />
-					</motion.button>
+					{showMenu && (
+						<div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-50 overflow-hidden">
+							{/* Favorite removed */}
 
-					<motion.button
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						onClick={handleVisit}
-						className="p-2 sm:p-2 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-indigo-400/20 transition-colors">
-						<ArrowTopRightOnSquareIcon className="w-5 h-5 sm:w-4 sm:h-4" />
-					</motion.button>
+							<button
+								className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 flex items-center gap-2"
+								onClick={() => {
+									// notify other cards to close their edit modal first
+									const ev = new CustomEvent("bm:open-edit", {
+										detail: bookmark.id,
+									});
+									window.dispatchEvent(ev);
+									setShowEdit(true);
+									setShowMenu(false);
+								}}>
+								<ClockIcon className="w-4 h-4 text-gray-400" />
+								<span>Edit</span>
+							</button>
 
-					<motion.button
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						onClick={handleDelete}
-						className="p-2 sm:p-2 rounded-full text-gray-400 hover:text-red-400 hover:bg-red-400/20 transition-colors">
-						<TrashIcon className="w-5 h-5 sm:w-4 sm:h-4" />
-					</motion.button>
+							<button
+								className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 flex items-center gap-2"
+								onClick={async () => {
+									if (!user || bookmark.user_id !== user.id) {
+										toast.error("Tidak punya akses");
+										setShowMenu(false);
+										return;
+									}
+									try {
+										await update.mutateAsync({
+											id: bookmark.id,
+											updates: { is_public: !Boolean(bookmark.is_public) },
+										});
+										const nowPublic = !Boolean(bookmark.is_public);
+										toast.success(nowPublic ? "Now Public" : "Now Private");
+									} catch (err) {
+										console.error("Update toggle error:", err);
+										const msg =
+											(err as any)?.message ||
+											(err as any)?.error ||
+											JSON.stringify(err);
+										toast.error(`Gagal memperbarui visibility: ${msg}`);
+									}
+									setShowMenu(false);
+								}}>
+								<EyeIcon className="w-4 h-4 text-gray-400" />
+								<span>{bookmark.is_public ? "Set Private" : "Set Public"}</span>
+							</button>
+
+							<button
+								className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 flex items-center gap-2"
+								onClick={() => {
+									setShowPreview(true);
+									setShowMenu(false);
+								}}>
+								<EyeIcon className="w-4 h-4 text-gray-400" />
+								<span>Preview</span>
+							</button>
+
+							<button
+								className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 flex items-center gap-2"
+								onClick={() => {
+									handleVisit();
+									setShowMenu(false);
+								}}>
+								<ArrowTopRightOnSquareIcon className="w-4 h-4 text-gray-400" />
+								<span>Open</span>
+							</button>
+
+							<button
+								className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-800/20 flex items-center gap-2"
+								onClick={() => {
+									handleDelete();
+									setShowMenu(false);
+								}}>
+								<TrashIcon className="w-4 h-4" />
+								<span>Delete</span>
+							</button>
+						</div>
+					)}
 				</div>
 			</div>
 
@@ -190,50 +270,65 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 			{/* Hover Effect Overlay */}
 			<div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
 
-			{/* Preview Modal */}
-			{showPreview && (
-				<div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-					<motion.div
-						initial={{ opacity: 0, scale: 0.9 }}
-						animate={{ opacity: 1, scale: 1 }}
-						exit={{ opacity: 0, scale: 0.9 }}
-						className="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden">
-						<div className="flex items-center justify-between p-4 border-b border-gray-700">
-							<div className="flex-1 min-w-0">
-								<h3 className="text-lg font-semibold text-white truncate">
-									{bookmark.title}
-								</h3>
-								<p className="text-sm text-gray-400 truncate">{bookmark.url}</p>
-							</div>
-							<button
-								onClick={() => setShowPreview(false)}
-								className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all flex-shrink-0 ml-4">
-								<XMarkIcon className="w-5 h-5" />
-							</button>
-						</div>
-						<div className="p-4">
-							<div className="mb-3 flex items-center gap-2 justify-between">
-								<span className="text-sm text-gray-400 truncate flex-1">
-									Preview: {bookmark.url}
-								</span>
-								<a
-									href={bookmark.url}
-									target="_blank"
-									rel="noopener noreferrer"
-									className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1 flex-shrink-0">
-									<ArrowTopRightOnSquareIcon className="w-4 h-4" />
-									Buka di tab baru
-								</a>
-							</div>
-							<iframe
-								src={bookmark.url}
-								className="w-full h-96 rounded-lg border border-gray-600"
-								title={`Preview: ${bookmark.title}`}
-								sandbox="allow-scripts allow-same-origin"
-							/>
-						</div>
-					</motion.div>
-				</div>
+			{/* Preview Modal (portalized) */}
+			{showPreview && typeof document !== "undefined"
+				? createPortal(
+						<div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+							<motion.div
+								initial={{ opacity: 0, scale: 0.9 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0.9 }}
+								className="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+								<div className="flex items-center justify-between p-4 border-b border-gray-700">
+									<div className="flex-1 min-w-0">
+										<h3 className="text-lg font-semibold text-white truncate">
+											{bookmark.title}
+										</h3>
+										<p className="text-sm text-gray-400 truncate">
+											{bookmark.url}
+										</p>
+									</div>
+									<button
+										onClick={() => setShowPreview(false)}
+										className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all flex-shrink-0 ml-4">
+										<XMarkIcon className="w-5 h-5" />
+									</button>
+								</div>
+								<div className="p-4">
+									<div className="mb-3 flex items-center gap-2 justify-between">
+										<span className="text-sm text-gray-400 truncate flex-1">
+											Preview: {bookmark.url}
+										</span>
+										<a
+											href={bookmark.url}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1 flex-shrink-0">
+											<ArrowTopRightOnSquareIcon className="w-4 h-4" />
+											Buka di tab baru
+										</a>
+									</div>
+									<iframe
+										src={bookmark.url}
+										className="w-full h-96 rounded-lg border border-gray-600"
+										title={`Preview: ${bookmark.title}`}
+										sandbox="allow-scripts allow-same-origin"
+									/>
+								</div>
+							</motion.div>
+						</div>,
+						document.body
+				  )
+				: null}
+
+			{/* Edit Modal */}
+			{showEdit && (
+				<EditBookmarkModal
+					bookmark={bookmark}
+					isOpen={showEdit}
+					onClose={() => setShowEdit(false)}
+					onSaved={() => setShowEdit(false)}
+				/>
 			)}
 		</motion.div>
 	);

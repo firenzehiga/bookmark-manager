@@ -9,14 +9,14 @@ import {
 } from "@heroicons/react/24/outline";
 import BookmarkSkeleton from "@/components/skeleton/BookmarkSkeleton";
 
-interface Bookmark {
-	id: string;
-	title: string;
-	url: string;
-	description?: string;
-	tags?: string[];
-	created_at: string;
-	user_id: string;
+import { Bookmark } from "@/types/bookmark";
+
+interface MoveCardProps {
+	data?: Bookmark[];
+	title?: string;
+	categoryFilter?: string[] | null;
+	excludeUserId?: string | null | number;
+	limit?: number;
 }
 
 const BookmarkCard = ({
@@ -106,12 +106,38 @@ const BookmarkCard = ({
 	);
 };
 
-export function MoveCard() {
-	const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
-	const [loading, setLoading] = useState(true);
+export function MoveCard({
+	data,
+	title = "Recent Bookmarks",
+	categoryFilter = null,
+	excludeUserId = null,
+	limit = 10,
+}: MoveCardProps) {
+	const [bookmarks, setBookmarks] = useState<Bookmark[]>(data || []);
+	const [loading, setLoading] = useState<boolean>(!data);
 	const { user, loading: authLoading } = useAuth(); // pastikan ada loading dari context
 
 	useEffect(() => {
+		// If external data is provided, use it and apply filters locally
+		if (data) {
+			let filtered = data;
+			if (categoryFilter && categoryFilter.length > 0) {
+				// Keep bookmarks that have at least one tag in categoryFilter (OR behavior)
+				filtered = filtered.filter((b) =>
+					(b.tags || []).some((t) => categoryFilter.includes(t))
+				);
+			}
+			if (excludeUserId != null) {
+				filtered = filtered.filter(
+					(b) => String(b.user_id) !== String(excludeUserId)
+				);
+			}
+			setBookmarks(filtered.slice(0, limit));
+			setLoading(false);
+			return;
+		}
+
+		// Otherwise, fetch for current user (original behavior)
 		const fetchRecentBookmarks = async () => {
 			if (authLoading) return; // tunggu auth selesai
 			if (!user) {
@@ -121,15 +147,15 @@ export function MoveCard() {
 			}
 
 			try {
-				const { data, error } = await supabase
+				const { data: fetched, error } = await supabase
 					.from("bookmarks")
 					.select("*")
 					.eq("user_id", user.id)
 					.order("created_at", { ascending: false })
-					.limit(10);
+					.limit(limit);
 
 				if (error) throw error;
-				setBookmarks(data || []);
+				setBookmarks((fetched as Bookmark[]) || []);
 			} catch (error) {
 				console.error("Error fetching bookmarks:", error);
 			} finally {
@@ -138,18 +164,20 @@ export function MoveCard() {
 		};
 
 		fetchRecentBookmarks();
-	}, [user, authLoading]);
+	}, [data, categoryFilter, excludeUserId, limit, user, authLoading]);
 
 	return (
 		<div className="relative flex w-full flex-col items-center justify-center overflow-hidden rounded-2xl">
 			<div className="text-center mb-8">
 				<h2 className="text-2xl font-bold bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent mb-2">
-					Recent Bookmarks
+					{title}
 				</h2>
-				<p className="text-gray-400">Bookmark terbaru yang Anda simpan</p>
+				<p className="text-gray-400">
+					{data ? "Bookmark publik" : "Bookmark terbaru yang Anda simpan"}
+				</p>
 			</div>
 			<div
-				className="relative w-full flex justify-center min-h-[180px]" // min height biar stabil
+				className="relative w-full flex justify-center min-h-[180px]"
 				style={{
 					maskImage:
 						"linear-gradient(to right, transparent 0%, rgba(0,0,0,0.2) 5%, black 15%, black 85%, rgba(0,0,0,0.2) 95%, transparent 100%)",
@@ -162,18 +190,21 @@ export function MoveCard() {
 							<BookmarkSkeleton key={i} />
 						))}
 					</Marquee>
-				) : !user ? (
+				) : !data && !user ? (
 					<div className="w-72 flex items-center justify-center text-gray-400 text-center mx-auto">
 						Silakan login untuk melihat bookmark terbaru Anda.
 					</div>
-				) : user && bookmarks.length === 0 ? (
+				) : bookmarks.length === 0 ? (
 					<div className="w-72 flex items-center justify-center text-gray-400 text-center mx-auto">
-						Belum ada bookmark. Mulai simpan link favorit Anda!
+						{data
+							? "Tidak ada public bookmarks untuk kategori ini."
+							: "Belum ada bookmark. Mulai simpan link favorit Anda!"}
 					</div>
 				) : (
 					<Marquee pauseOnHover className="[--duration:60s]">
 						{bookmarks.map((bookmark) => (
-							<BookmarkCard key={bookmark.id} {...bookmark} />
+							// BookmarkCard expects specific props; spread works if shapes align
+							<BookmarkCard key={String(bookmark.id)} {...(bookmark as any)} />
 						))}
 					</Marquee>
 				)}

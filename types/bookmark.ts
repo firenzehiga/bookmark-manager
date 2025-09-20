@@ -4,6 +4,7 @@ export interface Bookmark {
   url: string;
   description?: string;
   tags?: string[];
+  is_public?: boolean;
   created_at: string;
   user_id: string; // Add user_id field
 }
@@ -13,6 +14,7 @@ export interface BookmarkFormData {
   url: string;
   description: string;
   tags: string[];
+  is_public?: boolean;
 }
 
 export const BOOKMARK_CATEGORIES = [

@@ -4,52 +4,54 @@ import { useState, useMemo } from "react";
 import { BookmarkCard } from "./BookmarkCard";
 import { BookmarkFilter } from "./BookmarkFilter";
 import { useBookmarks, useDeleteBookmark } from "@/hooks/useBookmarks";
-import {motion} from "framer-motion";
+import { motion } from "framer-motion";
 
 export function BookmarksList() {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedCategory, setSelectedCategory] = useState<string>("all");
 	const [visibleData, setVisibleData] = useState(6); // State to control how many bookmarks to show
-	
+	// favorites feature removed
 
 	// ✅ Use React Query hooks
 	const { data: bookmarks = [], isLoading, error } = useBookmarks();
 	const deleteBookmarkMutation = useDeleteBookmark();
-	
+
 	// ✅ Memoized filtered bookmarks for performance
 	const filteredBookmarks = useMemo(() => {
 		let filtered = bookmarks;
-		
+
 		// Filter berdasarkan search query
 		if (searchQuery) {
 			filtered = filtered.filter(
 				(bookmark) =>
 					bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				bookmark.description
-				?.toLowerCase()
-				.includes(searchQuery.toLowerCase()) ||
-				bookmark.url.toLowerCase().includes(searchQuery.toLowerCase())
+					bookmark.description
+						?.toLowerCase()
+						.includes(searchQuery.toLowerCase()) ||
+					bookmark.url.toLowerCase().includes(searchQuery.toLowerCase())
 			);
 		}
-		
+
 		// Filter berdasarkan kategori
 		if (selectedCategory !== "all") {
 			filtered = filtered.filter((bookmark) =>
 				bookmark.tags?.includes(selectedCategory)
-		);
-	}
-	
-	return filtered;
-}, [bookmarks, searchQuery, selectedCategory]);
+			);
+		}
 
-const showMore = () => {
-	setVisibleData(bookmarks.length); // Increase by 6 each time
-}
+		// no favorites filtering
 
-const showLess = () => {
-	setVisibleData(6); // Reset to initial 6 bookmarks
-}
-const handleDelete = async (id: number) => {
+		return filtered;
+	}, [bookmarks, searchQuery, selectedCategory]);
+
+	const showMore = () => {
+		setVisibleData(bookmarks.length); // Increase by 6 each time
+	};
+
+	const showLess = () => {
+		setVisibleData(6); // Reset to initial 6 bookmarks
+	};
+	const handleDelete = async (id: number) => {
 		deleteBookmarkMutation.mutate(id);
 	};
 
@@ -76,8 +78,12 @@ const handleDelete = async (id: number) => {
 		return (
 			<div className="flex flex-col items-center justify-center py-16">
 				<div className="text-6xl mb-4 opacity-20">❌</div>
-				<h3 className="text-xl font-bold text-gray-300 mb-2">Gagal memuat bookmark</h3>
-				<p className="text-gray-500">Coba refresh halaman atau cek koneksi internet</p>
+				<h3 className="text-xl font-bold text-gray-300 mb-2">
+					Gagal memuat bookmark
+				</h3>
+				<p className="text-gray-500">
+					Coba refresh halaman atau cek koneksi internet
+				</p>
 			</div>
 		);
 	}
@@ -94,6 +100,8 @@ const handleDelete = async (id: number) => {
 				onSearchChange={setSearchQuery}
 				onCategoryChange={setSelectedCategory}
 			/>
+
+			{/* Favorites feature removed */}
 
 			{/* Bookmarks Grid */}
 			<div className="space-y-4">
