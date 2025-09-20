@@ -67,7 +67,7 @@ export default function BookmarksPage() {
 								Kembali ke Home
 							</Link>
 							<Link
-								href="/bookmarks/table"
+								href="/table"
 								className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all">
 								<TableCellsIcon className="w-5 h-5" />
 								Table View

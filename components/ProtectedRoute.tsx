@@ -30,7 +30,7 @@ export function ProtectedRoute({
 	// Show loading only briefly
 	if (loading) {
 		return (
-			<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-600">
+			<div className="min-h-screen flex items-center justify-center bg-gradient-to-br  from-slate-900 via-purple-900 to-slate-900">
 				<div className="text-center">
 					<motion.div
 						animate={{ rotate: 360 }}
@@ -50,7 +50,7 @@ export function ProtectedRoute({
 	if (!user) {
 		return (
 			fallback || (
-				<div className="min-h-screen flex items-center justify-center bg-gray-900">
+				<div className="min-h-screen flex items-center justify-center bg-gradient-to-br  from-slate-900 via-purple-900 to-slate-900">
 					<div className="text-center max-w-md mx-auto p-6">
 						<div className="text-6xl mb-4">🔒</div>
 						<h2 className="text-2xl font-bold text-white mb-2">
