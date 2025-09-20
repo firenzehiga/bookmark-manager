@@ -24,36 +24,36 @@ export function AuthButton() {
 	}, [loading, user]);
 
 	const handleSignOut = async () => {
-		const result = await Swal.fire({
-			title: "Want to Sign Out?",
-			width: 330,
-			showCancelButton: true,
-			confirmButtonText: "Yes, sign out",
-			cancelButtonText: "Cancel",
-			reverseButtons: true,
-			backdrop: `
-				url("/images/nyan-cat.gif")
-				right 65rem bottom 20rem
-				no-repeat
-			`,
-			customClass: {
-				container: "swal-custom-backdrop",
-			},
-		});
+		// const result = await Swal.fire({
+		// 	title: "Want to Sign Out?",
+		// 	width: 330,
+		// 	showCancelButton: true,
+		// 	confirmButtonText: "Yes, sign out",
+		// 	cancelButtonText: "Cancel",
+		// 	reverseButtons: true,
+		// 	backdrop: `
+		// 		url("/images/nyan-cat.gif")
+		// 		right 65rem bottom 20rem
+		// 		no-repeat
+		// 	`,
+		// 	customClass: {
+		// 		container: "swal-custom-backdrop",
+		// 	},
+		// });
 
-		if (result.isConfirmed) {
-			try {
-				setIsSigningOut(true);
-				setIsProfileOpen(false);
+		// if (result.isConfirmed) {
+		try {
+			setIsSigningOut(true);
+			setIsProfileOpen(false);
 
-				// Tambahkan delay kecil untuk animasi
-				await new Promise((resolve) => setTimeout(resolve, 500));
-				await signOut();
-			} catch (error) {
-				console.error("Error signing out:", error);
-				setIsSigningOut(false);
-			}
+			// Tambahkan delay kecil untuk animasi
+			await new Promise((resolve) => setTimeout(resolve, 500));
+			await signOut();
+		} catch (error) {
+			console.error("Error signing out:", error);
+			setIsSigningOut(false);
 		}
+		// }
 	};
 
 	// Only show loading spinner saat isSigningOut, bukan saat initial loading
