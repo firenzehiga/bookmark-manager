@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookmarksList } from "@/components/BookmarksList";
-import { AddBookmarkForm } from "@/components/AddBookmarkForm";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import { ImportExportModal } from "@/components/ImportExportModal";
+import { BookmarksList } from "@/components/features/bookmark/BookmarksList";
+import { AddBookmarkForm } from "@/components/features/bookmark/AddBookmarkForm";
+import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
+import { ImportExportModal } from "@/components/shared/ui/ImportExportModal";
 import {
 	BookmarkIcon,
 	PlusIcon,

@@ -7,7 +7,7 @@ import { PlusIcon, BookmarkIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreateBookmark } from "@/hooks/useBookmarks";
 import toast from "react-hot-toast";
-import { CategorySelector } from "./CategorySelector";
+import { CategorySelector } from "@/components/shared/CategorySelector";
 import Switch from "@mui/material/Switch";
 export function QuickAddBookmark() {
 	const [isOpen, setIsOpen] = useState(false);

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { Bookmark } from "@/types/bookmark";
-import { CategorySelector } from "./CategorySelector";
+import { CategorySelector } from "../../shared/CategorySelector";
 import { useUpdateBookmark } from "@/hooks/useBookmarks";
 import Switch from "@mui/material/Switch";
 import toast from "react-hot-toast";

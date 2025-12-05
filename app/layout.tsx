@@ -1,9 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import { ToastProvider } from "@/components/ToastProvider";
+import { ToastProvider } from "@/components/shared/ui/ToastProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { QueryProvider } from "@/providers/QueryProvider";
-import { AuthButton } from "@/components/AuthButton";
-import { QuickAddBookmark } from "@/components/QuickAddBookmark";
+import { AuthButton } from "@/components/shared/AuthButton";
+import { QuickAddBookmark } from "@/components/shared/QuickAddBookmark";
 import "./globals.css";
 
 const geistSans = Geist({

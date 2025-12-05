@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Marquee } from "@/components/magicui/marquee";
+import { Marquee } from "@/components/shared/ui/marquee";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/contexts/AuthContext";
@@ -7,7 +7,7 @@ import {
 	ArrowTopRightOnSquareIcon,
 	CalendarIcon,
 } from "@heroicons/react/24/outline";
-import BookmarkSkeleton from "@/components/skeleton/BookmarkSkeleton";
+import BookmarkSkeleton from "@/components/shared/skeleton/BookmarkSkeleton";
 
 import { Bookmark } from "@/types/bookmark";
 

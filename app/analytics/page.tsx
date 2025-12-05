@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabaseClient";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import {
 	ChartBarIcon,
 	BookmarkIcon,
@@ -14,16 +14,9 @@ import {
 	ArrowTrendingUpIcon,
 } from "@heroicons/react/24/outline";
 import { ArrowLeftCircleIcon } from "lucide-react";
+import { AnalyticsData } from "@/types/analytics";
 
-import AnalyticSkeleton from "@/components/skeleton/AnalyticSkeleton";
-
-interface AnalyticsData {
-	totalBookmarks: number;
-	bookmarksThisMonth: number;
-	topTags: Array<{ tag: string; count: number }>;
-	monthlyStats: Array<{ month: string; count: number }>;
-	topDomains: Array<{ domain: string; count: number }>;
-}
+import AnalyticSkeleton from "@/components/shared/skeleton/AnalyticSkeleton";
 
 export default function AnalyticsPage() {
 	const { user } = useAuth();

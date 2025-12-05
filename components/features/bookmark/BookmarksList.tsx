@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { BookmarkCard } from "./BookmarkCard";
-import { BookmarkFilter } from "./BookmarkFilter";
+import { BookmarkFilter } from "../../shared/ui/BookmarkFilter";
 import { useBookmarks, useDeleteBookmark } from "@/hooks/useBookmarks";
 import { motion } from "framer-motion";
 

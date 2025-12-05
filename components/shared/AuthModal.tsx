@@ -11,7 +11,7 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 import { Loader2 } from "lucide-react";
-import GoogleSignButton from "./button/GoogleSignButton";
+import GoogleSignButton from "./GoogleSignButton";
 
 interface AuthModalProps {
 	isOpen: boolean;

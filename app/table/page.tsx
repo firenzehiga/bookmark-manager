@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import { Bookmark, BOOKMARK_CATEGORIES } from "@/types/bookmark";
 import {
 	MagnifyingGlassIcon,
@@ -15,7 +15,7 @@ import {
 	XMarkIcon,
 	ArrowPathIcon,
 } from "@heroicons/react/24/outline";
-import TableSkeleton from "@/components/skeleton/TableSkeleton";
+import TableSkeleton from "@/components/shared/skeleton/TableSkeleton";
 import { ArrowLeftCircleIcon } from "lucide-react";
 import {
 	useBookmarks,
@@ -33,8 +33,6 @@ export default function BookmarksTablePage() {
 	const { data: bookmarks = [], isLoading, isFetching } = useBookmarks();
 	const deleteBookmark = useDeleteBookmark();
 	const refreshBookmarks = useRefreshBookmarks();
-
-
 
 	useEffect(() => {
 		let filtered = bookmarks;
@@ -81,7 +79,7 @@ export default function BookmarksTablePage() {
 
 			// console.log("✅ Refresh completed");
 			toast.success("🔄 Data bookmark diperbarui!");
-		} catch  {
+		} catch {
 			// console.error("❌ Error refreshing bookmarks:", error);
 			toast.error("❌ Gagal memperbarui data");
 		}

@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { supabase } from "@/lib/supabaseClient";
 import { BookmarkFormData } from "@/types/bookmark";
-import { CategorySelector } from "./CategorySelector";
+import { CategorySelector } from "../../shared/CategorySelector";
 import { useAuth } from "@/contexts/AuthContext";
 import {
 	PlusIcon,

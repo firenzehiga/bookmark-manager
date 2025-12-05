@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { MoveCard } from "@/components/MoveCard";
+import { MoveCard } from "@/components/shared/ui/MoveCard";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -9,16 +9,16 @@ import {
 	SparklesIcon,
 	RocketLaunchIcon,
 } from "@heroicons/react/24/outline";
-import ShinyText from "@/components/ShinyText";
+import ShinyText from "@/components/shared/ui/ShinyText";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Bookmark } from "@/types/bookmark";
 import { useAuth } from "@/contexts/AuthContext";
-import { AuthModal } from "@/components/AuthModal";
+import { AuthModal } from "@/components/shared/AuthModal";
 import Image from "next/image";
-import SquaresEnhanced from "@/components/Squares";
+import SquaresEnhanced from "@/components/shared/ui/Squares";
 import { usePublicBookmarks, useBookmarks } from "@/hooks/useBookmarks";
-import { CategorySelector } from "@/components/CategorySelector";
+import { CategorySelector } from "@/components/shared/CategorySelector";
 export default function Home() {
 	const [recentBookmarks, setRecentBookmarks] = useState<Bookmark[]>([]);
 	const [isLoading, setIsLoading] = useState(true);
