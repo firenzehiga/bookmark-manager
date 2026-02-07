@@ -10,10 +10,7 @@ import toast from "react-hot-toast";
 interface AuthContextType {
 	user: User | null;
 	loading: boolean;
-	signUp: (
-		email: string,
-		password: string
-	) => Promise<{ needsVerification: boolean }>;
+	signUp: (email: string, password: string) => Promise<void>;
 	signIn: (email: string, password: string) => Promise<void>;
 	signInWithGoogle: () => Promise<void>;
 	signOut: () => Promise<void>;
@@ -36,7 +33,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				const {
 					data: { session },
 				} = await supabase.auth.getSession();
-				
+
 				if (session) {
 					setUser(session.user);
 					hasInitialized.current = true;
@@ -52,11 +49,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			} catch (error) {
 				console.error("Error getting session:", error);
 			} finally {
-				// Set loading to false after a short delay to ensure smooth transitions
-				setTimeout(() => {
-					setLoading(false);
-					hasInitialized.current = true;
-				}, 300);
+				// Set loading to false immediately
+				setLoading(false);
+				hasInitialized.current = true;
 			}
 		};
 
@@ -66,7 +61,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		const {
 			data: { subscription },
 		} = supabase.auth.onAuthStateChange(async (event, session) => {
-			console.log("Auth event:", event, "Initialized:", hasInitialized.current);
 
 			const now = Date.now();
 			const timeSinceLastEvent = now - authEventTime.current;
@@ -91,28 +85,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				lastAuthEvent.current = event;
 				authEventTime.current = now;
 			}
-			
-			// Set loading to false after auth events
+
+			// Set loading to false immediately for smooth transitions
 			if (event === "SIGNED_IN" || event === "SIGNED_OUT") {
-				setTimeout(() => {
-					setLoading(false);
-				}, 300);
+				setLoading(false);
 			}
 		});
 
 		return () => subscription.unsubscribe();
 	}, []);
 
+
+
 	const signUp = async (email: string, password: string) => {
-		const { data, error } = await supabase.auth.signUp({
+		const { error } = await supabase.auth.signUp({
 			email,
 			password,
 			options: {
-				emailRedirectTo: `${
-					process.env.NODE_ENV === "production"
-						? "https://bookmark-manager-neon.vercel.app"
-						: window.location.origin
-				}/auth/callback`,
+				emailRedirectTo: `${window.location.origin}/auth/callback`,
 			},
 		});
 
@@ -120,13 +110,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 			console.error("Sign up error:", error);
 			throw error;
 		}
-
-		// Jika email confirmation diperlukan
-		if (data.user && !data.session) {
-			return { needsVerification: true };
-		}
-
-		return { needsVerification: false };
 	};
 
 	const signIn = async (email: string, password: string) => {
@@ -145,7 +128,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		try {
 			// Gunakan URL lengkap untuk redirect
 			const redirectTo = `${window.location.origin}/auth/callback`;
-			
+
 			const { error } = await supabase.auth.signInWithOAuth({
 				provider: "google",
 				options: {
@@ -159,7 +142,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				console.error("Google sign in error:", error);
 				throw error;
 			}
-			
+
 			// Jika berhasil, pengguna akan diarahkan ke halaman Google untuk login
 			// Setelah login, mereka akan diarahkan kembali ke /auth/callback
 			return;
@@ -173,7 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		try {
 			// Clear user state immediately for better UX
 			setUser(null);
-			
+
 			// Clear cached data
 			if (typeof window !== "undefined") {
 				localStorage.removeItem("supabase.auth.token");
