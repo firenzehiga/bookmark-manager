@@ -19,12 +19,18 @@ export const bookmarkKeys = {
 // API FUNCTIONS
 // ===============================
 const bookmarkApi = {
-  getAll: async (userId: string): Promise<Bookmark[]> => {
-    const { data, error } = await supabase
+  getAll: async (userId: string, limit?: number): Promise<Bookmark[]> => {
+    let query = supabase
       .from('bookmarks')
       .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
+
+    if (limit) {
+      query = query.limit(limit);
+    }
+
+    const { data, error } = await query;
 
     if (error) throw error;
     return data || [];
@@ -98,16 +104,15 @@ const bookmarkApi = {
  * Hook untuk fetch semua bookmarks user
  */
 
-export function useBookmarks() {
+export function useBookmarks(limit?: number, options?: { enabled?: boolean }) {
   const { user } = useAuth();
 
   return useQuery({
-    queryKey: bookmarkKeys.list(user?.id || ''),
-    queryFn: () => bookmarkApi.getAll(user!.id),
-    enabled: !!user,
+    queryKey: [...bookmarkKeys.list(user?.id || ''), limit].filter(Boolean),
+    queryFn: () => bookmarkApi.getAll(user!.id, limit),
+    enabled: !!user && (options?.enabled ?? true),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-  
   });
 }
 

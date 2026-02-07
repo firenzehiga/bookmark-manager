@@ -3,22 +3,29 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { PlusIcon, BookmarkIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { BookmarkIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCreateBookmark } from "@/hooks/useBookmarks";
 import toast from "react-hot-toast";
 import { CategorySelector } from "@/components/shared/CategorySelector";
 import Switch from "@mui/material/Switch";
+import { BookmarkPlusIcon } from "../ui/bookmark-plus";
+import { ClipboardCheck, ClipboardPaste } from "lucide-react";
+import { ClipboardCheckIcon } from "../ui/clipboard-check";
 export function QuickAddBookmark() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [url, setUrl] = useState("");
 	const [title, setTitle] = useState("");
 	const [selectedTags, setSelectedTags] = useState<string[]>([]);
 	const [isPublic, setIsPublic] = useState(false);
-	const { user } = useAuth();
+	const { user, loading } = useAuth();
+	const [isPasted, setIsPasted] = useState(false);
 
 	// ✅ Use React Query mutation
 	const createBookmarkMutation = useCreateBookmark();
+
+	if (loading) return null;
+	if (!user) return null;
 
 	const extractTitle = async (url: string) => {
 		try {
@@ -90,6 +97,11 @@ export function QuickAddBookmark() {
 			const text = await navigator.clipboard.readText();
 			if (text.startsWith("http")) {
 				setUrl(text);
+
+				// Set pasted state for feedback
+				setIsPasted(true);
+				setTimeout(() => setIsPasted(false), 2000);
+
 				// Auto-extract title when URL is pasted
 				if (!title.trim()) {
 					const extractedTitle = await extractTitle(text);
@@ -112,8 +124,9 @@ export function QuickAddBookmark() {
 					{/* Floating Action Button */}
 					<button
 						onClick={() => setIsOpen(true)}
+						title="Add Bookmark"
 						className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-transform duration-150">
-						<PlusIcon className="w-6 h-6" />
+						<BookmarkPlusIcon size={27} />
 					</button>
 				</motion.div>
 			</AnimatePresence>
@@ -199,8 +212,16 @@ export function QuickAddBookmark() {
 									<button
 										type="button"
 										onClick={handlePasteFromClipboard}
-										className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors text-sm">
-										📋 Paste
+										className="flex items-center gap-2 px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors text-sm">
+										{isPasted ? (
+											<>
+												<ClipboardCheck size={16} /> Pasted!
+											</>
+										) : (
+											<>
+												<ClipboardPaste size={16} /> Paste
+											</>
+										)}
 									</button>
 
 									<button

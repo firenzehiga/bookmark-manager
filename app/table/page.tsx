@@ -16,7 +16,7 @@ import {
 	ArrowPathIcon,
 } from "@heroicons/react/24/outline";
 import TableSkeleton from "@/components/shared/skeleton/TableSkeleton";
-import { ArrowLeftCircleIcon } from "lucide-react";
+import { ArrowLeftCircleIcon, DatabaseBackup, Table } from "lucide-react";
 import {
 	useBookmarks,
 	useDeleteBookmark,
@@ -69,16 +69,13 @@ export default function BookmarksTablePage() {
 
 	// ✅ Fungsi untuk refresh manual
 	const handleRefresh = async () => {
-		// console.log("🔄 Refresh button clicked");
-		// console.log("Current bookmarks count:", bookmarks.length);
-		// console.log("isFetching:", isFetching);
 
 		try {
 			// Invalidate cache dan trigger refetch
 			refreshBookmarks();
 
 			// console.log("✅ Refresh completed");
-			toast.success("🔄 Data bookmark diperbarui!");
+			toast.success("Data bookmark diperbarui!");
 		} catch {
 			// console.error("❌ Error refreshing bookmarks:", error);
 			toast.error("❌ Gagal memperbarui data");
@@ -119,7 +116,7 @@ export default function BookmarksTablePage() {
 						transition={{ duration: 0.6, ease: "easeOut" }}
 						className="text-center mb-8">
 						<h2 className="text-3xl font-bold text-white mb-2">
-							📊 Tabel Bookmark
+							<Table size={32} className="inline-block mr-2" /> Tabel Bookmark
 						</h2>
 						<p className="text-gray-400">
 							Kelola bookmark Anda dalam format tabel yang responsif
@@ -207,7 +204,7 @@ export default function BookmarksTablePage() {
 													return (
 														<option key={categoryId} value={categoryId}>
 															{category
-																? `${category.icon} ${category.label}`
+																? category.label
 																: categoryId}
 														</option>
 													);
@@ -231,8 +228,8 @@ export default function BookmarksTablePage() {
 												</span>
 											)}
 											{!isLoading && !isFetching && (
-												<span className="text-xs bg-green-600/20 text-green-400 px-2 py-1 rounded-full">
-													📚 Data tersimpan di cache
+												<span className="text-xs bg-green-600/20 text-green-400 px-2 py-1 rounded-full flex items-center gap-1">
+													<DatabaseBackup size={16} /> Data tersimpan di cache
 												</span>
 											)}
 											{deleteBookmark.isPending && (
@@ -293,9 +290,8 @@ export default function BookmarksTablePage() {
 															key={bookmark.id}
 															className="border-b border-gray-700/50 hover:bg-gray-800/30 transition-colors"
 															style={{
-																animation: `fadeIn 0.3s ease-out ${
-																	index * 0.05
-																}s both`,
+																animation: `fadeIn 0.3s ease-out ${index * 0.05
+																	}s both`,
 															}}>
 															{/* Title & Description */}
 															<td className="p-4">
@@ -337,7 +333,7 @@ export default function BookmarksTablePage() {
 																										borderColor: `${category.color}40`,
 																										color: category.color,
 																									}}>
-																									{category.icon}{" "}
+																									<category.icon size={16} />
 																									{category.label}
 																								</span>
 																							) : null;
@@ -380,13 +376,13 @@ export default function BookmarksTablePage() {
 																			return category ? (
 																				<span
 																					key={tagId}
-																					className="text-xs px-2 py-1 rounded-full border"
+																					className="text-xs px-2 py-1 flex items-center gap-1 rounded-full border"
 																					style={{
 																						backgroundColor: `${category.color}20`,
 																						borderColor: `${category.color}40`,
 																						color: category.color,
 																					}}>
-																					{category.icon} {category.label}
+																					<category.icon size={16} /> {category.label}
 																				</span>
 																			) : null;
 																		})}

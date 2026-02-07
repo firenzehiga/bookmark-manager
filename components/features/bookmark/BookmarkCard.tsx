@@ -38,7 +38,7 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 				if (detail !== undefined && detail !== bookmark.id) {
 					setShowEdit(false);
 				}
-			} catch {}
+			} catch { }
 		};
 		window.addEventListener("bm:open-edit", handler as EventListener);
 		return () =>
@@ -101,11 +101,10 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 						{bookmark.title}
 						{/* Visibility badge */}
 						<span
-							className={`ml-3 inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${
-								bookmark.is_public
-									? "bg-green-600 text-white"
-									: "bg-gray-700 text-gray-200"
-							}`}>
+							className={`ml-3 inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${bookmark.is_public
+								? "bg-green-600 text-white"
+								: "bg-gray-700 text-gray-200"
+								}`}>
 							{bookmark.is_public ? "Public" : "Private"}
 						</span>
 					</motion.h3>
@@ -246,7 +245,7 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 								animate={{ opacity: 1, scale: 1 }}
 								transition={{ delay: index * 0.1 + tagIndex * 0.05 }}
 								className="inline-flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-300 rounded-full text-xs border border-indigo-400/30 backdrop-blur-sm flex-shrink-0">
-								<span className="text-xs">{categoryInfo.icon}</span>
+								<categoryInfo.icon size={16} />
 								<span className="font-medium text-xs truncate max-w-20">
 									{categoryInfo.label}
 								</span>
@@ -273,52 +272,52 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 			{/* Preview Modal (portalized) */}
 			{showPreview && typeof document !== "undefined"
 				? createPortal(
-						<div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-							<motion.div
-								initial={{ opacity: 0, scale: 0.9 }}
-								animate={{ opacity: 1, scale: 1 }}
-								exit={{ opacity: 0, scale: 0.9 }}
-								className="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden">
-								<div className="flex items-center justify-between p-4 border-b border-gray-700">
-									<div className="flex-1 min-w-0">
-										<h3 className="text-lg font-semibold text-white truncate">
-											{bookmark.title}
-										</h3>
-										<p className="text-sm text-gray-400 truncate">
-											{bookmark.url}
-										</p>
-									</div>
-									<button
-										onClick={() => setShowPreview(false)}
-										className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all flex-shrink-0 ml-4">
-										<XMarkIcon className="w-5 h-5" />
-									</button>
+					<div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+						<motion.div
+							initial={{ opacity: 0, scale: 0.9 }}
+							animate={{ opacity: 1, scale: 1 }}
+							exit={{ opacity: 0, scale: 0.9 }}
+							className="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+							<div className="flex items-center justify-between p-4 border-b border-gray-700">
+								<div className="flex-1 min-w-0">
+									<h3 className="text-lg font-semibold text-white truncate">
+										{bookmark.title}
+									</h3>
+									<p className="text-sm text-gray-400 truncate">
+										{bookmark.url}
+									</p>
 								</div>
-								<div className="p-4">
-									<div className="mb-3 flex items-center gap-2 justify-between">
-										<span className="text-sm text-gray-400 truncate flex-1">
-											Preview: {bookmark.url}
-										</span>
-										<a
-											href={bookmark.url}
-											target="_blank"
-											rel="noopener noreferrer"
-											className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1 flex-shrink-0">
-											<ArrowTopRightOnSquareIcon className="w-4 h-4" />
-											Buka di tab baru
-										</a>
-									</div>
-									<iframe
-										src={bookmark.url}
-										className="w-full h-96 rounded-lg border border-gray-600"
-										title={`Preview: ${bookmark.title}`}
-										sandbox="allow-scripts allow-same-origin"
-									/>
+								<button
+									onClick={() => setShowPreview(false)}
+									className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all flex-shrink-0 ml-4">
+									<XMarkIcon className="w-5 h-5" />
+								</button>
+							</div>
+							<div className="p-4">
+								<div className="mb-3 flex items-center gap-2 justify-between">
+									<span className="text-sm text-gray-400 truncate flex-1">
+										Preview: {bookmark.url}
+									</span>
+									<a
+										href={bookmark.url}
+										target="_blank"
+										rel="noopener noreferrer"
+										className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1 flex-shrink-0">
+										<ArrowTopRightOnSquareIcon className="w-4 h-4" />
+										Buka di tab baru
+									</a>
 								</div>
-							</motion.div>
-						</div>,
-						document.body
-				  )
+								<iframe
+									src={bookmark.url}
+									className="w-full h-96 rounded-lg border border-gray-600"
+									title={`Preview: ${bookmark.title}`}
+									sandbox="allow-scripts allow-same-origin"
+								/>
+							</div>
+						</motion.div>
+					</div>,
+					document.body
+				)
 				: null}
 
 			{/* Edit Modal */}

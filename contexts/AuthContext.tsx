@@ -13,6 +13,8 @@ interface AuthContextType {
 	signUp: (email: string, password: string) => Promise<void>;
 	signIn: (email: string, password: string) => Promise<void>;
 	signInWithGoogle: () => Promise<void>;
+	resetPassword: (email: string) => Promise<void>;
+	updatePassword: (newPassword: string) => Promise<void>;
 	signOut: () => Promise<void>;
 }
 
@@ -152,6 +154,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		}
 	};
 
+	const resetPassword = async (email: string) => {
+		const { error } = await supabase.auth.resetPasswordForEmail(email, {
+			redirectTo: `${window.location.origin}/auth/callback`,
+		});
+
+		if (error) {
+			console.error("Reset password error:", error);
+			throw error;
+		}
+	};
+
+	const updatePassword = async (newPassword: string) => {
+		const { error } = await supabase.auth.updateUser({
+			password: newPassword,
+		});
+
+		if (error) {
+			console.error("Update password error:", error);
+			throw error;
+		}
+	};
+
 	const signOut = async () => {
 		try {
 			// Clear user state immediately for better UX
@@ -186,6 +210,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				signUp,
 				signIn,
 				signInWithGoogle,
+				resetPassword,
+				updatePassword,
 				signOut,
 			}}>
 			{children}

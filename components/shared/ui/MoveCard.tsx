@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Marquee } from "@/components/shared/ui/marquee";
-import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { useMemo } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
 	ArrowTopRightOnSquareIcon,
@@ -9,15 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import BookmarkSkeleton from "@/components/shared/skeleton/BookmarkSkeleton";
 
-import { Bookmark } from "@/types/bookmark";
-
-interface MoveCardProps {
-	data?: Bookmark[];
-	title?: string;
-	categoryFilter?: string[] | null;
-	excludeUserId?: string | null | number;
-	limit?: number;
-}
+import { MoveCardProps } from "@/types/bookmark";
 
 const BookmarkCard = ({
 	title,
@@ -108,63 +99,45 @@ const BookmarkCard = ({
 
 export function MoveCard({
 	data,
+	type = "user",
+	isLoading = false,
 	title = "Recent Bookmarks",
 	categoryFilter = null,
-	excludeUserId = null,
 	limit = 10,
 }: MoveCardProps) {
-	const [bookmarks, setBookmarks] = useState<Bookmark[]>(data || []);
-	const [loading, setLoading] = useState<boolean>(!data);
-	const { user, loading: authLoading } = useAuth(); // pastikan ada loading dari context
+	const { user } = useAuth();
 
-	useEffect(() => {
-		// If external data is provided, use it and apply filters locally
-		if (data) {
-			let filtered = data;
+	// Derive final bookmarks and loading state based on type and props
+	const { bookmarks, loading } = useMemo(() => {
+		// Base data from props (default to empty array)
+		let processedData = data || [];
+
+		// Case 1: Public Bookmarks - Apply additional filtering
+		if (type === "public") {
+			// Apply category filter
 			if (categoryFilter && categoryFilter.length > 0) {
-				// Keep bookmarks that have at least one tag in categoryFilter (OR behavior)
-				filtered = filtered.filter((b) =>
+				processedData = processedData.filter((b) =>
 					(b.tags || []).some((t) => categoryFilter.includes(t))
 				);
 			}
-			if (excludeUserId != null) {
-				filtered = filtered.filter(
-					(b) => String(b.user_id) !== String(excludeUserId)
+
+			// Exclude current user's bookmarks from public view (optional, but good UX)
+			if (user) {
+				processedData = processedData.filter(
+					(b) => String(b.user_id) !== String(user.id)
 				);
 			}
-			setBookmarks(filtered.slice(0, limit));
-			setLoading(false);
-			return;
 		}
 
-		// Otherwise, fetch for current user (original behavior)
-		const fetchRecentBookmarks = async () => {
-			if (authLoading) return; // tunggu auth selesai
-			if (!user) {
-				setBookmarks([]);
-				setLoading(false);
-				return;
-			}
+		// Case 2: User Bookmarks (type="user")
+		// Data is presumed to be correct user data passed from parent.
+		// We just slice it to limit if needed, though parent fetch usually handles limit.
 
-			try {
-				const { data: fetched, error } = await supabase
-					.from("bookmarks")
-					.select("*")
-					.eq("user_id", user.id)
-					.order("created_at", { ascending: false })
-					.limit(limit);
-
-				if (error) throw error;
-				setBookmarks((fetched as Bookmark[]) || []);
-			} catch (error) {
-				console.error("Error fetching bookmarks:", error);
-			} finally {
-				setLoading(false);
-			}
+		return {
+			bookmarks: processedData.slice(0, limit),
+			loading: isLoading
 		};
-
-		fetchRecentBookmarks();
-	}, [data, categoryFilter, excludeUserId, limit, user, authLoading]);
+	}, [data, type, categoryFilter, limit, isLoading, user]);
 
 	return (
 		<div className="relative flex w-full flex-col items-center justify-center overflow-hidden rounded-2xl">
@@ -173,7 +146,7 @@ export function MoveCard({
 					{title}
 				</h2>
 				<p className="text-gray-400">
-					{data ? "Bookmark publik" : "Bookmark terbaru yang Anda simpan"}
+					{type === "public" ? "Bookmark publik" : "Bookmark terbaru yang Anda simpan"}
 				</p>
 			</div>
 			<div
@@ -196,7 +169,7 @@ export function MoveCard({
 					</div>
 				) : bookmarks.length === 0 ? (
 					<div className="w-77 flex items-center relative p-2 transition-all duration-300 group rounded-xl bg-gray-900/50 justify-center text-purple-500 font-semibold text-center mx-auto">
-						{data
+						{type === "public"
 							? "Tidak ada bookmark untuk kategori ini."
 							: "Belum ada bookmark. Mulai simpan link favorit Anda!"}
 					</div>

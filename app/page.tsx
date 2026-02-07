@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { MoveCard } from "@/components/shared/ui/MoveCard";
@@ -7,94 +6,27 @@ import { motion } from "framer-motion";
 import {
 	BookmarkIcon,
 	SparklesIcon,
-	RocketLaunchIcon,
+
 } from "@heroicons/react/24/outline";
 import ShinyText from "@/components/shared/ui/ShinyText";
-import { useState, useEffect, useCallback } from "react";
-import { supabase } from "@/lib/supabaseClient";
-import { Bookmark } from "@/types/bookmark";
+import { useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { AuthModal } from "@/components/shared/AuthModal";
 import Image from "next/image";
 import SquaresEnhanced from "@/components/shared/ui/Squares";
 import { usePublicBookmarks, useBookmarks } from "@/hooks/useBookmarks";
 import { CategorySelector } from "@/components/shared/CategorySelector";
+import { RocketIcon } from "@/components/ui/rocket";
+import { HeartIcon } from "@/components/ui/heart";
 export default function Home() {
-	const [recentBookmarks, setRecentBookmarks] = useState<Bookmark[]>([]);
-	const [isLoading, setIsLoading] = useState(true);
+	// Hooks for bookmarks
 	const [showAuthModal, setShowAuthModal] = useState(false);
 	const { user, loading: authLoading } = useAuth();
-	const [lastFetchedUserId, setLastFetchedUserId] = useState<string | null>(
-		null
-	);
-	const [hasFetchedOnce, setHasFetchedOnce] = useState(false);
 
-	// Hooks for bookmarks
 	const { data: publicBookmarks, isLoading: loadingPublic } =
 		usePublicBookmarks();
-	const { data: userBookmarks, isLoading: loadingUserBookmarks } =
-		useBookmarks();
 
-	// const features = [
-	//   { icon: "📱", title: "Responsif", desc: "Bekerja di semua device" },
-	//   { icon: "🎨", title: "Modern UI", desc: "Design yang elegan dan interaktif" },
-	//   { icon: "⚡", title: "Real-time", desc: "Data tersimpan langsung di cloud" },
-	//   { icon: "🔍", title: "Pencarian", desc: "Temukan bookmark dengan mudah" },
-	// ];
-
-	const fetchRecentBookmarks = useCallback(async () => {
-		try {
-			// Only fetch if user is logged in
-			if (!user) {
-				setRecentBookmarks([]);
-				setIsLoading(false);
-				setLastFetchedUserId(null);
-				setHasFetchedOnce(false);
-				return;
-			}
-
-			// Prevent duplicate fetches for the same user
-			if (hasFetchedOnce && lastFetchedUserId === user.id) {
-				// console.log('Skipping fetch - already have data for user:', user.id);
-				setIsLoading(false);
-				return;
-			}
-
-			setIsLoading(true);
-			//   console.log('Fetching bookmarks for user:', user.id);
-
-			const { data, error } = await supabase
-				.from("bookmarks")
-				.select("*")
-				.eq("user_id", user.id) // Filter by user_id
-				.order("created_at", { ascending: false })
-				.limit(3);
-
-			//   if (error) {
-			//     console.error('Error fetching bookmarks:', error);
-			//     return;
-			//   }
-
-			//   console.log('Fetched bookmarks:', data);
-			setRecentBookmarks(data || []);
-			setLastFetchedUserId(user.id);
-			setHasFetchedOnce(true);
-		} catch (error) {
-			//   console.error('Error:', error);
-		} finally {
-			setIsLoading(false);
-		}
-	}, [user, hasFetchedOnce, lastFetchedUserId]);
-
-	useEffect(() => {
-		// Only fetch when user actually changes (login/logout)
-		const currentUserId = user?.id || null;
-
-		if (currentUserId !== lastFetchedUserId) {
-			setHasFetchedOnce(false); // Reset the flag when user changes
-			fetchRecentBookmarks();
-		}
-	}, [user?.id, lastFetchedUserId, fetchRecentBookmarks]);
+	const { data: userBookmarks, isLoading: loadingUserBookmarks } = useBookmarks(10);
 
 	const handleStartNow = useCallback(
 		(e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -167,6 +99,8 @@ export default function Home() {
 			<div className="max-w-full pt-4">
 				<MoveCard
 					data={publicBookmarks || []}
+					isLoading={loadingPublic}
+					type="public"
 					title="Public Bookmarks"
 					categoryFilter={
 						selectedCategoryForPublic.length ? selectedCategoryForPublic : null
@@ -295,22 +229,21 @@ export default function Home() {
 										<motion.div
 											whileHover={{ scale: 1.05 }}
 											whileTap={{ scale: 0.95 }}
-											className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-3 rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 flex items-center justify-center gap-2 w-full sm:w-auto">
-											<BookmarkIcon className="w-5 h-5 flex-shrink-0" />
+											className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-4 rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 flex items-center justify-center gap-2 w-full sm:w-auto">
 											<ShinyText
 												text="Mulai Sekarang"
 												disabled={false}
-												speed={5}
+												speed={4}
 												className="font-semibold whitespace-nowrap"
 											/>
-											<RocketLaunchIcon className="w-5 h-5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+											<RocketIcon className="w-6 h-6 mb-1 " />
 										</motion.div>
 									</Link>
 								</motion.div>
 							</motion.div>
 
 							{/* Recent Bookmarks Marquee */}
-							{user && <MoveCard />}
+							{user && <MoveCard data={userBookmarks} isLoading={loadingUserBookmarks} />}
 
 							{!user && (
 								<section className="mt-4">
@@ -324,10 +257,10 @@ export default function Home() {
 								animate={{ opacity: 1 }}
 								transition={{ delay: 0.8 }}
 								className="text-center mt-2">
-								<div className="flex items-center justify-center gap-2 text-gray-400 mb-4">
-									<SparklesIcon className="w-5 h-5 text-indigo-400" />
-									<span>Made with ❤️ | by @frenzehiga_</span>
-									<SparklesIcon className="w-5 h-5 text-indigo-400" />
+								<div className="flex items-center justify-center gap-1.5 text-gray-400 mb-4">
+									<span>Made with</span>
+									<HeartIcon size={15} className="text-red-500" />
+									<span>by @frenzehiga_</span>
 								</div>
 							</motion.div>
 						</>

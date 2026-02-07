@@ -1,50 +1,94 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { motion } from "framer-motion";
 
 export default function AuthCallback() {
 	const router = useRouter();
+	const [isProcessing, setIsProcessing] = useState(true);
 
 	useEffect(() => {
-		// Supabase akan secara otomatis memproses callback OAuth
-		// Kita hanya perlu memeriksa session setelah komponen dimuat
-
 		const checkSession = async () => {
 			try {
-				// Tunggu sejenak untuk memastikan session diproses oleh Supabase
-				await new Promise((resolve) => setTimeout(resolve, 1000));
+				// Parse URL hash for recovery token (Supabase sends it as #access_token=...)
+				const hashParams = new URLSearchParams(window.location.hash.substring(1));
+				const urlParams = new URLSearchParams(window.location.search);
+
+				const type = urlParams.get("type") || hashParams.get("type");
+				const error = urlParams.get("error");
+				const errorDescription = urlParams.get("error_description");
+				const accessToken = hashParams.get("access_token");
+				const refreshToken = hashParams.get("refresh_token");
+
+				console.log("Auth callback params:", { type, error, accessToken: !!accessToken });
+
+				// Handle errors from Supabase
+				if (error) {
+					console.error("Auth callback error:", error, errorDescription);
+
+					if (error === "access_denied" && errorDescription?.includes("expired")) {
+						router.push("/?error=link_expired");
+						return;
+					}
+
+					router.push("/?error=auth_failed");
+					return;
+				}
+
+				// Password recovery flow - redirect to reset-password page
+				if (type === "recovery" || (accessToken && window.location.hash.includes("type=recovery"))) {
+					console.log("Password recovery detected - redirecting to reset-password page");
+
+					// Set session with the tokens from URL
+					if (accessToken && refreshToken) {
+						await supabase.auth.setSession({
+							access_token: accessToken,
+							refresh_token: refreshToken,
+						});
+					}
+
+					// Redirect to reset password page
+					router.push("/reset-password");
+					return;
+				}
+
+				// Normal OAuth/login flow
+				await new Promise((resolve) => setTimeout(resolve, 500));
 
 				const {
 					data: { session },
-					error,
+					error: sessionError,
 				} = await supabase.auth.getSession();
 
-				if (error) {
-					console.error("Auth callback error:", error);
+				if (sessionError) {
+					console.error("Session error:", sessionError);
 					router.push("/?error=auth_failed");
 					return;
 				}
 
 				if (session) {
-					// User authenticated, redirect to bookmarks
 					console.log("User authenticated:", session.user.email);
 					router.push("/bookmarks");
 				} else {
-					// No session, redirect to home with error
 					console.log("No session found");
 					router.push("/?error=no_session");
 				}
 			} catch (error) {
 				console.error("Error in auth callback:", error);
 				router.push("/?error=auth_failed");
+			} finally {
+				setIsProcessing(false);
 			}
 		};
 
 		checkSession();
 	}, [router]);
+
+	if (!isProcessing) {
+		return null;
+	}
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -107,7 +151,7 @@ export default function AuthCallback() {
 					animate={{ opacity: 1 }}
 					transition={{ delay: 1 }}
 					className="mt-6 text-sm text-indigo-300">
-					Mengarahkan Anda ke dashboard...
+					Mengarahkan Anda ke halaman yang tepat...
 				</motion.div>
 			</motion.div>
 		</div>

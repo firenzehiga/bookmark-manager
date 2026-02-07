@@ -6,6 +6,7 @@ import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { BOOKMARK_CATEGORIES } from "@/types/bookmark";
+import { Search } from "lucide-react";
 
 // Dark theme untuk MUI
 const darkTheme = createTheme({
@@ -128,18 +129,22 @@ export function BookmarkFilter({
 							}}>
 							<MenuItem value="all">
 								<span className="flex items-center gap-2">
-									🔍 <span>Semua Kategori</span>
+									<Search size={20} /> <span>Semua Kategori</span>
 								</span>
 							</MenuItem>
 							{availableCategories.map((categoryId) => {
 								const category = BOOKMARK_CATEGORIES.find(
 									(c) => c.id === categoryId
 								);
+								if (!category) return null;
+
 								return (
 									<MenuItem key={categoryId} value={categoryId}>
 										<span className="flex items-center gap-2">
-											<span>{category?.icon || "📁"}</span>
-											<span>{category?.label || categoryId}</span>
+											<span>
+												<category.icon size={20} />
+											</span>
+											<span>{category.label}</span>
 										</span>
 									</MenuItem>
 								);

@@ -43,36 +43,33 @@ export function CategorySelector({
 						}}
 						className={`
               relative p-2 rounded-xl border-2 transition-all duration-300 group
-              ${
-								selectedTags.includes(category.id)
-									? "border-indigo-400 bg-indigo-500/20 shadow-lg shadow-indigo-500/25"
-									: selectedTags.length >= 2 &&
-									  !selectedTags.includes(category.id)
+              ${selectedTags.includes(category.id)
+								? "border-indigo-400 bg-indigo-500/20 shadow-lg shadow-indigo-500/25"
+								: selectedTags.length >= 2 &&
+									!selectedTags.includes(category.id)
 									? "border-gray-600 bg-gray-500/20 cursor-not-allowed"
 									: "border-gray-600 bg-gray-800/50 hover:border-gray-500 hover:bg-gray-700/50"
 							}
             `}>
 						<div className="text-center">
 							<div
-								className={`text-2xl mb-1 ${
-									selectedTags.includes(category.id)
-										? "text-indigo-400"
-										: selectedTags.length >= 2 &&
-										  !selectedTags.includes(category.id)
+								className={`text-2xl mb-1 ${selectedTags.includes(category.id)
+									? "text-indigo-400"
+									: selectedTags.length >= 2 &&
+										!selectedTags.includes(category.id)
 										? "text-gray-500 opacity-15"
 										: "text-gray-400"
-								}`}>
-								{category.icon}
+									}`}>
+								<category.icon className="w-8 h-8 mx-auto mb-2" strokeWidth={1.5} />
 							</div>
 							<div
-								className={`text-xs font-medium ${
-									selectedTags.includes(category.id)
-										? "text-gray-300"
-										: selectedTags.length >= 2 &&
-										  !selectedTags.includes(category.id)
+								className={`text-xs font-medium ${selectedTags.includes(category.id)
+									? "text-gray-300"
+									: selectedTags.length >= 2 &&
+										!selectedTags.includes(category.id)
 										? "text-gray-400 opacity-15"
 										: "text-gray-400 group-hover:text-white transition-colors"
-								} `}>
+									} `}>
 								{category.label}
 							</div>
 						</div>
@@ -102,7 +99,7 @@ export function CategorySelector({
 								<span
 									key={tagId}
 									className="inline-flex items-center gap-1 px-2 py-1 bg-indigo-500/20 text-indigo-300 rounded-full text-xs border border-indigo-400/30">
-									<span>{category.icon}</span>
+									<category.icon className="w-3 h-3" />
 									<span>{category.label}</span>
 								</span>
 							) : null;
