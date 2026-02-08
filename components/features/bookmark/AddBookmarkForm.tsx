@@ -15,6 +15,8 @@ import {
 	ExclamationTriangleIcon,
 } from "@heroicons/react/24/outline";
 import Switch from "@mui/material/Switch";
+import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/stateful-button";
 
 export function AddBookmarkForm({
 	onSuccess,
@@ -74,7 +76,7 @@ export function AddBookmarkForm({
 				throw error;
 			}
 
-			toast.success("🎉 Bookmark berhasil ditambahkan!");
+			toast.success("Bookmark berhasil ditambahkan!");
 			setFormData({ title: "", url: "", description: "", tags: [] });
 			setIsPublic(false);
 
@@ -329,28 +331,13 @@ export function AddBookmarkForm({
 			</motion.div>
 
 			{/* Submit Button */}
-			<motion.button
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ delay: 0.5 }}
+			<Button
 				type="submit"
 				title="Add Bookmark"
-				disabled={isLoading}
-				whileHover={{ scale: 1.01 }}
-				whileTap={{ scale: 0.99 }}
-				className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex items-center justify-center gap-2 btn-hover">
-				{isLoading ? (
-					<>
-						<div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-						Menyimpan...
-					</>
-				) : (
-					<>
-						<PlusIcon className="w-5 h-5" />
-						Tambah Bookmark
-					</>
-				)}
-			</motion.button>
+				disabled={isLoading || !formData.title || !formData.url}
+				className="w-full  disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 flex  items-center justify-center gap-2">
+				Add Bookmark
+			</Button>
 		</form>
 	);
 }

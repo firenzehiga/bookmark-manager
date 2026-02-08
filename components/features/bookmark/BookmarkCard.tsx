@@ -253,7 +253,7 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 			{/* Detail Modal */}
 			{showDetailModal && typeof document !== "undefined"
 				? createPortal(
-						<div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+						<div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 							<motion.div
 								initial={{ opacity: 0, scale: 0.9, y: 20 }}
 								animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -346,71 +346,72 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 
 								{/* Action Buttons */}
 								<div className="flex flex-wrap gap-3 p-6 border-t border-gray-700/50">
-									<button
-										onClick={() => {
-											const ev = new CustomEvent("bm:open-edit", {
-												detail: bookmark.id,
-											});
-											window.dispatchEvent(ev);
-											setShowEdit(true);
-											setShowDetailModal(false);
-										}}
-										className="flex items-center gap-2 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium">
-										<PencilIcon className="w-5 h-5" />
-										Edit
-									</button>
-
-									<button
-										onClick={async () => {
-											if (!user || bookmark.user_id !== user.id) {
-												toast.error("Tidak punya akses");
-												return;
-											}
-											try {
-												await update.mutateAsync({
-													id: bookmark.id,
-													updates: { is_public: !Boolean(bookmark.is_public) },
+									<div className="flex rounded-lg overflow-hidden border border-white/50 backdrop-blur-sm">
+										<button
+											onClick={async () => {
+												if (!user || bookmark.user_id !== user.id) {
+													toast.error("Tidak punya akses");
+													return;
+												}
+												try {
+													await update.mutateAsync({
+														id: bookmark.id,
+														updates: {
+															is_public: !Boolean(bookmark.is_public),
+														},
+													});
+													const nowPublic = !Boolean(bookmark.is_public);
+												} catch (err) {
+													const msg =
+														(err as any)?.message || JSON.stringify(err);
+													toast.error(`Update failed: ${msg}`);
+												}
+											}}
+											className="relative inline-flex gap-2 items-center justify-center px-4 py-2 text-white text-sm font-medium bg-white/2.5 backdrop-blur-sm shadow-[inset_0_1px_0px_rgba(255,255,255,0.75),0_0_9px_rgba(0,0,0,0.2),0_3px_8px_rgba(0,0,0,0.15)] hover:bg-white/30 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/60 before:via-transparent before:to-transparent before:opacity-70 before:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-tl after:from-white/30 after:via-transparent after:to-transparent after:opacity-50 after:pointer-events-none border-r border-white/50">
+											<EyeIcon className="w-5 h-5" />
+											{bookmark.is_public ? "Set Private" : "Set Public"}
+										</button>
+										<button
+											onClick={() => {
+												const ev = new CustomEvent("bm:open-edit", {
+													detail: bookmark.id,
 												});
-												const nowPublic = !Boolean(bookmark.is_public);
-											} catch (err) {
-												const msg =
-													(err as any)?.message || JSON.stringify(err);
-												toast.error(`Update failed: ${msg}`);
-											}
-										}}
-										className="flex items-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
-										<EyeIcon className="w-5 h-5" />
-										{bookmark.is_public ? "Set Private" : "Set Public"}
-									</button>
-
-									<button
-										onClick={() => {
-											setShowPreview(true);
-											setShowDetailModal(false);
-										}}
-										className="flex items-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
-										<EyeIcon className="w-5 h-5" />
-										Preview
-									</button>
-
-									<button
-										onClick={() => {
-											handleVisit();
-											setShowDetailModal(false);
-										}}
-										className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">
-										<ArrowTopRightOnSquareIcon className="w-5 h-5" />
-										Open Link
-									</button>
+												window.dispatchEvent(ev);
+												setShowEdit(true);
+												setShowDetailModal(false);
+											}}
+											className="relative inline-flex gap-2 items-center justify-center px-4 py-2 text-white text-sm font-medium bg-white/2.5 backdrop-blur-sm shadow-[inset_0_1px_0px_rgba(255,255,255,0.75),0_0_9px_rgba(0,0,0,0.2),0_3px_8px_rgba(0,0,0,0.15)] hover:bg-white/30 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/60 before:via-transparent before:to-transparent before:opacity-70 before:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-tl after:from-white/30 after:via-transparent after:to-transparent after:opacity-50 after:pointer-events-none border-r border-white/50">
+											<PencilIcon className="w-5 h-5" />
+											Edit
+										</button>
+										<button
+											onClick={() => {
+												setShowPreview(true);
+												setShowDetailModal(false);
+											}}
+											className="relative inline-flex gap-2 items-center justify-center px-4 py-2 text-white text-sm font-medium bg-white/2.5 backdrop-blur-sm shadow-[inset_0_1px_0px_rgba(255,255,255,0.75),0_0_9px_rgba(0,0,0,0.2),0_3px_8px_rgba(0,0,0,0.15)] hover:bg-white/30 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/60 before:via-transparent before:to-transparent before:opacity-70 before:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-tl after:from-white/30 after:via-transparent after:to-transparent after:opacity-50 after:pointer-events-none border-r border-white/50">
+											<EyeIcon className="w-5 h-5" />
+											Preview
+										</button>
+										<button
+											onClick={() => {
+												handleVisit();
+												setShowDetailModal(false);
+											}}
+											className="relative inline-flex gap-2 items-center justify-center px-4 py-2 text-white text-sm font-medium bg-white/2.5 backdrop-blur-sm shadow-[inset_0_1px_0px_rgba(255,255,255,0.75),0_0_9px_rgba(0,0,0,0.2),0_3px_8px_rgba(0,0,0,0.15)] hover:bg-white/30 transition-all duration-300 before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/60 before:via-transparent before:to-transparent before:opacity-70 before:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-tl after:from-white/30 after:via-transparent after:to-transparent after:opacity-50 after:pointer-events-none">
+											<ArrowTopRightOnSquareIcon className="w-5 h-5" />
+											Open
+										</button>
+									</div>
 
 									<button
 										onClick={() => {
 											handleDelete();
 											setShowDetailModal(false);
 										}}
-										className="flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors ml-auto">
-										<TrashIcon className="w-5 h-5" />
-										Delete
+										title="Delete bookmark"
+										className="flex items-center justify-center select-none font-sans  text-center px-4 py-2 ml-auto text-white text-sm font-medium rounded-lg bg-white/2.5 border border-white/50 backdrop-blur-sm shadow-[inset_0_1px_0px_rgba(255,255,255,0.75),0_0_9px_rgba(0,0,0,0.2),0_3px_8px_rgba(0,0,0,0.15)] hover:bg-white/30 transition-all duration-300 before:absolute before:inset-0 before:rounded-lg before:bg-gradient-to-br before:from-white/60 before:via-transparent before:to-transparent before:opacity-70 before:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:bg-gradient-to-tl after:from-white/30 after:via-transparent after:to-transparent after:opacity-50 after:pointer-events-none  antialiased">
+										<TrashIcon className="w-5 h-5 text-red-500" />
 									</button>
 								</div>
 							</motion.div>

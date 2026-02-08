@@ -142,7 +142,7 @@ export function useCreateBookmark() {
       );
       
       // Show success toast
-      toast.success('🔖 Bookmark berhasil ditambahkan!');
+      toast.success('Bookmark berhasil ditambahkan!');
     },
     onError: (error) => {
       console.error('Error creating bookmark:', error);
@@ -181,10 +181,10 @@ export function useDeleteBookmark() {
       if (context?.previousBookmarks) {
         queryClient.setQueryData(bookmarkKeys.list(user?.id || ''), context.previousBookmarks);
       }
-      toast.error('❌ Gagal menghapus bookmark');
+      toast.error('Gagal menghapus bookmark');
     },
     onSuccess: () => {
-      toast.success('🗑️ Bookmark berhasil dihapus');
+      toast.success('Bookmark berhasil dihapus');
     },
     onSettled: () => {
       // Always refetch after error or success

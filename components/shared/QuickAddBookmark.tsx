@@ -12,6 +12,7 @@ import Switch from "@mui/material/Switch";
 import { BookmarkPlusIcon } from "../ui/bookmark-plus";
 import { ClipboardCheck, ClipboardPaste } from "lucide-react";
 import { ClipboardCheckIcon } from "../ui/clipboard-check";
+import { Button } from "../ui/stateful-button";
 export function QuickAddBookmark() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [url, setUrl] = useState("");
@@ -224,12 +225,12 @@ export function QuickAddBookmark() {
 										)}
 									</button>
 
-									<button
-										type="submit"
+									<Button
 										disabled={createBookmarkMutation.isPending || !url.trim()}
+										type="submit"
 										className="flex-1 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-										{createBookmarkMutation.isPending ? "..." : "Tambah"}
-									</button>
+										Add Bookmark
+									</Button>
 								</div>
 							</form>
 						</motion.div>
