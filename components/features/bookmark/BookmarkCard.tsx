@@ -9,8 +9,10 @@ import {
 	ClockIcon,
 	EyeIcon,
 	XMarkIcon,
+	ArrowsPointingOutIcon,
+	PencilIcon,
 } from "@heroicons/react/24/outline";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import toast from "react-hot-toast";
 import EditBookmarkModal from "./EditBookmarkModal";
@@ -26,8 +28,8 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 	const { user } = useAuth();
 	// removed favorites feature: isLiked state removed
 	const [showPreview, setShowPreview] = useState(false);
-	const [showMenu, setShowMenu] = useState<boolean>(false);
 	const [showEdit, setShowEdit] = useState(false);
+	const [showDetailModal, setShowDetailModal] = useState(false);
 	const update = useUpdateBookmark();
 
 	// Close this card's edit modal when another card opens its edit modal
@@ -38,7 +40,7 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 				if (detail !== undefined && detail !== bookmark.id) {
 					setShowEdit(false);
 				}
-			} catch { }
+			} catch {}
 		};
 		window.addEventListener("bm:open-edit", handler as EventListener);
 		return () =>
@@ -101,10 +103,11 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 						{bookmark.title}
 						{/* Visibility badge */}
 						<span
-							className={`ml-3 inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${bookmark.is_public
-								? "bg-green-600 text-white"
-								: "bg-gray-700 text-gray-200"
-								}`}>
+							className={`ml-3 inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full ${
+								bookmark.is_public
+									? "bg-green-600 text-white"
+									: "bg-gray-700 text-gray-200"
+							}`}>
 							{bookmark.is_public ? "Public" : "Private"}
 						</span>
 					</motion.h3>
@@ -121,97 +124,14 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 					</div>
 				</div>
 
-				{/* Compact action menu */}
-				<div className="relative flex-shrink-0">
+				{/* Maximize button */}
+				<div className="flex-shrink-0">
 					<button
-						onClick={() => setShowMenu((s) => !s)}
-						className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-gray-800/60 transition-colors"
-						title="Actions">
-						{/* three-dot vertical icon */}
-						<span className="inline-block w-1.5 h-1.5 bg-current rounded-full" />
-						<span className="inline-block w-1.5 h-1.5 bg-current rounded-full mx-0.5" />
-						<span className="inline-block w-1.5 h-1.5 bg-current rounded-full" />
+						onClick={() => setShowDetailModal(true)}
+						className="p-2 rounded-full text-gray-300 hover:text-white hover:bg-indigo-500/20 transition-all duration-200 hover:scale-110"
+						title="View Details">
+						<ArrowsPointingOutIcon className="w-5 h-5" />
 					</button>
-
-					{showMenu && (
-						<div className="absolute right-0 mt-2 w-48 bg-gray-900 border border-gray-700 rounded-lg shadow-lg z-50 overflow-hidden">
-							{/* Favorite removed */}
-
-							<button
-								className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 flex items-center gap-2"
-								onClick={() => {
-									// notify other cards to close their edit modal first
-									const ev = new CustomEvent("bm:open-edit", {
-										detail: bookmark.id,
-									});
-									window.dispatchEvent(ev);
-									setShowEdit(true);
-									setShowMenu(false);
-								}}>
-								<ClockIcon className="w-4 h-4 text-gray-400" />
-								<span>Edit</span>
-							</button>
-
-							<button
-								className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 flex items-center gap-2"
-								onClick={async () => {
-									if (!user || bookmark.user_id !== user.id) {
-										toast.error("Tidak punya akses");
-										setShowMenu(false);
-										return;
-									}
-									try {
-										await update.mutateAsync({
-											id: bookmark.id,
-											updates: { is_public: !Boolean(bookmark.is_public) },
-										});
-										const nowPublic = !Boolean(bookmark.is_public);
-										toast.success(nowPublic ? "Now Public" : "Now Private");
-									} catch (err) {
-										console.error("Update toggle error:", err);
-										const msg =
-											(err as any)?.message ||
-											(err as any)?.error ||
-											JSON.stringify(err);
-										toast.error(`Gagal memperbarui visibility: ${msg}`);
-									}
-									setShowMenu(false);
-								}}>
-								<EyeIcon className="w-4 h-4 text-gray-400" />
-								<span>{bookmark.is_public ? "Set Private" : "Set Public"}</span>
-							</button>
-
-							<button
-								className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 flex items-center gap-2"
-								onClick={() => {
-									setShowPreview(true);
-									setShowMenu(false);
-								}}>
-								<EyeIcon className="w-4 h-4 text-gray-400" />
-								<span>Preview</span>
-							</button>
-
-							<button
-								className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-800 flex items-center gap-2"
-								onClick={() => {
-									handleVisit();
-									setShowMenu(false);
-								}}>
-								<ArrowTopRightOnSquareIcon className="w-4 h-4 text-gray-400" />
-								<span>Open</span>
-							</button>
-
-							<button
-								className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-800/20 flex items-center gap-2"
-								onClick={() => {
-									handleDelete();
-									setShowMenu(false);
-								}}>
-								<TrashIcon className="w-4 h-4" />
-								<span>Delete</span>
-							</button>
-						</div>
-					)}
 				</div>
 			</div>
 
@@ -272,52 +192,52 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 			{/* Preview Modal (portalized) */}
 			{showPreview && typeof document !== "undefined"
 				? createPortal(
-					<div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-						<motion.div
-							initial={{ opacity: 0, scale: 0.9 }}
-							animate={{ opacity: 1, scale: 1 }}
-							exit={{ opacity: 0, scale: 0.9 }}
-							className="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden">
-							<div className="flex items-center justify-between p-4 border-b border-gray-700">
-								<div className="flex-1 min-w-0">
-									<h3 className="text-lg font-semibold text-white truncate">
-										{bookmark.title}
-									</h3>
-									<p className="text-sm text-gray-400 truncate">
-										{bookmark.url}
-									</p>
+						<div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+							<motion.div
+								initial={{ opacity: 0, scale: 0.9 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0.9 }}
+								className="bg-gray-900 rounded-2xl border border-gray-700 w-full max-w-4xl max-h-[90vh] overflow-hidden">
+								<div className="flex items-center justify-between p-4 border-b border-gray-700">
+									<div className="flex-1 min-w-0">
+										<h3 className="text-lg font-semibold text-white truncate">
+											{bookmark.title}
+										</h3>
+										<p className="text-sm text-gray-400 truncate">
+											{bookmark.url}
+										</p>
+									</div>
+									<button
+										onClick={() => setShowPreview(false)}
+										className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all flex-shrink-0 ml-4">
+										<XMarkIcon className="w-5 h-5" />
+									</button>
 								</div>
-								<button
-									onClick={() => setShowPreview(false)}
-									className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-all flex-shrink-0 ml-4">
-									<XMarkIcon className="w-5 h-5" />
-								</button>
-							</div>
-							<div className="p-4">
-								<div className="mb-3 flex items-center gap-2 justify-between">
-									<span className="text-sm text-gray-400 truncate flex-1">
-										Preview: {bookmark.url}
-									</span>
-									<a
-										href={bookmark.url}
-										target="_blank"
-										rel="noopener noreferrer"
-										className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1 flex-shrink-0">
-										<ArrowTopRightOnSquareIcon className="w-4 h-4" />
-										Buka di tab baru
-									</a>
+								<div className="p-4">
+									<div className="mb-3 flex items-center gap-2 justify-between">
+										<span className="text-sm text-gray-400 truncate flex-1">
+											Preview: {bookmark.url}
+										</span>
+										<a
+											href={bookmark.url}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-indigo-400 hover:text-indigo-300 text-sm flex items-center gap-1 flex-shrink-0">
+											<ArrowTopRightOnSquareIcon className="w-4 h-4" />
+											Buka di tab baru
+										</a>
+									</div>
+									<iframe
+										src={bookmark.url}
+										className="w-full h-96 rounded-lg border border-gray-600"
+										title={`Preview: ${bookmark.title}`}
+										sandbox="allow-scripts allow-same-origin"
+									/>
 								</div>
-								<iframe
-									src={bookmark.url}
-									className="w-full h-96 rounded-lg border border-gray-600"
-									title={`Preview: ${bookmark.title}`}
-									sandbox="allow-scripts allow-same-origin"
-								/>
-							</div>
-						</motion.div>
-					</div>,
-					document.body
-				)
+							</motion.div>
+						</div>,
+						document.body,
+					)
 				: null}
 
 			{/* Edit Modal */}
@@ -329,6 +249,175 @@ export function BookmarkCard({ bookmark, onDelete, index }: BookmarkCardProps) {
 					onSaved={() => setShowEdit(false)}
 				/>
 			)}
+
+			{/* Detail Modal */}
+			{showDetailModal && typeof document !== "undefined"
+				? createPortal(
+						<div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+							<motion.div
+								initial={{ opacity: 0, scale: 0.9, y: 20 }}
+								animate={{ opacity: 1, scale: 1, y: 0 }}
+								exit={{ opacity: 0, scale: 0.9, y: 20 }}
+								className="bg-gray-900 rounded-3xl border border-gray-700/50 w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl">
+								{/* Header */}
+								<div className="flex items-start justify-between p-6 border-b border-gray-700/50">
+									<div className="flex-1 min-w-0">
+										<h2 className="text-2xl font-bold text-white mb-2 line-clamp-2">
+											{bookmark.title}
+										</h2>
+										<div className="flex items-center gap-3 text-sm text-gray-400">
+											<span className="flex items-center gap-1">
+												<ClockIcon className="w-4 h-4" />
+												{formatDate(bookmark.created_at)}
+											</span>
+											<span
+												className={`px-2 py-1 rounded-full text-xs font-medium ${
+													bookmark.is_public
+														? "bg-green-600 text-white"
+														: "bg-gray-700 text-gray-200"
+												}`}>
+												{bookmark.is_public ? "Public" : "Private"}
+											</span>
+										</div>
+									</div>
+									<button
+										onClick={() => setShowDetailModal(false)}
+										className="p-2 text-gray-400 hover:text-white hover:bg-gray-700/50 rounded-xl transition-all">
+										<XMarkIcon className="w-6 h-6" />
+									</button>
+								</div>
+
+								{/* Content */}
+								<div className="p-6 max-h-[60vh] overflow-y-auto">
+									{/* URL */}
+									<div className="mb-6">
+										<label className="text-sm font-medium text-gray-400 mb-2 block">
+											URL
+										</label>
+										<a
+											href={bookmark.url}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-indigo-400 hover:text-indigo-300 break-all transition-colors">
+											{bookmark.url}
+										</a>
+									</div>
+
+									{/* Description */}
+									{bookmark.description && (
+										<div className="mb-6">
+											<label className="text-sm font-medium text-gray-400 mb-2 block">
+												Description
+											</label>
+											<p className="text-gray-300 leading-relaxed">
+												{bookmark.description}
+											</p>
+										</div>
+									)}
+
+									{/* Tags */}
+									{bookmark.tags && bookmark.tags.length > 0 && (
+										<div className="mb-6">
+											<label className="text-sm font-medium text-gray-400 mb-2 block">
+												Categories
+											</label>
+											<div className="flex flex-wrap gap-2">
+												{bookmark.tags.map((tagId) => {
+													const categoryInfo = getCategoryInfo(tagId);
+													return categoryInfo ? (
+														<span
+															key={tagId}
+															className="inline-flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 text-indigo-300 rounded-full text-sm border border-indigo-400/30">
+															<categoryInfo.icon size={18} />
+															{categoryInfo.label}
+														</span>
+													) : (
+														<span
+															key={tagId}
+															className="px-3 py-1.5 bg-gray-700/50 text-gray-400 rounded-full text-sm">
+															#{tagId}
+														</span>
+													);
+												})}
+											</div>
+										</div>
+									)}
+								</div>
+
+								{/* Action Buttons */}
+								<div className="flex flex-wrap gap-3 p-6 border-t border-gray-700/50">
+									<button
+										onClick={() => {
+											const ev = new CustomEvent("bm:open-edit", {
+												detail: bookmark.id,
+											});
+											window.dispatchEvent(ev);
+											setShowEdit(true);
+											setShowDetailModal(false);
+										}}
+										className="flex items-center gap-2 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition-colors font-medium">
+										<PencilIcon className="w-5 h-5" />
+										Edit
+									</button>
+
+									<button
+										onClick={async () => {
+											if (!user || bookmark.user_id !== user.id) {
+												toast.error("Tidak punya akses");
+												return;
+											}
+											try {
+												await update.mutateAsync({
+													id: bookmark.id,
+													updates: { is_public: !Boolean(bookmark.is_public) },
+												});
+												const nowPublic = !Boolean(bookmark.is_public);
+											} catch (err) {
+												const msg =
+													(err as any)?.message || JSON.stringify(err);
+												toast.error(`Update failed: ${msg}`);
+											}
+										}}
+										className="flex items-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
+										<EyeIcon className="w-5 h-5" />
+										{bookmark.is_public ? "Set Private" : "Set Public"}
+									</button>
+
+									<button
+										onClick={() => {
+											setShowPreview(true);
+											setShowDetailModal(false);
+										}}
+										className="flex items-center gap-2 px-4 py-2.5 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors">
+										<EyeIcon className="w-5 h-5" />
+										Preview
+									</button>
+
+									<button
+										onClick={() => {
+											handleVisit();
+											setShowDetailModal(false);
+										}}
+										className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition-colors">
+										<ArrowTopRightOnSquareIcon className="w-5 h-5" />
+										Open Link
+									</button>
+
+									<button
+										onClick={() => {
+											handleDelete();
+											setShowDetailModal(false);
+										}}
+										className="flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors ml-auto">
+										<TrashIcon className="w-5 h-5" />
+										Delete
+									</button>
+								</div>
+							</motion.div>
+						</div>,
+						document.body,
+					)
+				: null}
 		</motion.div>
 	);
 }

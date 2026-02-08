@@ -63,12 +63,12 @@ export function AuthButton() {
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
 					animate={{ opacity: 1, scale: 1 }}
-					className="flex items-center gap-2  bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 backdrop-blur-sm border border-gray-700 text-white px-4 py-2 rounded-xl shadow-lg">
+					className="flex items-center gap-2  bg-gradient-to-r from-indigo-600 to-purple-600backdrop-blur-sm border border-gray-700 text-white px-4 py-2 rounded-xl shadow-lg">
 					<motion.div
 						animate={{ rotate: 360 }}
 						transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
 						className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"></motion.div>
-					<span className="hidden sm:block text-sm">Keluar...</span>
+					<span className="hidden sm:block text-sm">Signing Out...</span>
 				</motion.div>
 			</div>
 		);
@@ -85,8 +85,8 @@ export function AuthButton() {
 					className="fixed bottom-6 right-6 z-50">
 					{/* Floating Action Button */}
 					<div className="fixed top-4 right-4 z-50">
-						<div className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 text-transparent px-6 py-2 rounded-xl animate-pulse">
-							<span className="opacity-0">Masuk</span>
+						<div className="bg-gray-900/50 backdrop-blur-sm border  border-gray-700 text-transparent px-6 py-2 rounded-xl animate-pulse">
+							<span className="opacity-0">Signing In</span>
 						</div>
 					</div>
 					<button className="bg-gray-900/50 backdrop-blur-sm border border-gray-700 text-transparent p-4 rounded-full shadow-lg animate-pulse">
@@ -141,7 +141,7 @@ export function AuthButton() {
 											disabled={isSigningOut}
 											className="flex items-center gap-3 w-full px-3 py-2 text-sm text-white hover:bg-red-500 hover:text-red-100 transition-colors disabled:opacity-50">
 											<ArrowRightOnRectangleIcon className="w-4 h-4" />
-											Keluar
+											Sign Out
 										</button>
 									</div>
 								</motion.div>
@@ -156,7 +156,7 @@ export function AuthButton() {
 						<button
 							onClick={() => setShowAuthModal(true)}
 							className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300">
-							Masuk
+							Sign In
 						</button>
 					</motion.div>
 				)}

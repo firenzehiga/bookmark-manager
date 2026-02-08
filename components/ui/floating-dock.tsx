@@ -34,8 +34,10 @@ export const FloatingDock = ({
 }) => {
 	return (
 		<>
-			<FloatingDockDesktop items={items} className={desktopClassName} />
-			<FloatingDockMobile items={items} className={mobileClassName} />
+			<FloatingDockDesktop
+				items={items}
+				className={cn(desktopClassName, mobileClassName)}
+			/>
 		</>
 	);
 };
@@ -54,7 +56,7 @@ const FloatingDockMobile = ({
 }) => {
 	const [open, setOpen] = useState(false);
 	return (
-		<div className={cn("relative block md:hidden", className)}>
+		<div className={cn("block md:hidden", className)}>
 			<AnimatePresence>
 				{open && (
 					<>
@@ -106,11 +108,13 @@ const FloatingDockMobile = ({
 					</>
 				)}
 			</AnimatePresence>
-			<button
-				onClick={() => setOpen(!open)}
-				className="flex h-12 w-12 items-center justify-center rounded-lg bg-white/10 border border-white/20 hover:bg-white/20 transition-colors duration-150">
-				<Bars3Icon className="h-6 w-6 text-white/80" />
-			</button>
+			<AnimatePresence>
+				<button
+					onClick={() => setOpen(!open)}
+					className="flex h-12 w-12 items-center justify-center rounded-lg bg-indigo/10 border border-white/20 hover:bg-black/20 transition-colors duration-150">
+					<Bars3Icon className="h-6 w-6 text-white/80" />
+				</button>
+			</AnimatePresence>
 		</div>
 	);
 };
@@ -134,7 +138,7 @@ const FloatingDockDesktop = ({
 			onMouseLeave={() => mouseX.set(Infinity)}
 			style={{ transform: "translate3d(0, 0, 0)" }}
 			className={cn(
-				"mx-auto hidden h-16 items-end gap-4 rounded-2xl bg-black/20 border border-white/10 px-4 pb-3 md:flex shadow-2xl",
+				"mx-auto flex h-16 items-end gap-4 rounded-2xl bg-black/20 border border-white/10 px-4 pb-3 shadow-2xl",
 				className,
 			)}>
 			{items.map((item) => (

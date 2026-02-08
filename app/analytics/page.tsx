@@ -163,7 +163,7 @@ export default function AnalyticsPage() {
 									href="/bookmarks"
 									className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all">
 									<ArrowLeftCircleIcon className="w-5 h-5" />
-									Kembali ke Bookmarks
+									Kembali
 								</Link>
 							</div>
 						</div>
@@ -252,8 +252,8 @@ export default function AnalyticsPage() {
 											{Math.round(
 												analytics.monthlyStats.reduce(
 													(acc, curr) => acc + curr.count,
-													0
-												) / analytics.monthlyStats.length
+													0,
+												) / analytics.monthlyStats.length,
 											)}
 										</p>
 									</div>
@@ -281,7 +281,7 @@ export default function AnalyticsPage() {
 											{analytics.monthlyStats.map((stat, index) => {
 												const total = analytics.monthlyStats.reduce(
 													(acc, curr) => acc + curr.count,
-													0
+													0,
 												);
 												const percentage =
 													total > 0 ? (stat.count / total) * 100 : 0;
@@ -294,7 +294,7 @@ export default function AnalyticsPage() {
 														(acc, curr) =>
 															acc +
 															(total > 0 ? (curr.count / total) * 100 : 0),
-														0
+														0,
 													);
 
 												const colors = [
@@ -335,7 +335,7 @@ export default function AnalyticsPage() {
 												<div className="text-2xl font-bold text-white">
 													{analytics.monthlyStats.reduce(
 														(acc, curr) => acc + curr.count,
-														0
+														0,
 													)}
 												</div>
 												<div className="text-sm text-gray-400">Total</div>
@@ -390,7 +390,7 @@ export default function AnalyticsPage() {
 								<div className="space-y-6">
 									{analytics.topTags.map((tag, index) => {
 										const maxCount = Math.max(
-											...analytics.topTags.map((t) => t.count)
+											...analytics.topTags.map((t) => t.count),
 										);
 										const size = 40 + (tag.count / maxCount) * 40; // Size between 40-80px
 										const colors = [
@@ -484,7 +484,7 @@ export default function AnalyticsPage() {
 							<div className="space-y-4">
 								{analytics.topDomains.map((domain, index) => {
 									const maxCount = Math.max(
-										...analytics.topDomains.map((d) => d.count)
+										...analytics.topDomains.map((d) => d.count),
 									);
 									const percentage =
 										maxCount > 0 ? (domain.count / maxCount) * 100 : 0;

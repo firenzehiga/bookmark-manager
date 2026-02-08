@@ -90,7 +90,7 @@ export default function BookmarksPage() {
 							initial={{ opacity: 0, y: 10 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.5, duration: 0.4 }}
-							className="flex justify-center">
+							className="flex justify-center mb-8">
 							<FloatingDock
 								items={dockItems.map((item) => ({
 									...item,
@@ -102,7 +102,6 @@ export default function BookmarksPage() {
 												: undefined,
 								}))}
 								desktopClassName="shadow-2xl"
-								mobileClassName="fixed top-4 left-4 z-50"
 							/>
 						</motion.div>
 					</motion.div>

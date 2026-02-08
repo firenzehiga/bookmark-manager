@@ -38,10 +38,12 @@ export function CategorySelector({
 						transition={{ delay: index * 0.1 }}
 						whileTap={{ scale: 0.95 }}
 						onClick={() => {
-							// Prevent deselecting if it's the last selected category
+							const isOnHomePage = window.location.pathname === "/";
+							// Prevent deselecting if it's the last selected category (unless on home page)
 							if (
 								selectedTags.includes(category.id) &&
-								selectedTags.length === 1
+								selectedTags.length === 1 &&
+								!isOnHomePage
 							) {
 								return; // Don't allow deselecting the last category
 							}
@@ -52,8 +54,9 @@ export function CategorySelector({
               relative p-2 rounded-xl border-2 transition-all duration-300 group
               ${
 								selectedTags.includes(category.id)
-									? selectedTags.length === 1
-										? "border-amber-400 bg-amber-500/20 shadow-lg shadow-amber-500/25 cursor-not-allowed"
+									? selectedTags.length === 1 &&
+										window.location.pathname !== "/"
+										? "border-indigo-400 bg-indigo-500/20 shadow-lg shadow-indigo-500/25 cursor-not-allowed"
 										: "border-indigo-400 bg-indigo-500/20 shadow-lg shadow-indigo-500/25 hover:border-red-400 hover:bg-red-500/10"
 									: selectedTags.length >= 2 &&
 										  !selectedTags.includes(category.id)

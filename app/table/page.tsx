@@ -45,14 +45,14 @@ export default function BookmarksTablePage() {
 					bookmark.description
 						?.toLowerCase()
 						.includes(searchQuery.toLowerCase()) ||
-					bookmark.url.toLowerCase().includes(searchQuery.toLowerCase())
+					bookmark.url.toLowerCase().includes(searchQuery.toLowerCase()),
 			);
 		}
 
 		// Filter berdasarkan kategori
 		if (selectedCategory !== "all") {
 			filtered = filtered.filter((bookmark) =>
-				bookmark.tags?.includes(selectedCategory)
+				bookmark.tags?.includes(selectedCategory),
 			);
 		}
 
@@ -69,7 +69,6 @@ export default function BookmarksTablePage() {
 
 	// ✅ Fungsi untuk refresh manual
 	const handleRefresh = async () => {
-
 		try {
 			// Invalidate cache dan trigger refetch
 			refreshBookmarks();
@@ -199,13 +198,11 @@ export default function BookmarksTablePage() {
 												<option value="all">Semua Kategori</option>
 												{getUniqueCategories().map((categoryId) => {
 													const category = BOOKMARK_CATEGORIES.find(
-														(c) => c.id === categoryId
+														(c) => c.id === categoryId,
 													);
 													return (
 														<option key={categoryId} value={categoryId}>
-															{category
-																? category.label
-																: categoryId}
+															{category ? category.label : categoryId}
 														</option>
 													);
 												})}
@@ -214,14 +211,14 @@ export default function BookmarksTablePage() {
 									</div>
 
 									{/* Stats */}
-									<div className="mt-4 flex items-center justify-between text-sm text-gray-400">
+									<div className="mt-4 lg:flex items-center justify-between text-xs text-gray-400">
 										<span>
 											Menampilkan {filteredBookmarks.length} dari{" "}
 											{bookmarks.length} bookmark
 										</span>
 
 										{/* Cache Status */}
-										<div className="flex items-center gap-2">
+										<div className="flex items-center mt-3 gap-2">
 											{isFetching && (
 												<span className="text-xs bg-blue-600/20 text-blue-400 px-2 py-1 rounded-full">
 													🔄 Memuat ulang...
@@ -290,8 +287,9 @@ export default function BookmarksTablePage() {
 															key={bookmark.id}
 															className="border-b border-gray-700/50 hover:bg-gray-800/30 transition-colors"
 															style={{
-																animation: `fadeIn 0.3s ease-out ${index * 0.05
-																	}s both`,
+																animation: `fadeIn 0.3s ease-out ${
+																	index * 0.05
+																}s both`,
 															}}>
 															{/* Title & Description */}
 															<td className="p-4">
@@ -322,12 +320,12 @@ export default function BookmarksTablePage() {
 																						.map((tagId) => {
 																							const category =
 																								BOOKMARK_CATEGORIES.find(
-																									(c) => c.id === tagId
+																									(c) => c.id === tagId,
 																								);
 																							return category ? (
 																								<span
 																									key={tagId}
-																									className="text-xs px-2 py-1 rounded-full border"
+																									className="text-xs px-2 py-1 flex gap-2 rounded-full border"
 																									style={{
 																										backgroundColor: `${category.color}20`,
 																										borderColor: `${category.color}40`,
@@ -371,7 +369,7 @@ export default function BookmarksTablePage() {
 																	<div className="flex flex-wrap gap-1">
 																		{bookmark.tags.slice(0, 2).map((tagId) => {
 																			const category = BOOKMARK_CATEGORIES.find(
-																				(c) => c.id === tagId
+																				(c) => c.id === tagId,
 																			);
 																			return category ? (
 																				<span
@@ -382,7 +380,8 @@ export default function BookmarksTablePage() {
 																						borderColor: `${category.color}40`,
 																						color: category.color,
 																					}}>
-																					<category.icon size={16} /> {category.label}
+																					<category.icon size={16} />{" "}
+																					{category.label}
 																				</span>
 																			) : null;
 																		})}

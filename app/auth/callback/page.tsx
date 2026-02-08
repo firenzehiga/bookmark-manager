@@ -24,12 +24,6 @@ export default function AuthCallback() {
 				const accessToken = hashParams.get("access_token");
 				const refreshToken = hashParams.get("refresh_token");
 
-				console.log("Auth callback params:", {
-					type,
-					error,
-					accessToken: !!accessToken,
-				});
-
 				// Handle errors from Supabase
 				if (error) {
 					console.error("Auth callback error:", error, errorDescription);
