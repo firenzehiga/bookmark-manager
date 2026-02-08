@@ -134,7 +134,7 @@ export function BookmarkFilter({
 							</MenuItem>
 							{availableCategories.map((categoryId) => {
 								const category = BOOKMARK_CATEGORIES.find(
-									(c) => c.id === categoryId
+									(c) => c.id === categoryId,
 								);
 								if (!category) return null;
 

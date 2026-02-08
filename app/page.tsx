@@ -3,11 +3,7 @@
 import { MoveCard } from "@/components/shared/ui/MoveCard";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-	BookmarkIcon,
-	SparklesIcon,
-
-} from "@heroicons/react/24/outline";
+import { BookmarkIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import ShinyText from "@/components/shared/ui/ShinyText";
 import { useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -26,7 +22,8 @@ export default function Home() {
 	const { data: publicBookmarks, isLoading: loadingPublic } =
 		usePublicBookmarks();
 
-	const { data: userBookmarks, isLoading: loadingUserBookmarks } = useBookmarks(10);
+	const { data: userBookmarks, isLoading: loadingUserBookmarks } =
+		useBookmarks(10);
 
 	const handleStartNow = useCallback(
 		(e: React.MouseEvent<HTMLAnchorElement>) => {
@@ -36,7 +33,7 @@ export default function Home() {
 			}
 			// Jika user ada, biarkan Link navigate normal
 		},
-		[user]
+		[user],
 	);
 
 	const handleAddFirstBookmark = useCallback(() => {
@@ -229,12 +226,12 @@ export default function Home() {
 										<motion.div
 											whileHover={{ scale: 1.05 }}
 											whileTap={{ scale: 0.95 }}
-											className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-4 rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 flex items-center justify-center gap-2 w-full sm:w-auto">
+											className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold text-lg shadow-2xl hover:shadow-indigo-500/25 transition-all duration-300 flex items-center justify-center gap-2 w-full sm:w-auto">
 											<ShinyText
 												text="Mulai Sekarang"
 												disabled={false}
-												speed={4}
-												className="font-semibold whitespace-nowrap"
+												speed={5}
+												className="font-semibold whitespace-nowrap text-sm sm:text-base"
 											/>
 											<RocketIcon className="w-6 h-6 mb-1 " />
 										</motion.div>
@@ -243,7 +240,12 @@ export default function Home() {
 							</motion.div>
 
 							{/* Recent Bookmarks Marquee */}
-							{user && <MoveCard data={userBookmarks} isLoading={loadingUserBookmarks} />}
+							{user && (
+								<MoveCard
+									data={userBookmarks}
+									isLoading={loadingUserBookmarks}
+								/>
+							)}
 
 							{!user && (
 								<section className="mt-4">

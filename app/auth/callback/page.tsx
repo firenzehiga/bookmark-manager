@@ -13,7 +13,9 @@ export default function AuthCallback() {
 		const checkSession = async () => {
 			try {
 				// Parse URL hash for recovery token (Supabase sends it as #access_token=...)
-				const hashParams = new URLSearchParams(window.location.hash.substring(1));
+				const hashParams = new URLSearchParams(
+					window.location.hash.substring(1),
+				);
 				const urlParams = new URLSearchParams(window.location.search);
 
 				const type = urlParams.get("type") || hashParams.get("type");
@@ -22,13 +24,20 @@ export default function AuthCallback() {
 				const accessToken = hashParams.get("access_token");
 				const refreshToken = hashParams.get("refresh_token");
 
-				console.log("Auth callback params:", { type, error, accessToken: !!accessToken });
+				console.log("Auth callback params:", {
+					type,
+					error,
+					accessToken: !!accessToken,
+				});
 
 				// Handle errors from Supabase
 				if (error) {
 					console.error("Auth callback error:", error, errorDescription);
 
-					if (error === "access_denied" && errorDescription?.includes("expired")) {
+					if (
+						error === "access_denied" &&
+						errorDescription?.includes("expired")
+					) {
 						router.push("/?error=link_expired");
 						return;
 					}
@@ -38,8 +47,13 @@ export default function AuthCallback() {
 				}
 
 				// Password recovery flow - redirect to reset-password page
-				if (type === "recovery" || (accessToken && window.location.hash.includes("type=recovery"))) {
-					console.log("Password recovery detected - redirecting to reset-password page");
+				if (
+					type === "recovery" ||
+					(accessToken && window.location.hash.includes("type=recovery"))
+				) {
+					console.log(
+						"Password recovery detected - redirecting to reset-password page",
+					);
 
 					// Set session with the tokens from URL
 					if (accessToken && refreshToken) {
@@ -91,7 +105,7 @@ export default function AuthCallback() {
 	}
 
 	return (
-		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+		<div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-900 via-purple-900 to-purple-900">
 			<motion.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}

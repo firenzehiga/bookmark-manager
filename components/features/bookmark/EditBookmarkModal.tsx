@@ -8,6 +8,7 @@ import { CategorySelector } from "../../shared/CategorySelector";
 import { useUpdateBookmark } from "@/hooks/useBookmarks";
 import Switch from "@mui/material/Switch";
 import toast from "react-hot-toast";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function EditBookmarkModal({
 	bookmark,
@@ -41,7 +42,6 @@ export default function EditBookmarkModal({
 				id: bookmark!.id,
 				updates: { title, description, tags, is_public: isPublic },
 			});
-			toast.success("Bookmark diperbarui");
 			onSaved?.();
 			onClose();
 		} catch (err) {
@@ -60,8 +60,10 @@ export default function EditBookmarkModal({
 				<div className="flex items-center gap-3 mb-4">
 					<h3 className="text-lg font-semibold">Edit Bookmark</h3>
 					<div className="ml-auto">
-						<button onClick={onClose} className="text-sm text-gray-400">
-							Close
+						<button
+							onClick={onClose}
+							className="  text-gray-400 hover:text-white transition-colors p-2 rounded-xl hover:bg-gray-800/50 group">
+							<XMarkIcon className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
 						</button>
 					</div>
 				</div>
@@ -92,7 +94,7 @@ export default function EditBookmarkModal({
 								setTags((prev) =>
 									prev.includes(tagId)
 										? prev.filter((t) => t !== tagId)
-										: [...prev, tagId]
+										: [...prev, tagId],
 								)
 							}
 						/>
@@ -104,7 +106,7 @@ export default function EditBookmarkModal({
 								checked={isPublic}
 								onChange={(
 									e: React.ChangeEvent<HTMLInputElement>,
-									checked: boolean
+									checked: boolean,
 								) => setIsPublic(checked)}
 								color="primary"
 								inputProps={{ "aria-label": "controlled" }}
@@ -118,12 +120,12 @@ export default function EditBookmarkModal({
 					<div className="flex gap-2 justify-end">
 						<button
 							onClick={onClose}
-							className="px-4 py-2 rounded-lg bg-gray-700 text-gray-200">
+							className="px-4 py-2 rounded-lg bg-gray-700 text-gray-200 hover:bg-gray-600 transition-colors">
 							Cancel
 						</button>
 						<button
 							onClick={handleSave}
-							className="px-4 py-2 rounded-lg bg-indigo-600 text-white">
+							className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-500 transition-colors">
 							Save
 						</button>
 					</div>

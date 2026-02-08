@@ -7,6 +7,7 @@ import { BookmarksList } from "@/components/features/bookmark/BookmarksList";
 import { AddBookmarkForm } from "@/components/features/bookmark/AddBookmarkForm";
 import { ProtectedRoute } from "@/components/layout/ProtectedRoute";
 import { ImportExportModal } from "@/components/shared/ui/ImportExportModal";
+import { FloatingDock } from "@/components/ui/floating-dock";
 import {
 	BookmarkIcon,
 	PlusIcon,
@@ -15,11 +16,41 @@ import {
 	ArrowLeftCircleIcon,
 	ChartBarIcon,
 	ArrowsRightLeftIcon,
+	HomeIcon,
 } from "@heroicons/react/24/outline";
 
 export default function BookmarksPage() {
 	const [showAddForm, setShowAddForm] = useState(false);
 	const [showImportExport, setShowImportExport] = useState(false);
+
+	// Floating Dock Items
+	const dockItems = [
+		{
+			title: "Home",
+			icon: <HomeIcon className="w-6 h-6" />,
+			href: "/",
+		},
+		{
+			title: "Add Bookmark",
+			icon: <PlusIcon className="w-6 h-6" />,
+			href: "#",
+		},
+		{
+			title: "Table View",
+			icon: <TableCellsIcon className="w-6 h-6" />,
+			href: "/table",
+		},
+		{
+			title: "Analytics",
+			icon: <ChartBarIcon className="w-6 h-6" />,
+			href: "/analytics",
+		},
+		{
+			title: "Import/Export",
+			icon: <ArrowsRightLeftIcon className="w-6 h-6" />,
+			href: "#",
+		},
+	];
 
 	return (
 		<ProtectedRoute redirectToHome={true}>
@@ -54,36 +85,25 @@ export default function BookmarksPage() {
 							Temukan dan kelola link penting Anda
 						</motion.p>
 
-						{/* View Toggle */}
+						{/* Floating Dock Navigation */}
 						<motion.div
 							initial={{ opacity: 0, y: 10 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.5, duration: 0.4 }}
-							className="flex flex-wrap justify-center gap-4">
-							<Link
-								href="/"
-								className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all">
-								<ArrowLeftCircleIcon className="w-5 h-5" />
-								Kembali ke Home
-							</Link>
-							<Link
-								href="/table"
-								className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all">
-								<TableCellsIcon className="w-5 h-5" />
-								Table View
-							</Link>
-							<Link
-								href="/analytics"
-								className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all">
-								<ChartBarIcon className="w-5 h-5" />
-								Analytics
-							</Link>
-							<button
-								onClick={() => setShowImportExport(true)}
-								className="flex items-center gap-2 px-4 py-2 bg-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-600/50 transition-all">
-								<ArrowsRightLeftIcon className="w-5 h-5" />
-								Import/Export
-							</button>
+							className="flex justify-center">
+							<FloatingDock
+								items={dockItems.map((item) => ({
+									...item,
+									onClick:
+										item.title === "Add Bookmark"
+											? () => setShowAddForm(true)
+											: item.title === "Import/Export"
+												? () => setShowImportExport(true)
+												: undefined,
+								}))}
+								desktopClassName="shadow-2xl"
+								mobileClassName="fixed top-4 left-4 z-50"
+							/>
 						</motion.div>
 					</motion.div>
 
@@ -93,18 +113,7 @@ export default function BookmarksPage() {
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ delay: 0.3, duration: 0.6 }}
 						className="mb-8">
-						{!showAddForm ? (
-							<div className="text-center">
-								<motion.button
-									onClick={() => setShowAddForm(true)}
-									whileHover={{ scale: 1.02 }}
-									whileTap={{ scale: 0.98 }}
-									className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 btn-hover">
-									<PlusIcon className="w-5 h-5" />
-									Tambah Bookmark Baru
-								</motion.button>
-							</div>
-						) : (
+						{showAddForm && (
 							<AnimatePresence>
 								<motion.div
 									initial={{ opacity: 0, height: 0, y: -20 }}

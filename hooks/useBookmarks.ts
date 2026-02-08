@@ -217,7 +217,7 @@ export function useUpdateBookmark() {
       // Also invalidate public bookmarks so visibility changes are reflected for guests
       queryClient.invalidateQueries({ queryKey: bookmarkKeys.lists() });
 
-      toast.success('✅ Bookmark berhasil diperbarui');
+      toast.success('Bookmark berhasil diperbarui');
     },
     onError: (error) => {
       console.error('Error updating bookmark:', error);

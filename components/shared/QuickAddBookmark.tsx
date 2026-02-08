@@ -31,7 +31,7 @@ export function QuickAddBookmark() {
 		try {
 			// Try to fetch the page title
 			const response = await fetch(
-				`/api/extract-title?url=${encodeURIComponent(url)}`
+				`/api/extract-title?url=${encodeURIComponent(url)}`,
 			);
 			if (response.ok) {
 				const data = await response.json();
@@ -54,7 +54,7 @@ export function QuickAddBookmark() {
 
 	const toggleTag = (tag: string) => {
 		setSelectedTags((prev) =>
-			prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+			prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
 		);
 	};
 
@@ -154,9 +154,9 @@ export function QuickAddBookmark() {
 								<button
 									type="button"
 									onClick={() => setIsOpen(false)}
-									className="ml-auto p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg hover:from-purple-600 hover:to-blue-400 transition-all shadow-lg hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-400"
+									className=" ml-auto  text-gray-400 hover:text-white transition-colors p-2 rounded-xl hover:bg-gray-800/50 group"
 									aria-label="Close">
-									<XMarkIcon className="w-5 h-5 text-white" />
+									<XMarkIcon className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
 								</button>
 							</div>
 
@@ -197,7 +197,7 @@ export function QuickAddBookmark() {
 											checked={isPublic}
 											onChange={(
 												e: React.ChangeEvent<HTMLInputElement>,
-												checked: boolean
+												checked: boolean,
 											) => setIsPublic(checked)}
 											color="primary"
 											inputProps={{ "aria-label": "controlled" }}

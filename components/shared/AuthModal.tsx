@@ -71,7 +71,10 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 					toast.error("❌ Gagal masuk. Silakan coba lagi.");
 				}
 			} else {
-				if (errorMessage.includes("already registered") || errorMessage.includes("User already registered")) {
+				if (
+					errorMessage.includes("already registered") ||
+					errorMessage.includes("User already registered")
+				) {
 					toast.error("❌ Email sudah terdaftar");
 				} else if (errorMessage.includes("Password should be at least")) {
 					toast.error("❌ Password terlalu pendek");
@@ -133,7 +136,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				exit={{ opacity: 0 }}
-				className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-4"
+				className="fixed inset-0 bg-black/70 backdrop-blur-md z-50 flex items-center justify-center p-2 sm:p-4"
 				onClick={handleClose}>
 				<motion.div
 					initial={{ opacity: 0, scale: 0.9, y: 30 }}
@@ -141,28 +144,28 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 					exit={{ opacity: 0, scale: 0.9, y: 30 }}
 					transition={{ type: "spring", duration: 0.5 }}
 					onClick={(e) => e.stopPropagation()}
-					className="relative bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-10 w-full max-w-lg shadow-2xl">
+					className="relative bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-4 sm:p-6 md:p-10 w-full max-w-md sm:max-w-lg shadow-2xl max-h-[85vh] sm:max-h-[95vh] overflow-y-auto">
 					{/* Gradient Accent */}
 					<div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent rounded-full" />
 
 					{/* Close Button */}
 					<button
 						onClick={handleClose}
-						className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors p-2 rounded-xl hover:bg-gray-800/50 group">
-						<XMarkIcon className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+						className="absolute top-3 right-3 sm:top-6 sm:right-6 text-gray-400 hover:text-white transition-colors p-2 rounded-xl hover:bg-gray-800/50 group">
+						<XMarkIcon className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300" />
 					</button>
 
 					{/* Header with Icon */}
-					<div className="text-center mb-8">
+					<div className="text-center mb-4 sm:mb-6 md:mb-8">
 						<motion.div
 							animate={{
 								rotate: [0, 10, -10, 0],
 								scale: [1, 1.05, 1],
 							}}
 							transition={{ duration: 4, repeat: Infinity }}
-							className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-6 hover:scale-110 transition-transform duration-300">
+							className="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-2xl mb-3 sm:mb-6 hover:scale-110 transition-transform duration-300">
 							{mode === "forgot-password" || mode === "reset-success" ? (
-								<div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/40">
+								<div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/40">
 									{mode === "reset-success" ? (
 										<CheckCircleIcon className="w-10 h-10 text-white" />
 									) : (
@@ -177,7 +180,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 							initial={{ opacity: 0, y: 10 }}
 							animate={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.2 }}
-							className="text-3xl font-bold text-white mb-3">
+							className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3">
 							{mode === "login" && "Welcome Back"}
 							{mode === "register" && "Create Account"}
 							{mode === "forgot-password" && "Reset Password"}
@@ -187,11 +190,14 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 							initial={{ opacity: 0 }}
 							animate={{ opacity: 1 }}
 							transition={{ delay: 0.3 }}
-							className="text-gray-400 text-base">
+							className="text-gray-400 text-sm sm:text-base px-2 sm:px-0">
 							{mode === "login" && "Sign in to access your bookmarks"}
-							{mode === "register" && "Join us and start organizing your bookmarks"}
-							{mode === "forgot-password" && "Enter your email to receive a password reset link"}
-							{mode === "reset-success" && "We've sent you a password reset link"}
+							{mode === "register" &&
+								"Join us and start organizing your bookmarks"}
+							{mode === "forgot-password" &&
+								"Enter your email to receive a password reset link"}
+							{mode === "reset-success" &&
+								"We've sent you a password reset link"}
 						</motion.p>
 					</div>
 
@@ -207,7 +213,8 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 									Email Sent Successfully!
 								</h3>
 								<p className="text-gray-400 text-sm">
-									We've sent a password reset link to <span className="text-indigo-400 font-medium">{email}</span>
+									We've sent a password reset link to{" "}
+									<span className="text-indigo-400 font-medium">{email}</span>
 								</p>
 							</div>
 
@@ -249,7 +256,7 @@ export function AuthModal({ isOpen, onClose }: AuthModalProps) {
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ duration: 0.3 }}
 							onSubmit={handleSubmit}
-							className="space-y-5">
+							className="space-y-3 sm:space-y-5">
 							{/* Email Input */}
 							<div className="space-y-2">
 								<label className="flex items-center gap-2 text-sm font-medium text-gray-300">

@@ -16,7 +16,13 @@ import {
 } from "@heroicons/react/24/outline";
 import Switch from "@mui/material/Switch";
 
-export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
+export function AddBookmarkForm({
+	onSuccess,
+	liquidGlass = true,
+}: {
+	onSuccess?: () => void;
+	liquidGlass?: boolean;
+}) {
 	const { user } = useAuth();
 	const [formData, setFormData] = useState<BookmarkFormData>({
 		title: "",
@@ -86,7 +92,7 @@ export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
 	};
 
 	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
 	) => {
 		const { name, value } = e.target;
 		setFormData((prev) => ({ ...prev, [name]: value }));
@@ -132,7 +138,7 @@ export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
 			];
 
 			const isRestricted = restrictedPlatforms.some((platform) =>
-				hostname.includes(platform)
+				hostname.includes(platform),
 			);
 
 			return {
@@ -310,7 +316,7 @@ export function AddBookmarkForm({ onSuccess }: { onSuccess?: () => void }) {
 							checked={isPublic}
 							onChange={(
 								e: React.ChangeEvent<HTMLInputElement>,
-								checked: boolean
+								checked: boolean,
 							) => setIsPublic(checked)}
 							color="primary"
 							inputProps={{ "aria-label": "controlled" }}
